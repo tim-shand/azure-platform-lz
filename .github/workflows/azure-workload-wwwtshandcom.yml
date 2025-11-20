@@ -104,7 +104,7 @@ jobs:
           terraform plan -out=terraform.tfplan -var-file=terraform.tfvars \
           -var-file=cloudflare.tfvars
           -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-          -var="github_pat="$GH_PAT_TOKEN"
+          -var="github_pat=$GH_PAT_TOKEN"
         
       - name: Terraform Apply
         if: env.RUN_APPLY == 'true'
@@ -119,4 +119,4 @@ jobs:
           terraform destroy --auto-approve -var-file=terraform.tfvars \
           -var-file=cloudflare.tfvars
           -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-          -var="github_pat="$GH_PAT_TOKEN"
+          -var="github_pat=$GH_PAT_TOKEN"
