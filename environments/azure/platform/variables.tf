@@ -37,6 +37,6 @@ variable "plz_management_groups" {
 }
 
 variable "subscription_ids_plz" {
-  description = "List of subscription IDs for the Platform management group."
+  description = "List of subscription IDs for the Platform management group, passed in via GH workflow."
   type = list(string)
 }
