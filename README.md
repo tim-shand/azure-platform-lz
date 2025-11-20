@@ -8,6 +8,8 @@ Bootstrapped, deployed, and managed using Infra-as-Code and CI/CD workflows.
 
 As a big fan of small tech (think micro-pcs, Raspberry Pi etc), a primary requirement is maintaining a small footprint for my on-prem environment. I aim to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab. 
 
+![Photo of my current homelab setup.](docs/images/homelab.jpg)
+
 ## :office: Physical Hardware (On-Prem)
 
 ### Hypervisors (Proxmox)
