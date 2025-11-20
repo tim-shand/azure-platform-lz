@@ -8,6 +8,7 @@ module "plz-gov-management-groups" {
   source = "../../../modules/azure/plz-gov-management-groups"
   plz_management_groups = var.plz_management_groups
   naming                = var.naming
+  subscription_ids_plz  = var.subscription_ids_plz # Passed in via GH workflow.
 }
 
 

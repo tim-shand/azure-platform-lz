@@ -22,7 +22,7 @@ tags = {
 # Object of Management Groups to create.
 plz_management_groups = {
   "platform" = { 
-    mg_display_name = "Platform"
+    mg_display_name = "Platform" # Insert subscriptions here at runtime.
   }
   "workloads" = { 
     mg_display_name = "Workloads"

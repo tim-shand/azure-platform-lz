@@ -88,7 +88,15 @@ jobs:
         run: |
           terraform plan -out=terraform.tfplan -var-file=terraform.tfvars \
           -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-          -var='plz_management_groups.platform.subscription_ids=["'"$ARM_SUBSCRIPTION_ID"'","'"$ARM_PLATFORM_SUBSCRIPTION_ID"'"]'
+          -var "plz_management_groups={
+            platform={
+              mg_display_name=\"Platform\"
+              subscription_ids=[\"$ARM_SUBSCRIPTION_ID\",\"$ARM_SUBSCRIPTION_ID_IAC\"]
+            }
+            workloads={mg_display_name=\"Workloads\"}
+            sandbox={mg_display_name=\"Sandbox\"}
+            decom={mg_display_name=\"Decommissioned\"}
+          }"
         
       - name: Terraform Apply
         if: env.RUN_APPLY == 'true'
