@@ -26,19 +26,19 @@ terraform {
 }
 # Provider configurations.
 provider "azurerm" {
-  subscription_id   = var.subscription_id # Obtain from GHA workflow.
-  tenant_id         = var.azure_tenant_id # Obtain from GHA workflow.
   features {}
+  tenant_id       = data.azuread_client_config.current.tenant_id # Get tenant from current session.
+  subscription_id = var.subscription_id # Target subscription for resources. 
 }
 
 provider "cloudflare" {
-  api_token         = var.cloudflare_api_token# Replace the associated variable with your Cloudflare API token.
+  api_token = var.cloudflare_config["zone_token"] # Repo secrets, passed via GH actions.
 }
 
 provider "github" {
-  owner             = var.github_org_user # Replace the associated variable with your GitHub org/user.
+  owner = var.github_config["owner"]
+  token = var.github_pat # Env secret, passed during Github Actions workflow. 
 }
 
-# Get data from current AzCli session.
 data "azuread_client_config" "current" {} # Get current user session data.
 data "azurerm_subscription" "current" {} # Get current Azure CLI subscription.

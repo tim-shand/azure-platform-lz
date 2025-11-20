@@ -1,4 +1,4 @@
-name: Testing - Deploy Workload-Test (Azure)
+name: Deploy - Web App [wwwtshandcom] (Azure)
 
 on:
   workflow_dispatch: # Run manually
@@ -15,15 +15,17 @@ on:
 
   push: # Commits
     paths:
-      - "environments/azure/workloads/workload-test/**"
-      - ".github/workflows/test-azure-workload.yml"
+      - "environments/azure/workloads/swa-wwwtshandcom**"
+      - ".github/workflows/azure-workload-wwwtshandcom.yml"
+      - "modules/azure/app-web-staticwebapp"
     branches:
       - main
   
   pull_request: # PR
     paths:
-      - "environments/azure/workloads/workload-test/**"
-      - ".github/workflows/test-azure-workload.yml"
+      - "environments/azure/workloads/swa-wwwtshandcom**"
+      - ".github/workflows/azure-workload-wwwtshandcom.yml"
+      - "modules/azure/app-web-staticwebapp"
     branches:
       - main
 
@@ -33,14 +35,14 @@ permissions:
   issues: read
 
 jobs:
-  deploy-iac-backend:
-    name: Deploy Workload-Test (Azure)
+  deploy-swa-wwwtshandcom:
+    name: Deploy - Web App [wwwtshandcom] (Azure)
     runs-on: ubuntu-latest
     timeout-minutes: 10  # The entire job will fail if it runs longer than 'x' minutes.
-    environment: azure-workload-test # Name of the Github environment.
+    environment: azure-workload-wwwtshandcom # Name of the Github environment.
     defaults:
       run: # Set job defaults for 'run' commands.
-        working-directory: ./environments/azure/workloads/workload-test
+        working-directory: ./environments/azure/workloads/swa-wwwtshandcom
     env:
       # Backend (IaC subscription)
       TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group
@@ -57,6 +59,10 @@ jobs:
 
       # Github PAT Auth
       GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # Required by Terraform provider to manage environments.
+
+      # Cloudflare Config
+      CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_TSHANDCOM_ID }}
+      CLOUDFLARE_ZONE_TOKEN: ${{ secrets.CLOUDFLARE_ZONE_TSHANDCOM_TOKEN }}
 
       # Determine which steps should be run based on inputs and commits or PRs.
       RUN_PLAN: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || github.event.inputs.tf_action == 'Plan' || github.event.inputs.tf_action == 'Plan-Apply' }}
@@ -82,12 +88,17 @@ jobs:
           -backend-config="key=$TF_BACKEND_KEY" \
           -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID_IAC"
 
+      - name: Setup Cloudflare Config for Terraform
+        run: echo "cloudflare_config={\"zone_id\":\"$CLOUDFLARE_ZONE_ID\",\"zone_token\":\"$CLOUDFLARE_ZONE_TOKEN\"}" >> $CLOUDFLARE_CONFIG
+
       - name: Terraform Plan
         if: env.RUN_PLAN == 'true'
         timeout-minutes: 5  # This step will fail if it runs longer than 'x' minutes.
         run: |
           terraform plan -out=terraform.tfplan -var-file=terraform.tfvars \
-          -var="subscription_id=$ARM_SUBSCRIPTION_ID" 
+          -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
+          -var="github_pat="$GH_PAT_TOKEN" \
+          -var="cloudflare_config=$CLOUDFLARE_CONFIG"
         
       - name: Terraform Apply
         if: env.RUN_APPLY == 'true'
@@ -100,4 +111,6 @@ jobs:
         timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
         run: |
           terraform destroy --auto-approve -var-file=terraform.tfvars \
-          -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID" 
+          -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
+          -var="github_pat="$GH_PAT_TOKEN" \
+          -var="cloudflare_config=$CLOUDFLARE_CONFIG"

@@ -3,11 +3,6 @@
 #=================================================#
 
 # Azure
-variable "azure_tenant_id" {
-  description = "The Azure Tenant ID to deploy resources into."
-  type        = string
-}
-
 variable "subscription_id" {
   description = "Subscription ID for the target resources."
   type        = string
@@ -15,11 +10,6 @@ variable "subscription_id" {
 
 variable "location" {
   description = "The Azure location to deploy resources into."
-  type        = string
-}
-
-variable "management_group" {
-  description = "Desired ID of the top-level management group (under Tenant Root)."
   type        = string
 }
 
@@ -41,32 +31,20 @@ variable "custom_domain_name" {
 }
 
 # Cloudflare: https://developers.cloudflare.com/fundamentals/api/get-started/create-token/
-variable "cloudflare_zone_id" {
-  description = "Github owner or organization."
-  type        = string
-}
-variable "cloudflare_api_token" {
-  description = "Github owner or organization."
-  type        = string
-}
-variable "cloudflare_dnshost" {
-  description = "Github owner or organization."
-  type        = string
+variable "cloudflare_config" {
+  description = "Map of Cloudflare details required for deployment."
+  type = map(string)
+  sensitive = true # No output.
 }
 
 # Github
-variable "github_org_user" {
-  description = "Github owner or organization."
-  type        = string
+variable "github_config" {
+  description = "Map of values for Github configuration."
+  type        = map(string)
 }
 
-variable "github_repo_name" {
-  description = "Name of Github repository holding source code."
+variable "github_pat" {
+  description = "Github API token for deployment."
   type        = string
-}
-
-variable "github_branch" {
-  description = "Github repository branch to use."
-  type        = string
-  default     = "main"
+  sensitive   = true
 }
