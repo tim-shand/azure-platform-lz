@@ -1,11 +1,12 @@
 # Personal Home Lab
 
 Welcome to my personal home lab! :wave:  
+
 This project provides an environment for self-hosting and experimenting with different technologies.  
 A base for hands-on learning, developing knowledge and improving skills in DevOps and Cloud platforms.  
 Bootstrapped, deployed, and managed using Infra-as-Code and CI/CD workflows.  
 
-As a big fan of small tech (think micro-pcs, Raspberry Pi etc), a primary requirement is maintain a small footprint for my on-prem environment. I try to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab. 
+As a big fan of small tech (think micro-pcs, Raspberry Pi etc), a primary requirement is maintaining a small footprint for my on-prem environment. I aim to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab. 
 
 ## :office: Physical Hardware (On-Prem)
 
@@ -23,7 +24,7 @@ As a big fan of small tech (think micro-pcs, Raspberry Pi etc), a primary requir
 - **Switch:** TP-Link TL-SG108PE 8-Port Gigabit Easy Smart PoE Switch. 
   - Connecting nodes physically, providing outbound access to Internet via firewall connected to home WiFi network. 
 - **Firewall:** HP EliteDesk G1 (Intel i5-4590T, 16 GB DDR3, 250 GB SSD). 
-  - Running [OPNsense](https://opnsense.org/) providing firewall, VLAN and routing functionality. 
+  - Running [OPNsense](https://opnsense.org/) providing firewall, DNS, VLAN and routing functionality. 
   - Separate VLANs for infrastructure, management and server workloads. 
 
 ## :computer: Virtualized Infrastructure
@@ -36,16 +37,16 @@ As a big fan of small tech (think micro-pcs, Raspberry Pi etc), a primary requir
 ### Azure
 
 - **Automated bootstrapping using Powershell + Terraform** 
-  - Generates required Terraform files, kicks off the deployment, and triggers post-deployment state migration to Azure. 
-  - Creates Entra ID Service Principal, secured with Federated Credentials (OIDC), and adds details to a specified Github repository. 
+  - Generates required Terraform files, kicks off the bootstrapping deployment, and triggers post-deployment state migration to Azure. 
+  - Creates Entra ID Service Principal, secured with Federated Credentials (OIDC), adding the SP details as secrets to the specified GitHub repository. 
 - **Platform Landing Zone** 
-  - Minimalistic, light-weight platform landing zone for connectivity, governance, monitoring and shared resources 
+  - Minimalistic, light-weight platform landing zone for connectivity, governance, monitoring and shared resources. 
   - Hub/Spoke network topology, with hub VNet providing a centralized connectivity for workload spoke VNet peering. 
 - **IaC Backend Vending** 
   - Dedicated IaC subscription to contain remote Terraform states for all deployments, with per-project Azure Blob Containers. 
   - Each project backend is deployed using an IaC Backend Vending module to create storage and Github resources. 
   - Creates a new environment in Github repository, with target resource Azure subscription stored as environment secrets. 
-  - This allows workflows
+  - This allows workflows to use a dedicated subscription ID for remote backend state storage, while still utilizing environment secrets for workload specific subscriptions. 
 
 ### Cloudflare
 
