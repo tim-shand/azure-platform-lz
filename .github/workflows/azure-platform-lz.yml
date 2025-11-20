@@ -87,7 +87,7 @@ jobs:
         run: |
           terraform plan -out=terraform.tfplan -var-file=terraform.tfvars \
           -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-          -var="subscription_ids_plz='$ARM_SUBSCRIPTION_ID','$ARM_SUBSCRIPTION_ID_IAC'"
+          -var="subscription_ids_plz=[\"$ARM_SUBSCRIPTION_ID\",\"$ARM_SUBSCRIPTION_ID_IAC\"]"
         
       - name: Terraform Apply
         if: env.RUN_APPLY == 'true'
