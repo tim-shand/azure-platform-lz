@@ -15,7 +15,7 @@ on:
 
   push: # Commits
     paths:
-      - "environments/azure/workloads/swa-wwwtshandcom**"
+      - "environments/azure/workloads/swa-wwwtshandcom"
       - ".github/workflows/azure-workload-wwwtshandcom.yml"
       - "modules/azure/app-web-staticwebapp"
     branches:
@@ -23,7 +23,7 @@ on:
   
   pull_request: # PR
     paths:
-      - "environments/azure/workloads/swa-wwwtshandcom**"
+      - "environments/azure/workloads/swa-wwwtshandcom"
       - ".github/workflows/azure-workload-wwwtshandcom.yml"
       - "modules/azure/app-web-staticwebapp"
     branches:
@@ -101,7 +101,7 @@ jobs:
         if: env.RUN_PLAN == 'true'
         timeout-minutes: 5  # This step will fail if it runs longer than 'x' minutes.
         run: |
-          terraform plan -out=terraform.tfplan -var-file=terraform.tfvars \
+          terraform plan -out=terraform.tfplan -var-file=prod.tfvars \
           -var-file=cloudflare.tfvars \
           -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
           -var="github_pat=$GH_PAT_TOKEN"
@@ -116,7 +116,7 @@ jobs:
         if: env.RUN_DESTROY == 'true'
         timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
         run: |
-          terraform destroy --auto-approve -var-file=terraform.tfvars \
+          terraform destroy --auto-approve -var-file=prod.tfvars \
           -var-file=cloudflare.tfvars \
           -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
           -var="github_pat=$GH_PAT_TOKEN"
