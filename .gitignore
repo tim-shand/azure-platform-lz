@@ -39,6 +39,7 @@ backend.conf
 !example.tfvars
 !bootstrap.tfvars
 !prod.tfvars
+!dev.tfvars
 !terraform.tfvars
 
 # Ignore override files as they are usually used to override resources locally.
