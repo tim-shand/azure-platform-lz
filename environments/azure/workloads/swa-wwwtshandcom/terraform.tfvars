@@ -25,4 +25,4 @@ github_config = {
 }
 
 # SWA
-custom_domain_name = "dev"
+custom_domain_name = "dev.tshand.com"
