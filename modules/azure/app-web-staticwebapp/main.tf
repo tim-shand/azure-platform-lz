@@ -64,6 +64,6 @@ resource "azurerm_static_web_app_custom_domain" "swa_domain" {
 # GitHub Actions: Upload secret (deployment token) for the SWA.
 resource "github_actions_secret" "swa_token" {
   repository      = var.github_config["src_repo"]
-  secret_name     = "azure_swa_token_${var.naming.project}"
+  secret_name     = "azure_swa_token_${var.naming.project}_${var.naming.environment}"
   plaintext_value = azurerm_static_web_app.swa.api_key
 }
