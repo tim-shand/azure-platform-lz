@@ -269,12 +269,12 @@ if (!($Destroy)) {
     # Terraform: Plan
     Write-Host ""
     Write-Host -ForegroundColor $HD1 "[*] Performing Action: Running Terraform plan... "
-    if (terraform -chdir="$PSScriptRoot/terraform" plan --out=bootstrap.tfplan `
+    if (terraform -chdir="$PSScriptRoot/terraform" plan --out=bootstrap.plan `
             -var-file="bootstrap.tfvars" `
             -var="subscription_id_iac=$($config.Azure.SubscriptionIAC)"
     ) {
         Write-Host -ForegroundColor $INF "PASS" 
-        terraform -chdir="$PSScriptRoot/terraform" show bootstrap.tfplan
+        terraform -chdir="$PSScriptRoot/terraform" show bootstrap.plan
     }
     else {
         Write-Host -ForegroundColor $ERR "FAIL" 
