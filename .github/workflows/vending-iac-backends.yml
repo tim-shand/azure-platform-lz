@@ -101,11 +101,12 @@ jobs:
         timeout-minutes: 5  # This step will fail if it runs longer than 'x' minutes.
         run: |
           terraform plan -out=terraform.plan -var-file=terraform.tfvars \
-          -var="github_token=$GH_PAT_TOKEN" \
           -var="iac_storage_account_rg=$TF_BACKEND_RG" \
           -var="iac_storage_account_name=$TF_BACKEND_SA" \
-          -var="subscription_id=$ARM_SUBSCRIPTION_ID_IAC"
-        
+          -var="subscription_id=$ARM_SUBSCRIPTION_ID_IAC" \
+          -var="github_token=$GH_PAT_TOKEN" \
+          -var='github_config={owner="${{ github.repository_owner }}",repo="${{ github.repository }}"}''
+
       - name: Terraform Apply
         if: env.RUN_APPLY == 'true'
         timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
