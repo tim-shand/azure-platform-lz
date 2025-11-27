@@ -62,34 +62,25 @@ resource "azurerm_storage_container" "iac_storage_container" {
 
 # Create: Github Repo - Environment
 resource "github_repository_environment" "gh_repo_env" {
-  count               = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
-  environment         = var.project_name # Get from variable map for project. 
-  repository          = var.github_config["repo"]
-}
-
-# Create: Github Repo - Environment: Secret (Resource Subscription ID).
-resource "github_actions_environment_secret" "gh_repo_env_secret_sub" {
-  count            = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
-  repository       = github_repository_environment.gh_repo_env[count.index].repository
-  environment      = github_repository_environment.gh_repo_env[count.index].environment
-  secret_name      = "ARM_SUBSCRIPTION_ID"
-  plaintext_value  = var.subscription_id_env # Azure subscription for Github environment to use. 
+  count       = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
+  environment = var.project_name              # Get from variable map for project. 
+  repository  = var.github_config["repo"]
 }
 
 # Create: Github Repo - Environment: Variable (Backend Container)
 resource "github_actions_environment_variable" "gh_repo_env_var" {
-  count            = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
-  repository       = github_repository_environment.gh_repo_env[count.index].repository
-  environment      = github_repository_environment.gh_repo_env[count.index].environment
-  variable_name    = "TF_BACKEND_CONTAINER"
-  value            = azurerm_storage_container.iac_storage_container.name
+  count         = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
+  repository    = github_repository_environment.gh_repo_env[count.index].repository
+  environment   = github_repository_environment.gh_repo_env[count.index].environment
+  variable_name = "TF_BACKEND_CONTAINER"
+  value         = azurerm_storage_container.iac_storage_container.name
 }
 
 # Create: Github Repo - Environment: Variable (Backend Key)
 resource "github_actions_environment_variable" "gh_repo_env_var_key" {
-  count           = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
-  repository      = github_repository_environment.gh_repo_env[count.index].repository
-  environment     = github_repository_environment.gh_repo_env[count.index].environment
-  variable_name   = "TF_BACKEND_KEY"
-  value           = "${var.project_name}.tfstate"
+  count         = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
+  repository    = github_repository_environment.gh_repo_env[count.index].repository
+  environment   = github_repository_environment.gh_repo_env[count.index].environment
+  variable_name = "TF_BACKEND_KEY"
+  value         = "${var.project_name}.tfstate"
 }

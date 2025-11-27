@@ -13,8 +13,8 @@ variable "iac_storage_account_name" {
 }
 
 variable "github_config" {
-  description = "Map of values for Github configuration."
-  type = map(string)
+  description = "Map of values for GitHub configuration."
+  type        = map(string)
 }
 
 variable "project_name" {
@@ -22,13 +22,8 @@ variable "project_name" {
   type        = string
 }
 
-variable "subscription_id_env" {
-  description = "Azure subscription ID for target resources."
-  type        = string
-}
-
 variable "create_github_env" {
   description = "Toggle the creation of Github environment and variables."
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
