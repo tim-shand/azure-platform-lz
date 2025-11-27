@@ -2,7 +2,9 @@
 
 _Run-once Powershell/Terraform deployment to bootstrap Azure and GitHub platforms for IaC and CI/CD management._
 
-This bootstrap deployment will create resources in both Azure and GitHub, required for future deployments using Github Actions workflows. This allows for centralized storage of workload and platform project state files. This can be helpful when utilizing a monolithic style repository, as all project state files can be managed from the one location.
+This bootstrap deployment will create resources in both Azure and GitHub, required for future deployments using Github Actions workflows, allowing for centralized storage of workload and platform project state files.
+
+This can be helpful when utilizing a monolithic style repository, as all project state files can be managed from the one location.
 
 ## :green_book: Requirements
 
