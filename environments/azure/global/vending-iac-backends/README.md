@@ -22,7 +22,9 @@ Automatically provision required resources for new Terraform backends and secure
 - Creates new GitHub repository environment for the project.
 - Adds the `TF_BACKEND_CONTAINER` and `TF_BACKEND_KEY` variables to the GitHub repo environment to be used by the project backend configuration.
 - Adds a repo environment-specific federated credential (OIDC) to the Azure service principal.
-- **NOTE:** Requires _manually_ adding the `ARM_SUBSCRIPTION_ID` secret to the new environment to keeps IDs out of code base.
+- **NOTE:** Requires **MANUAL** actions:
+  - Adding the `ARM_SUBSCRIPTION_ID` secret to the new environment to keeps IDs out of code base.
+  - One-time grant admin consent for Service Principal API permissions (`Application.ReadWrite.All`).
 
 ## Example
 
