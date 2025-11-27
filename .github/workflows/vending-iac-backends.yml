@@ -100,12 +100,13 @@ jobs:
         if: env.RUN_PLAN == 'true'
         timeout-minutes: 5  # This step will fail if it runs longer than 'x' minutes.
         run: |
+          REPO=$(echo "${{ github.repository }}" | cut -d'/' -f2)
           terraform plan -out=terraform.plan -var-file=terraform.tfvars \
           -var="iac_storage_account_rg=$TF_BACKEND_RG" \
           -var="iac_storage_account_name=$TF_BACKEND_SA" \
           -var="subscription_id=$ARM_SUBSCRIPTION_ID_IAC" \
           -var="github_token=$GH_PAT_TOKEN" \
-          -var='github_config={owner="${{ github.repository_owner }}",repo="${{ github.repository }}"}'
+          -var='github_config={owner="${{ github.repository_owner }}",repo="$REPO"}'
 
       - name: Terraform Apply
         if: env.RUN_APPLY == 'true'
