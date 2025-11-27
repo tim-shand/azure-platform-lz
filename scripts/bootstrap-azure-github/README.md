@@ -17,7 +17,7 @@ This can be helpful when utilizing a monolithic style repository, as all project
 
 - **[Terraform](https://developer.hashicorp.com/terraform/install):** Used to deploy resources to target Azure environment.
 - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):** Required by Terraform `AzureRM` provider to connect to Azure.
-- **[Github CLI](https://cli.github.com/):** Connected and authenticated to target Github organization.
+- **[GitHub CLI](https://cli.github.com/):** Connected and authenticated to target Github organization.
 
 ## :hammer_and_wrench: Created Resources
 
