@@ -76,7 +76,7 @@ jobs:
           framework: terraform # Optional: Run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
           quiet: true # Optional: Display only failed checks
           soft_fail: false # Optional: Do not return an error code if there are failed checks
-          log_level: DEBUG # Optional: Set log level. Default WARNING
+          log_level: WARNING # Optional: Set log level. Default WARNING
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
