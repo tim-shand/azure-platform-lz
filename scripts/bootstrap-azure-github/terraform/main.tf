@@ -9,7 +9,7 @@
 # Set default naming conventions.
 locals {
   name_full  = "${var.naming["prefix"]}-${var.naming["service"]}-${var.naming["project"]}-${var.naming["environment"]}"
-  name_short = "${var.naming["prefix"]}${var.naming["service"]}${var.naming["project"]}${var.naming["environment"]}"
+  name_short = "${var.naming["prefix"]}${var.naming["service"]}${var.naming["project"]}"
 }
 
 #=====================================================================#
@@ -106,7 +106,7 @@ resource "azurerm_storage_account" "iac_sa" {
 
 # Storage Account Blob Container.
 resource "azurerm_storage_container" "iac_sa_cn" {
-  name                  = "tfstate-azure-${var.naming["project"]}-${var.naming["environment"]}"
+  name                  = "tfstate-azure-${var.naming["project"]}"
   storage_account_id    = azurerm_storage_account.iac_sa.id
   container_access_type = "private"
 }
