@@ -68,10 +68,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "Code Scan: Run Checkov (Terraform)"
-        uses: bridgecrewio/checkov-action@v12
+        uses: bridgecrewio/checkov-action@v12 
         with:
           directory: | # Use current working dir set by "working-directory".
-            environments/azure/global/vending-iac-backend
+            environments/azure/global/vending-iac-backends
             modules/azure/vending-iac-backend
           framework: terraform # Optional: Run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
           quiet: true # Optional: Display only failed checks
@@ -117,4 +117,4 @@ jobs:
           -var="github_token=$GH_PAT_TOKEN" \
           -var="iac_storage_account_rg=$TF_BACKEND_RG" \
           -var="iac_storage_account_name=$TF_BACKEND_SA" \
-          -var-"subscription_id=$ARM_SUBSCRIPTION_ID_IAC" 
+          -var="subscription_id=$ARM_SUBSCRIPTION_ID_IAC" 
