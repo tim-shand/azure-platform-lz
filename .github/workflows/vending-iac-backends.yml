@@ -105,7 +105,7 @@ jobs:
           -var="iac_storage_account_name=$TF_BACKEND_SA" \
           -var="subscription_id=$ARM_SUBSCRIPTION_ID_IAC" \
           -var="github_token=$GH_PAT_TOKEN" \
-          -var='github_config={owner="${{ github.repository_owner }}",repo="${{ github.repository }}"}''
+          -var='github_config={owner="${{ github.repository_owner }}",repo="${{ github.repository }}"}'
 
       - name: Terraform Apply
         if: env.RUN_APPLY == 'true'
