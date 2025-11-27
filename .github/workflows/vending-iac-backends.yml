@@ -1,4 +1,4 @@
-name: Vending - Deploy IaC Backends (Azure/Github)
+name: Vending - Deploy IaC Backends (Azure/GitHub)
 
 on:
   workflow_dispatch: # Run manually
@@ -35,7 +35,7 @@ permissions:
   issues: read
 
 jobs:
-  deploy-iac-backend:
+  deploy-iac-backends:
     name: Deploy IaC Backends
     runs-on: ubuntu-latest
     timeout-minutes: 30  # The entire job will fail if it runs longer than 'x' minutes.
@@ -56,7 +56,7 @@ jobs:
       ARM_SUBSCRIPTION_ID_IAC: ${{ secrets.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for IaC Backends.
 
       # Github PAT Auth
-      GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # Required by Terraform provider to manage environments.
+      GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # Required by Terraform provider to manage GH environments.
 
       # Determine which steps should run (on commits, PR, plan and plan-apply). 
       RUN_PLAN: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || github.event.inputs.tf_action == 'Plan' || github.event.inputs.tf_action == 'Plan-Apply' }}
@@ -66,6 +66,17 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: "Code Scan: Run Checkov (Terraform)"
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: | # Use current working dir set by "working-directory".
+            environments/azure/global/vending-iac-backend
+            modules/azure/vending-iac-backend
+          framework: terraform # Optional: Run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
+          quiet: true # Optional: Display only failed checks
+          soft_fail: false # Optional: Do not return an error code if there are failed checks
+          log_level: DEBUG # Optional: Set log level. Default WARNING
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -86,7 +97,7 @@ jobs:
         if: env.RUN_PLAN == 'true'
         timeout-minutes: 5  # This step will fail if it runs longer than 'x' minutes.
         run: |
-          terraform plan -out=terraform.tfplan -var-file=terraform.tfvars \
+          terraform plan -out=terraform.plan -var-file=terraform.tfvars \
           -var="github_token=$GH_PAT_TOKEN" \
           -var="iac_storage_account_rg=$TF_BACKEND_RG" \
           -var="iac_storage_account_name=$TF_BACKEND_SA" \
@@ -96,7 +107,7 @@ jobs:
         if: env.RUN_APPLY == 'true'
         timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
         run: |
-          terraform apply --auto-approve terraform.tfplan
+          terraform apply --auto-approve terraform.plan
     
       - name: Terraform Destroy
         if: env.RUN_DESTROY == 'true'
