@@ -24,8 +24,8 @@ on:
   push: # Commits
     paths:
       - "environments/azure/workloads/swa-wwwtshandcom"
-      - ".github/workflows/azure-workload-wwwtshandcom.yml"
-      - "modules/azure/app-web-staticwebapp"
+      - ".github/workflows/azure-swa-wwwtshandcom.yml"
+      - "modules/azure/swa-webapp-basic-dns"
     branches:
       - main
   
