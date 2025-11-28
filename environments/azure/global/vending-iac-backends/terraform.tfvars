@@ -7,10 +7,10 @@ projects = {
   "azure-mgt-platformlz" = {
     create_github_env = true # Enable creation of GitHub repository environment.
   }
-  "azure-wrk-wwwtshandcom-prd" = {
+  "azure-swa-wwwtshandcom-prd" = {
     create_github_env = true # Enable creation of GitHub repository environment.
   }
-  "azure-wrk-wwwtshandcom-dev" = {
+  "azure-swa-wwwtshandcom-dev" = {
     create_github_env = true # Enable creation of GitHub repository environment.
   }
 }
