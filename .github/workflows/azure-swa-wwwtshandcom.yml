@@ -44,18 +44,11 @@ permissions:
   issues: read
 
 jobs:
-  deploy_auto:
-    name: "Deploy: StaticWebApp [wwwtshandcom] (Azure)"
+  deploy:
+    name: "Deploy: Static Web App [wwwtshandcom] (Azure)"
     runs-on: ubuntu-latest
     timeout-minutes: 10  # The entire job will fail if it runs longer than 'x' minutes.
-
-    #environment: "azure-swa-wwwtshandcom-dev" # Name of the environment.
-    environment: >-
-      ${{
-        github.event_name == 'workflow_dispatch' &&
-        format('azure-swa-wwwtshandcom-{0}', github.event.inputs.deploy_env) ||
-        'azure-swa-wwwtshandcom-dev'
-      }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && format('azure-swa-wwwtshandcom-{0}', github.event.inputs.deploy_env) || 'azure-swa-wwwtshandcom-dev' }}
 
     defaults:
       run: # Set job defaults for 'run' commands.
@@ -84,7 +77,9 @@ jobs:
       RUN_DESTROY: ${{ github.event.inputs.tf_action == 'Destroy' }}
 
       # Set variable file to use based on environment deployment. 
-      ENV_TFVARS: "env-dev.tfvars"
+
+      #ENV_TFVARS: "env-.tfvars"
+      ENV_TFVARS: ${{ github.event_name == 'workflow_dispatch' && format('{0}', github.event.inputs.deploy_env) || 'dev' }}
 
     steps:
       - name: Checkout Repository
@@ -118,7 +113,7 @@ jobs:
         if: env.RUN_PLAN == 'true'
         timeout-minutes: 10  # This step will fail if it runs longer than 'x' minutes.
         run: |
-          terraform plan -out=terraform.plan -var-file=$ENV_TFVARS \
+          terraform plan -out=terraform.plan -var-file="env-$ENV_TFVARS.tfvars" \
           -var-file=cloudflare.tfvars \
           -var="subscription_id=$ARM_SUBSCRIPTION_ID"
         
@@ -132,6 +127,6 @@ jobs:
         if: env.RUN_DESTROY == 'true'
         timeout-minutes: 25 # Fail if it runs longer than 'x' minutes.
         run: |
-          terraform destroy --auto-approve -var-file=$ENV_TFVARS \
+          terraform destroy --auto-approve -var-file="env-$ENV_TFVARS.tfvars" \
           -var-file=cloudflare.tfvars \
           -var="subscription_id=$ARM_SUBSCRIPTION_ID" 
