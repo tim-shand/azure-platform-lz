@@ -86,7 +86,7 @@ resource "github_actions_environment_variable" "gh_repo_env_var_key" {
 }
 
 # Create: Github Repo - Environment: Variable (Backend Key DEV)
-resource "github_actions_environment_variable" "gh_repo_env_var_key" {
+resource "github_actions_environment_variable" "gh_repo_env_var_key_dev" {
   count         = var.enable_dev_state ? 1 : 0 # Eval the variable true/false to set count.
   repository    = github_repository_environment.gh_repo_env[count.index].repository
   environment   = github_repository_environment.gh_repo_env[count.index].environment
