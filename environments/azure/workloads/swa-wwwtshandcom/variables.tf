@@ -37,3 +37,8 @@ variable "swa_config" {
   description = "Map of values for Static Web App configuration."
   type        = map(string)
 }
+
+variable "project_groups" {
+  description = "List of group names to assign RBAC roles for project resources."
+  type        = list(string)
+}

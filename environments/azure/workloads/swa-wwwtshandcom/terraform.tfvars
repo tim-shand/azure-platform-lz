@@ -13,3 +13,6 @@ tags = {
   Project = "PersonalWebsite" # Name of the project the resources are for.
   Owner   = "CloudOps"        # Team responsible for the resources.
 }
+project_groups = [
+  "Project_RBAC_wwwtshandcom_Admin" # Must already exist in Entra. 
+]

@@ -17,4 +17,5 @@ module "swa-tshand-com" {
   tags              = var.tags
   swa_config        = var.swa_config
   cloudflare_config = var.cloudflare_config
+  project_groups    = var.project_groups
 }

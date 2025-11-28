@@ -37,3 +37,8 @@ variable "cloudflare_config" {
   type        = map(string)
   sensitive   = true # No output.
 }
+
+variable "project_groups" {
+  description = "List of group names to assign RBAC roles for project resources."
+  type        = list(string)
+}

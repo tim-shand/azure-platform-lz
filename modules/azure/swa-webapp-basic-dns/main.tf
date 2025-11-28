@@ -53,15 +53,15 @@ resource "azurerm_key_vault" "swa_keyvault" {
 }
 
 # Azure: Key Vault - RBAC Assignments
-resource "azurerm_role_assignment" "rbac_kv_sp1" {
-  scope                = azurerm_key_vault.swa_keyvault.id
-  role_definition_name = "Key Vault Administrator"
-  principal_id         = data.azuread_client_config.current.object_id
+data "azuread_group" "project_groups" {
+  for_each     = toset(var.project_groups)
+  display_name = each.value
 }
-resource "azurerm_role_assignment" "rbac_kv_sp2" {
+resource "azurerm_role_assignment" "rbac_kv" {
+  for_each             = data.azuread_group.project_groups # Repeat for each Entra group provided by data call.
   scope                = azurerm_key_vault.swa_keyvault.id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azuread_client_config.current.object_id
+  principal_id         = each.value.object_id # Obtained from data call, loop. 
 }
 
 # Azure: Key Vault - Create Secret (SWA Deployment Token)
