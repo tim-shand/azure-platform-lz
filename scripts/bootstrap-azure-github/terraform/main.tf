@@ -55,18 +55,26 @@ resource "azuread_application_federated_identity_credential" "entra_iac_app_cred
   subject        = "repo:${var.github_config["owner"]}/${var.github_config["repo"]}:ref:refs/heads/${var.github_config["branch"]}"
 }
 
-# Assign 'Contributor' role for SP at top-level tenant root management group.
+# Assign RBAC roles for SP at top-level tenant root group.
 resource "azurerm_role_assignment" "rbac_mg_sp1" {
   scope                = data.azurerm_management_group.mg_tenant_root.id # Tenant Root MG ID.
   role_definition_name = "Contributor"
   principal_id         = azuread_service_principal.entra_iac_sp.object_id # Service Principal ID.
 }
-
-# Assign 'User Access Administrator' role for SP at top-level tenant root management group.
 resource "azurerm_role_assignment" "rbac_mg_sp2" {
-  scope                = data.azurerm_management_group.mg_tenant_root.id # Tenant Root MG ID.
+  scope                = data.azurerm_management_group.mg_tenant_root.id
   role_definition_name = "User Access Administrator"
-  principal_id         = azuread_service_principal.entra_iac_sp.object_id # Service Principal ID.
+  principal_id         = azuread_service_principal.entra_iac_sp.object_id
+}
+resource "azurerm_role_assignment" "rbac_kv_01" {
+  scope                = data.azurerm_management_group.mg_tenant_root.id
+  role_definition_name = "Key Vault Administrator"
+  principal_id         = azuread_service_principal.entra_iac_sp.object_id
+}
+resource "azurerm_role_assignment" "rbac_kv_02" {
+  scope                = data.azurerm_management_group.mg_tenant_root.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = azuread_service_principal.entra_iac_sp.object_id
 }
 
 #=================================================================#
