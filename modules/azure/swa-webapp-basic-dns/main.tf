@@ -6,14 +6,16 @@
 data "azuread_client_config" "current" {}
 
 # Generate naming conventions.
+# Generate a random integer to use for suffix uniqueness.
+
 locals {
   # Default Names
   name_full  = "${var.naming.prefix}-${var.naming.service}-${var.naming.project}-${var.swa_config.environment}"
   name_short = "${var.naming.prefix}${var.naming.service}${var.naming.project}${var.swa_config.environment}"
   # Key Vault
-  kv_name_max_length = 19 # Random integer suffix will add 5 chars, so max = 19 for base name.
+  kv_name_max_length = 24 # Random integer suffix will add 5 chars, so max = 19 for base name.
   kv_name_base       = "${local.name_short}kv${random_integer.rndint.result}"
-  kv_name            = length(local.kv_name_base) > local.kv_name_max_length ? substr(local.kv_name_base, 0, local.kv_name_max_length - 5) : local.kv_name_base
+  kv_name            = length(local.kv_name_base) > local.kv_name_max_length ? "${substr(local.kv_name_base, 0, local.kv_name_max_length - 5)}${random_integer.rndint.result}" : local.kv_name_base
 }
 
 # Generate a random integer to use for suffix uniqueness.
