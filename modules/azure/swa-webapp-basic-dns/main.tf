@@ -47,7 +47,7 @@ resource "azurerm_key_vault" "swa_keyvault" {
   resource_group_name        = azurerm_resource_group.swa_rg.name
   location                   = azurerm_resource_group.swa_rg.location
   tags                       = var.tags
-  tenant_id                  = data.azurerm_client_config.current
+  tenant_id                  = data.azuread_client_config.current
   sku_name                   = "standard"
   rbac_authorization_enabled = true
 }
