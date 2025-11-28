@@ -3,7 +3,7 @@
 # All secrets are stored securely in Github Secrets or environment variables.
 
 # SWA
-swa_config {
+swa_config = {
   custom_domain_name    = "www.tshand.com"
   environment           = "prd"
   enable_cloudflare_dns = true # Enable/disable DNS propagation in Cloudflare.
