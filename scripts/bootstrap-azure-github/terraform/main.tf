@@ -35,6 +35,10 @@ resource "azuread_application" "entra_iac_app" {
       id   = "1bfefb4e-e0b5-418b-a88f-73c46d2cc8e9" # Application.ReadWrite.All
       type = "Role"                                 # Will require a GA to provide consent. 
     }
+    resource_access {
+      id   = "7ab1d382-f21e-4acd-a863-ba3e13f7da61" # Directory.Read.All
+      type = "Role"                                 # Will require a GA to provide consent. 
+    }
   }
 }
 
