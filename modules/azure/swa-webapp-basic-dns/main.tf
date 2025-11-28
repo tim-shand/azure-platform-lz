@@ -9,7 +9,7 @@ data "azuread_client_config" "current" {}
 locals {
   # Default Names
   name_full  = "${var.naming.prefix}-${var.naming.service}-${var.naming.project}-${var.swa_config.environment}"
-  name_short = "${var.naming.prefix}${var.naming.service}-${var.naming.project}${var.swa_config.environment}"
+  name_short = "${var.naming.prefix}${var.naming.service}${var.naming.project}${var.swa_config.environment}"
   # Key Vault
   kv_name_max_length = 19 # Random integer suffix will add 5 chars, so max = 19 for base name.
   kv_name_base       = "${local.name_short}kv${random_integer.rndint.result}"
