@@ -10,7 +10,7 @@ on:
         type: choice
         options:
           - "Plan"
-          - "Plan-Apply"
+          - "Apply"
           - "Destroy"
       deploy_env:
         description: "Environment: dev, prd"
@@ -72,8 +72,8 @@ jobs:
       CLOUDFLARE_ZONE_TOKEN: ${{ secrets.CLOUDFLARE_ZONE_TSHANDCOM_TOKEN }}
 
       # Determine which steps should be run based on inputs and commits or PRs.
-      RUN_PLAN: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || github.event.inputs.tf_action == 'Plan' || github.event.inputs.tf_action == 'Plan-Apply' }}
-      RUN_APPLY: ${{ github.event.inputs.tf_action == 'Plan-Apply' }}
+      RUN_PLAN: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || github.event.inputs.tf_action == 'Plan' || github.event.inputs.tf_action == 'Apply' }}
+      RUN_APPLY: ${{ github.event.inputs.tf_action == 'Apply' }}
       RUN_DESTROY: ${{ github.event.inputs.tf_action == 'Destroy' }}
 
       # Set variable file to use based on environment deployment. 
