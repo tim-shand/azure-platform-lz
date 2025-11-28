@@ -77,8 +77,6 @@ jobs:
       RUN_DESTROY: ${{ github.event.inputs.tf_action == 'Destroy' }}
 
       # Set variable file to use based on environment deployment. 
-
-      #ENV_TFVARS: "env-.tfvars"
       ENV_TFVARS: ${{ github.event_name == 'workflow_dispatch' && format('{0}', github.event.inputs.deploy_env) || 'dev' }}
 
     steps:
