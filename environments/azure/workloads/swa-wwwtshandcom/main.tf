@@ -2,6 +2,13 @@
 # Workload: Personal Website (www.tshand.com)
 #=================================================#
 
+# Type: Azure Static Web App, Key Vault
+# Deployment: GitHub Actions
+
+# Use IaC Backend vending to generate 'prd' and 'dev' GitHub envrionments. 
+# Deploy workload with GitHub actions, manually selecting the environment, or defaulting to 'dev' for auto-triggered. 
+# Static Web App deployment token is stored in Azure Key Vault within the workloads Resource Group. 
+
 module "swa-tshand-com" {
   source            = "../../../../modules/azure/swa-webapp-basic-dns"
   location          = var.location
