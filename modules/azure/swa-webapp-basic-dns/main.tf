@@ -20,8 +20,8 @@ locals {
 
 # Generate a random integer to use for suffix uniqueness.
 resource "random_integer" "rndint" {
-  min = 100000
-  max = 999999
+  min = 10000
+  max = 99999
 }
 
 # Merge environment tags with default tags. 
