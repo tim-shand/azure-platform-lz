@@ -79,7 +79,7 @@ resource "cloudflare_dns_record" "cname_record" {
   count   = var.swa_config.enable_cloudflare_dns ? 1 : 0 # Only setup DNS resources if enabled.
   zone_id = var.cloudflare_config["zone_id"]
   name    = var.swa_config.custom_domain_name
-  ttl     = 60                                                                                  # 60 seconds, can update later on.
+  ttl     = 300                                                                                 # 60 seconds, can update later on.
   type    = "CNAME"                                                                             # Can be "A" or "TXT" depending on your setup.
   comment = "Azure - ${var.naming.project}-${var.swa_config.environment} - Domain Verification" # Adds a comment for clarity.
   content = azurerm_static_web_app.swa.default_host_name                                        # Supplied by Azure SWA resource after creation.
