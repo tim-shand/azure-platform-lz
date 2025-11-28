@@ -12,6 +12,15 @@ on:
           - "Plan"
           - "Plan-Apply"
           - "Destroy"
+      deploy_env:
+        description: "Environment: dev, tst, prd"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - "dev"
+          - "tst"
+          - "prd"
 
   push: # Commits
     paths:
@@ -39,7 +48,7 @@ jobs:
     name: "Deploy: Infra - WebApp [wwwtshandcom] (Azure)"
     runs-on: ubuntu-latest
     timeout-minutes: 10  # The entire job will fail if it runs longer than 'x' minutes.
-    environment: azure-workload-wwwtshandcom # Name of the Github environment.
+    environment: azure-wrk-wwwtshandcom # Name of the Github environment.
     defaults:
       run: # Set job defaults for 'run' commands.
         working-directory: ./environments/azure/workloads/swa-wwwtshandcom

@@ -10,4 +10,5 @@ module "vending_iac_backends" {
   github_config            = var.github_config
   project_name             = each.key                     # Prefixed with "tfstate": tfstate-proxmox
   create_github_env        = each.value.create_github_env # Create Github resources TRUE/FALSE.
+  enable_dev_state         = each.value.enable_dev_state  # Create additional 'TF_BACKEND_KEY_DEV' environment variable.
 }
