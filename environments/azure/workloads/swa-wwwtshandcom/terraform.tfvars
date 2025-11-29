@@ -3,8 +3,7 @@
 # All secrets are stored securely in Github Secrets or environment variables.
 
 # General / Azure
-location       = "westus2" # SWA has limited regions for free-tier.
-repository_url = "https://github.com/tim-shand/www-tshand-com"
+location = "westus2" # SWA has limited regions for free-tier.
 naming = {
   prefix  = "tjs"          # Short name of organization ("abc").
   service = "web"          # Service name used in the project ("iac", "mgt", "sec").

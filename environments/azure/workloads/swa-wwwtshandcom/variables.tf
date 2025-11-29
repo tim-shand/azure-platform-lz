@@ -38,11 +38,6 @@ variable "swa_config" {
   type        = map(string)
 }
 
-variable "repository_url" {
-  description = "Full URL of the GitHub repository."
-  type        = string
-}
-
 variable "project_groups" {
   description = "List of group names to assign RBAC roles for project resources."
   type        = list(string)

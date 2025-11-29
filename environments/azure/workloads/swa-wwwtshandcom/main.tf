@@ -20,7 +20,6 @@ module "swa-tshand-com" {
   naming            = var.naming
   tags              = var.tags
   swa_config        = var.swa_config
-  repository_url    = var.repository_url
   cloudflare_config = var.cloudflare_config
   project_groups    = var.project_groups
 }

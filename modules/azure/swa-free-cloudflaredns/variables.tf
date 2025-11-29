@@ -31,11 +31,6 @@ variable "swa_config" {
   type        = map(string)
 }
 
-variable "repository_url" {
-  description = "Full URL of the GitHub repository."
-  type        = string
-}
-
 # Cloudflare: https://developers.cloudflare.com/fundamentals/api/get-started/create-token/
 variable "cloudflare_config" {
   description = "Map of Cloudflare details required for deployment."
