@@ -14,12 +14,13 @@
 # Static Web App deployment token is stored in Azure Key Vault within the workloads Resource Group. 
 
 module "swa-tshand-com" {
-  source            = "../../../../modules/azure/swa-webapp-basic-dns"
+  source            = "../../../../modules/azure/swa-free-cloudflaredns"
   location          = var.location
   subscription_id   = var.subscription_id
   naming            = var.naming
   tags              = var.tags
   swa_config        = var.swa_config
+  repository_url    = var.repository_url
   cloudflare_config = var.cloudflare_config
   project_groups    = var.project_groups
 }

@@ -6,5 +6,6 @@
 swa_config = {
   custom_domain_name    = "www.tshand.com"
   environment           = "prd"
+  repository_branch     = "main"
   enable_cloudflare_dns = true # Enable/disable DNS propagation in Cloudflare.
 }

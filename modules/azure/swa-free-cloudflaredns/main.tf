@@ -41,6 +41,8 @@ resource "azurerm_static_web_app" "swa" {
   location            = azurerm_resource_group.swa_rg.location
   tags                = var.tags
   sku_tier            = "Free" # or "Standard"
+  repository_url      = var.swa_config.gh_repo_url
+  repository_branch   = var.swa_config.gh_repo_branch
 }
 
 # Azure: Key Vault - Used to store SWA deployment token.
