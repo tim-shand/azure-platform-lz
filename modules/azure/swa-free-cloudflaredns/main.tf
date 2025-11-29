@@ -41,6 +41,8 @@ resource "azurerm_static_web_app" "swa" {
   location            = azurerm_resource_group.swa_rg.location
   tags                = var.tags
   sku_tier            = "Free" # or "Standard"
+  # Ignore repo url and branch to prevent setting to null on re-run. 
+  # This allows external repo to push deployment of app using SWA token. 
   lifecycle {
     ignore_changes = [
       repository_url,
