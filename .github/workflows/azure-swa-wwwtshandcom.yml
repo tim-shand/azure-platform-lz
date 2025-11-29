@@ -25,7 +25,7 @@ on:
     paths:
       - "environments/azure/workloads/swa-wwwtshandcom/**"
       - ".github/workflows/azure-swa-wwwtshandcom.yml"
-      - "modules/azure/swa-webapp-basic-dns/**"
+      - "modules/azure/swa-free-cloudflaredns/**"
     branches:
       - main
       - dev*
@@ -34,7 +34,7 @@ on:
     paths:
       - "environments/azure/workloads/swa-wwwtshandcom/**"
       - ".github/workflows/azure-swa-wwwtshandcom.yml"
-      - "modules/azure/swa-webapp-basic-dns/**"
+      - "modules/azure/swa-free-cloudflaredns/**"
     branches:
       - main
 
