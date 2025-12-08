@@ -44,9 +44,8 @@ As a big fan of small tech (think micro-pcs, Raspberry Pi etc), a primary requir
   - Minimalistic, light-weight platform landing zone for connectivity, governance, monitoring and shared resources. 
   - Hub/Spoke network topology, with hub VNet providing centralized connectivity for workload (spoke) VNet peering. 
 - **IaC Backend Vending** 
-  - Dedicated IaC subscription to contain remote Terraform states for all deployments, with per-project Azure Blob Containers. 
-  - Each project backend is deployed using an IaC Backend Vending module to create storage and GitHub resources. 
-  - Creates a new environment in GitHub repository, storing backend details in environment variables. 
+  - Utilizes a dedicated IaC subscription to contain remote Terraform states, with per-project Azure Blob Containers and GitHUb ACtions environments for remote state management. 
+  - Project backends are deployed using the `IaC Backend Vending` module to create Azure and GitHub resources. 
 
 ### Cloudflare
 
