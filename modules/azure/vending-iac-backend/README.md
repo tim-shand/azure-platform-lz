@@ -11,7 +11,7 @@ This Terraform module creates Azure and GitHub resources used for Terraform remo
 - Creates a workload specific Blob Container in the existing Storage Account, within the dedicated IaC Azure subscription. 
 - Adds federated credentials (OIDC) for each GitHub Actions environment to the IaC Service Principal in Entra ID. 
 - Enables container level RBAC role assignment to manage access and permission to state files. 
-- **NOTE:** Requires MANUAL actions:
+- **NOTE:** Requires _MANUAL_ actions:
   - Add the `ARM_SUBSCRIPTION_ID` secret to the new GitHub environments to keep subscription IDs out of code base. 
   - One-time grant admin consent for Service Principal API permissions (`Application.ReadWrite.All`) in Entra ID. 
 
