@@ -23,7 +23,7 @@ on:
 
   push: # Commits
     paths:
-      - "environments/azure/workloads/swa-wwwtshandcom/**"
+      - "platforms/azure/workloads/swa-wwwtshandcom/**"
       - ".github/workflows/azure-swa-wwwtshandcom.yml"
       - "modules/azure/swa-free-cloudflaredns/**"
     branches:
@@ -32,7 +32,7 @@ on:
   
   pull_request: # PR
     paths:
-      - "environments/azure/workloads/swa-wwwtshandcom/**"
+      - "platforms/azure/workloads/swa-wwwtshandcom/**"
       - ".github/workflows/azure-swa-wwwtshandcom.yml"
       - "modules/azure/swa-free-cloudflaredns/**"
     branches:
@@ -52,7 +52,7 @@ jobs:
 
     defaults:
       run: # Set job defaults for 'run' commands.
-        working-directory: ./environments/azure/workloads/swa-wwwtshandcom
+        working-directory: ./platforms/azure/workloads/swa-wwwtshandcom
     env:
       # Backend (IaC subscription)
       TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group

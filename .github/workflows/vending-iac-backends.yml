@@ -15,7 +15,7 @@ on:
 
   push: # Commits
     paths:
-      - "environments/azure/global/vending-iac-backends/**"
+      - "platforms/azure/global/vending-iac-backends/**"
       - "modules/azure/vending-iac-backend/**"
       - ".github/workflows/vending-iac-backends.yml"
     branches:
@@ -23,7 +23,7 @@ on:
   
   pull_request: # PR
     paths:
-      - "environments/azure/global/vending-iac-backends/**"
+      - "platforms/azure/global/vending-iac-backends/**"
       - "modules/azure/vending-iac-backend/**"
       - ".github/workflows/vending-iac-backends.yml"
     branches:
@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 30  # The entire job will fail if it runs longer than 'x' minutes.
     defaults:
       run: # Set job defaults for 'run' commands.
-        working-directory: ./environments/azure/global/vending-iac-backends
+        working-directory: ./platforms/azure/global/vending-iac-backends
     env:
       # Backend (IaC subscription)
       TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group
@@ -79,7 +79,7 @@ jobs:
       #   working-directory: .
       #   run: |
       #     checkov -d ./modules/azure/vending-iac-backend --framework terraform --quiet --skip-check
-      #     checkov -d ./environments/azure/global/vending-iac-backends --framework terraform --quiet
+      #     checkov -d ./platforms/azure/global/vending-iac-backends --framework terraform --quiet
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

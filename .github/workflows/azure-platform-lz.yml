@@ -15,7 +15,7 @@ on:
 
   # push: # Commits
   #   paths:
-  #     - "environments/azure/platform/**"
+  #     - "platforms/azure/platform-landing-zone/**"
   #     - "modules/azure/plz**"
   #     - ".github/workflows/azure-platform-lz.yml"
   #   branches:
@@ -23,7 +23,7 @@ on:
   
   # pull_request: # PR
   #   paths:
-  #     - "environments/azure/platform/**"
+  #     - "platforms/azure/platform-landing-zone/**"
   #     - "modules/azure/plz**"
   #     - ".github/workflows/azure-platform-lz.yml"
   #   branches:
@@ -42,7 +42,7 @@ jobs:
     environment: azure-platform-lz # Name of the Github environment.
     defaults:
       run: # Set job defaults for 'run' commands.
-        working-directory: ./environments/azure/platform
+        working-directory: ./platforms/azure/platform-landing-zone
     env:
       # Backend (IaC subscription)
       TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group
