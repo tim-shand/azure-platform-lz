@@ -58,3 +58,9 @@ hub_subnets = {
     default_outbound_access = false
   }
 }
+
+# Logging: Monitoring & Diagnostics -----------------#
+logging_law = {
+  "sku" = "PerGB2018"
+  "retention_days" = "30"
+}

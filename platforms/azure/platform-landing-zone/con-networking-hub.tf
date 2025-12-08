@@ -52,10 +52,53 @@ resource "azurerm_subnet_network_security_group_association" "plz_con_hub_snet_n
   network_security_group_id = azurerm_network_security_group.plz_con_hub_subnet_nsg[each.key].id
 }
 
+#======================================#
+# Network: Network Watcher (Logging)
+#======================================#
+
 # VNet (Hub): Network Watcher
 resource "azurerm_network_watcher" "plz_con_hub_nw" {
   name                = "${local.name_part}-nw"
   location            = azurerm_resource_group.plz_con_hub_rg.location
   resource_group_name = azurerm_resource_group.plz_con_hub_rg.name
   tags                = var.tags
+}
+
+# VNet (Hub): Network Watcher - Flow Logs
+resource "azurerm_network_watcher_flow_log" "plz_con_hub_logs" {
+  name                 = "${azurerm_virtual_network.plz_con_hub_vnet.name}-log"
+  location = var.location
+  resource_group_name  = azurerm_resource_group.plz_con_hub_rg.name
+  tags = var.tags
+  network_watcher_name = azurerm_network_watcher.plz_con_hub_nw.name # Network Watcher created above.
+  storage_account_id         = azurerm_storage_account.plz_log_mon_sa.id # Storage Account held in Logging RG.
+  target_resource_id         = azurerm_virtual_network.plz_con_hub_vnet.id # Target the VNet. 
+  enabled                    = true # Flow Log: Enabled
+  version                    = 2
+  retention_policy {
+    enabled = true # Retention Policy: Enabled
+    days    = 30
+  }
+  traffic_analytics {
+    enabled               = true # Traffic Analytics: Enabled
+    workspace_id          = azurerm_log_analytics_workspace.plz_log-mon_law.workspace_id
+    workspace_region      = azurerm_log_analytics_workspace.plz_log-mon_law.location
+    workspace_resource_id = azurerm_log_analytics_workspace.plz_log-mon_law.id
+    interval_in_minutes   = 10
+  }
+}
+
+# VNet (Hub): Network Watcher - Flow Logs
+resource "azurerm_monitor_diagnostic_setting" "plz_con_hub_diag" {
+  name               = "${azurerm_virtual_network.plz_con_hub_vnet.name}-diag"
+  target_resource_id = azurerm_virtual_network.plz_con_hub_vnet.id # VNet ID. 
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.plz_log-mon_law.workspace_id # Send to LAW workspace. 
+
+  enabled_log {
+    category = "AuditEvent"
+  }
+
+  enabled_metric {
+    category = "AllMetrics"
+  }
 }

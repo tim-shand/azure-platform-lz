@@ -48,3 +48,9 @@ variable "hub_subnets" {
     default_outbound_access = bool
   }))
 }
+
+# Logging: Monitoring & Diagnostics -----------------#
+variable "logging_law" {
+  description = "Map of central Log Analytics configuration."
+  type = map(string)
+}
