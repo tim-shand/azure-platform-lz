@@ -20,7 +20,7 @@ on:
   #     - ".github/workflows/azure-platform-lz.yml"
   #   branches:
   #     - main
-  
+
   # pull_request: # PR
   #   paths:
   #     - "platforms/azure/platform-landing-zone/**"
@@ -38,8 +38,8 @@ jobs:
   deploy-azure-platform-lz:
     name: Deploy - Platform Landing Zone (Azure)
     runs-on: ubuntu-latest
-    timeout-minutes: 10  # The entire job will fail if it runs longer than 'x' minutes.
-    environment: azure-platform-lz # Name of the Github environment.
+    timeout-minutes: 10 # The entire job will fail if it runs longer than 'x' minutes.
+    environment: azure-mgt-platformlz # Name of the Github environment.
     defaults:
       run: # Set job defaults for 'run' commands.
         working-directory: ./platforms/azure/platform-landing-zone
@@ -72,7 +72,7 @@ jobs:
           terraform_version: 1.13.0
 
       - name: Terraform Init
-        timeout-minutes: 5  # This step will fail if it runs longer than 'x' minutes.
+        timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
         run: |
           terraform init \
           -backend-config="resource_group_name=$TF_BACKEND_RG" \
@@ -83,21 +83,21 @@ jobs:
 
       - name: Terraform Plan
         if: env.RUN_PLAN == 'true'
-        timeout-minutes: 5  # This step will fail if it runs longer than 'x' minutes.
+        timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
         run: |
           terraform plan -out=terraform.tfplan -var-file=terraform.tfvars \
           -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
           -var="subscription_ids_plz=[\"$ARM_SUBSCRIPTION_ID\",\"$ARM_SUBSCRIPTION_ID_IAC\"]"
-        
+
       - name: Terraform Apply
         if: env.RUN_APPLY == 'true'
         timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
         run: |
           terraform apply --auto-approve terraform.tfplan
-    
+
       - name: Terraform Destroy
         if: env.RUN_DESTROY == 'true'
         timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
         run: |
           terraform destroy --auto-approve -var-file=terraform.tfvars \
-          -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID" 
+          -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID"
