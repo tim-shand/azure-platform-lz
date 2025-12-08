@@ -6,7 +6,7 @@
 
 # DESCRIPTION:
 # This bash script will download the latest cloud-init image of Ubuntu Server.  
-# In addtion, this script will also:
+# In addition, this script will also:
 # - Install the 'qemu-guest-agent' package within the cloud-init image.
 # - Set the default root password as defined by provided variable.
 # - Expand the file system to 32 GB total.
@@ -100,7 +100,7 @@ fi
 
 # Create VM and convert to template.
 if [ -f "$dstpath/$img_file" ]; then
-    echo "INFO: Creating inital VM..."
+    echo "INFO: Creating initial VM..."
     qm create $template_id --name "$template_name" \
         --ostype l26 \
         --memory 1024 --balloon 0 \
