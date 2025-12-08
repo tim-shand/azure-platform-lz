@@ -6,15 +6,14 @@
 location = "newzealandnorth"
 naming = {
     prefix = "tjs" # Short name of organization ("abc").
-    platform = "plz" # Platform name for related resources ("mgt", "plz").
+    service = "plz" # Service name used in the project ("iac", "mgt", "sec").
     project = "platform" # Project name for related resources ("platform", "landingzone").
-    service = "mgt" # Service name used in the project ("iac", "mgt", "sec").
     environment = "prd" # Environment for resources/project ("dev", "tst", "prd", "alz").
 }
 
 # Tags (assigned to all bootstrap resources).
 tags = {
-    Project = "Platform" # Name of the project the resources are for.
+    Project = "Platform-LZ" # Name of the project the resources are for.
     Environment = "prd" # dev, tst, prd, alz
     Owner = "CloudOps" # Team responsible for the resources.
 }
@@ -32,5 +31,26 @@ plz_management_groups = {
   }
   "decom" = { 
     mg_display_name = "Decommissioned"
+  }
+}
+
+# Connectivity: Network (Hub) -----------------#
+hub_vnet_space = "10.50.0.0/22" # Allows 4x /24 subnets.
+hub_subnets = {
+  "AzureManagementSubnet" = {
+    name = "mgt"
+    address = ["10.50.0.0/24"]
+  }
+  "AzureFirewallSubnet" = {
+    name = "fwl"
+    address = ["10.50.1.0/26"]
+  }  
+  "AzureGatewaySubnet" = {
+    name = "gwy"
+    address = ["10.50.2.0/24"]
+  }
+  "AzureBastionSubnet" = {
+    name = "bas"
+    address = ["10.50.3.0/26"]
   }
 }

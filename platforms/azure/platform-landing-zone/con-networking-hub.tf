@@ -1,20 +1,16 @@
 #==========================================#
-# Platform: Connectivity - Network (Hub)
+# Platform LZ: Connectivity - Network (Hub)
 #==========================================#
 
 locals {
-  name_part      = "${var.naming["prefix"]}-${var.naming["platform"]}" # Combine name parts in to single var.
-  computed_tags  = {
-    Modified = replace(replace(replace(replace(timestamp(), "-", ""), "T", ""), ":", ""), "Z", "") # Get timestamp to use for resource tags.
-  }
-  merged_tags = merge(local.computed_tags, var.tags) # Merge the tag map into existing tags variable.
+  name_part   = "${var.naming["prefix"]}-${var.naming["service"]}-con-hub" # Combine name parts in to single var.
 }
 
-# Create Resource Group.
+# Create Resource Group for hub networking.
 resource "azurerm_resource_group" "plz_con_hub_rg" {
-  name     = "${local.name_part}-con-hub-rg"
+  name     = "${local.name_part}-rg"
   location = var.location
-  tags     = local.merged_tags
+  tags     = var.tags
 }
 
 #======================================#
@@ -23,16 +19,17 @@ resource "azurerm_resource_group" "plz_con_hub_rg" {
 
 # Create: Virtual Network (Hub)
 resource "azurerm_virtual_network" "plz_con_hub_vnet" {
-  name                = "${local.name_part}-con-hub-vnet"
+  name                = "${local.name_part}-vnet"
   location            = azurerm_resource_group.plz_con_hub_rg.location
   resource_group_name = azurerm_resource_group.plz_con_hub_rg.name
-  address_space       = [var.vnet_space]
-  tags                = local.merged_tags
+  address_space       = [var.hub_vnet_space]
+  tags                = var.tags
 }
 
 # Create: Virtual Network Subnet (Primary)
-resource "azurerm_subnet" "plz_con_hub_sn1" {
-  name                 = "${local.name_part}-con-hub-sn1"
+resource "azurerm_subnet" "plz_con_hub_subnet" {
+  for_each = var.hub_subnets
+  name                 = "${local.name_part}-sn1"
   resource_group_name  = azurerm_virtual_network.plz_con_hub_vnet.resource_group_name
   virtual_network_name = azurerm_virtual_network.plz_con_hub_vnet.name
   address_prefixes     = [var.subnet_space]
@@ -45,10 +42,10 @@ resource "azurerm_subnet" "plz_con_hub_sn1" {
 
 # NSG rules to be defined in separate files.
 resource "azurerm_network_security_group" "plz_con_hub_sn1_nsg" {
-  name                = "${local.name_part}-con-hub-sn1-nsg"
+  name                = "${local.name_part}-sn1-nsg"
   location            = azurerm_virtual_network.plz_con_hub_vnet.location
   resource_group_name = azurerm_virtual_network.plz_con_hub_vnet.resource_group_name
-  tags                = local.merged_tags
+  tags                = var.tags
 }
 
 # Associate NSG with subnet.
@@ -61,10 +58,9 @@ resource "azurerm_subnet_network_security_group_association" "plz_con_hub_sn1_ns
 # Network Watcher
 #======================================#'
 
-resource "azurerm_network_watcher" "plz_con_hub_nww" {
-  name                = "${local.name_part}-con-hub-nww"
+resource "azurerm_network_watcher" "plz_con_hub_nw" {
+  name                = "${local.name_part}-nw"
   location            = azurerm_resource_group.plz_con_hub_rg.location
   resource_group_name = azurerm_resource_group.plz_con_hub_rg.name
-  tags                = local.merged_tags
+  tags                = var.tags
 }
-
