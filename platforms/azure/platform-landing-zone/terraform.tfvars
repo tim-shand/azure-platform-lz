@@ -13,9 +13,9 @@ naming = {
 
 # Tags (assigned to all bootstrap resources).
 tags = {
-  Project     = "Platform-LZ" # Name of the project the resources are for.
-  Environment = "prd"         # dev, tst, prd, alz
-  Owner       = "CloudOps"    # Team responsible for the resources.
+  Project     = "PlatformLandingZone" # Name of the project the resources are for.
+  Environment = "prd"                 # dev, tst, prd, alz
+  Owner       = "CloudOps"            # Team responsible for the resources.
 }
 
 # Governance: Management Groups -----------------#
@@ -25,7 +25,7 @@ gov_management_group_list = {
   }
   "platform" = {
     display_name = "Platform"
-    # Insert subscriptions here at runtime via pipeline.
+    # Insert subscriptions here at runtime via workflow.
   }
   "workloads" = {
     display_name = "Workloads"

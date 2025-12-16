@@ -3,7 +3,7 @@
 #=====================================================#
 
 # Create core top-level management group for the organization.
-resource "azurerm_management_group" "mg_top_level" {
+resource "azurerm_management_group" "plz_governance" {
   display_name = "Core"
   name         = "${var.naming["prefix"]}-core-mg"
 }
