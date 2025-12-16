@@ -21,19 +21,20 @@ tags = {
 gov_management_group_root = "Core" # Top level Management Group name.
 gov_management_group_list = {
   platform = {
-    display_name           = "Platform" # Cosmetic name for Management Group.
-    subcription_identifier = "mgt"      # Used to identify existing subscriptions to add to the Management Group. 
+    display_name            = "Platform" # Cosmetic name for Management Group.
+    subscription_identifier = "mgt"      # Used to identify existing subscriptions to add to the Management Group. 
   }
   workloads = {
-    display_name           = "Workloads"
-    subcription_identifier = "app"
+    display_name            = "Workloads"
+    subscription_identifier = "app"
   }
   sandbox = {
-    display_name           = "Sandbox"
-    subcription_identifier = "dev"
+    display_name            = "Sandbox"
+    subscription_identifier = "dev"
   }
   decom = {
-    display_name = "Decommission"
+    display_name            = "Decommission"
+    subscription_identifier = "decom"
   }
 }
 

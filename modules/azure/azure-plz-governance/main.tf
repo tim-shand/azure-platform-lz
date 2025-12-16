@@ -7,14 +7,15 @@
 data "azurerm_subscriptions" "all" {} # Get all subscriptions visible to current user or Service Principal. 
 
 locals {
-  # NOTE: Requires subscriptions to be renamed prior to deployment to match 'subcription_identifier' variable. 
+  # NOTE: Requires subscriptions to be renamed prior to deployment to include 'subcription_identifier' string value from variables file. 
   mg_subscription_ids = {
     for mg_key, mg in var.gov_management_group_list : # Loop each key and its value set in the Management Group map of objects. 
     mg_key => distinct(concat(
-      mg.subscription_identifier != null ? # If 'subscription_identifier' is not null, get subscriptions that contain the string value. 
+      mg.subscription_identifier != null ? # If 'subscription_identifier' is not null, get subscriptions that contain the identifier string value. 
       [
-        for sub in data.azurerm_subscriptions.all : # Loop each subscription (all) and get ID where display name matches identifier.  
-        sub.subscription_id if contains(lower(sub.display_name), lower(mg.subscription_identifier))
+        for sub in data.azurerm_subscriptions.all.subscriptions : # Loop each subscription (from all) and get ID where display name matches identifier.  
+        sub.subscription_id                                       # Select the subscription ID if regex condition passed (find identifier string inside display name). 
+        if can(regex(lower(mg.subscription_identifier), lower(sub.display_name)))
       ] : [] # Else, set as empty list if not matching subscriptions. 
     ))
   }
