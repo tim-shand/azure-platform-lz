@@ -1,4 +1,4 @@
-name: Vending - Deploy IaC Backends (Azure/GitHub)
+name: "Vending - Deploy IaC Backends (Azure/GitHub)"
 
 on:
   workflow_dispatch: # Run manually

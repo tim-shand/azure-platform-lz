@@ -1,4 +1,4 @@
-name: Deploy - Platform Landing Zone (Azure)
+name: "Deploy - Platform Landing Zone (Azure)"
 
 on:
   workflow_dispatch: # Run manually

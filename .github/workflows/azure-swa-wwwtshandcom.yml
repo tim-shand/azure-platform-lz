@@ -1,4 +1,4 @@
-name: Deploy - Web App [wwwtshandcom] (Azure)
+name: "Deploy - Web App [wwwtshandcom] (Azure)"
 
 on:
   workflow_dispatch: # Run manually
