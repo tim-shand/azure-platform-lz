@@ -32,5 +32,5 @@ resource "azurerm_management_group" "plz_governance_mg" {
   name                       = lower("${var.naming["org"]}-${each.key}-mg")       # Use key title in naming.
   display_name               = each.value.display_name                            # Get from each object looped. 
   parent_management_group_id = azurerm_management_group.plz_governance_mg_root.id # Nest MGs under root management group. 
-  subscription_ids           = local.mg_subscription_ids[each.key]
+  subscription_ids           = local.mg_subscription_ids[each.key]                # Associate subscriptions based on identifier matching. 
 }
