@@ -52,6 +52,7 @@ README.md            # Overview and purpose
 
 ## :memo: To Do / Future Improvements
 
+- [ ] Fix broken module paths. 
 - [ ] Platform Landing Zone: Governance
 - [ ] Platform Landing Zone: Observability
 - [ ] Platform Landing Zone: Connectivity
