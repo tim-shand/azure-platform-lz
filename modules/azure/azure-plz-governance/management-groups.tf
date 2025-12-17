@@ -1,5 +1,5 @@
 #=====================================================#
-# Platform LZ: Governance (Management Groups & Policy)
+# Platform LZ: Governance - Management Groups
 #=====================================================#
 
 # Governance: Management Groups -----------------#
