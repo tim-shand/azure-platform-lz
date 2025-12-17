@@ -2,13 +2,11 @@
 
 _Automated, IaC-driven Azure environment implementing governance, automation, and targeting operational best practices._
 
-This repository contains my personal Azure tenant, providing enterprise-style operations and a sandbox for hands-on learning. It includes Terraform-based landing zones, subscription management, monitoring, and CI/CD pipelines, aiming to align with CAF guidelines and best practice principals. 
+This repository contains my personal Azure tenant, providing enterprise-style operations and a sandbox for hands-on learning. It includes a platform landing zone, subscription management, monitoring, and CI/CD pipelines, aiming to align with CAF guidelines and best practice principals. 
 
 ---
 
-## :cloud: Components
-
-### Platform Landing Zone
+## :cloud: Platform Landing Zone
 
 Minimalistic, light-weight platform landing zone designed for personal use or by small organizations. IaC to deploy and manage shared resources, connectivity, governance, policy-as-code, monitoring/observability. 
 
@@ -25,7 +23,7 @@ Minimalistic, light-weight platform landing zone designed for personal use or by
   - Dedicated IaC subscription to contain all remote Terraform states, deployed using the custom `IaC Backend Vending` module. 
   - Blob Containers per project for remote state management, with individual GitHub environments maintaining isolation between workloads. 
 
-### Workloads
+## :gear: Workloads
 
 - **Personal Website (www.tshand.com)**
   - Static website built with Hugo, deployed to Azure Static Web Apps using Terraform and GitHub workflows. 
