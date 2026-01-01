@@ -18,10 +18,10 @@ Light-weight platform landing zone designed for personal use or by small organiz
   - Creates Entra ID Service Principal, secured with Federated Credentials (OIDC), adding the details as secrets to GitHub repository. 
 - **Governance & Policies**
   - Management groups, RBAC, and policy enforcement automated via Terraform modules, ensures scalable governance. 
+- **Connectivity: Hub-Spoke Architecture**
+  - Hub VNet for shared services with workload VNets peered as spokes for isolating environments. 
 - **Observability & Monitoring**
   - Centralized Log Analytics workspace with diagnostic settings and alerting. 
-- **Networking / Hub-Spoke Architecture**
-  - Hub VNet for shared services with workload VNets peered as spokes for isolated environments. 
 - **IaC Backend Vending** 
   - Uses a dedicated subscription to contain all remote Terraform states. 
   - Environments/projects are deployed using the `IaC Backend Vending` module. 
