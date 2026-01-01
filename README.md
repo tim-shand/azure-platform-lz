@@ -48,8 +48,6 @@ Minimalistic, light-weight platform landing zone designed for personal use or by
 ├── docs                            # Design diagrams, build documents, images. 
 ├── environments                    # Global resources, landing zone, and workloads.  
 │   ├── global
-│   │   ├── bootstrap-azure-github
-│   │   └── vending-iac-backends
 │   ├── platform-landing-zone       # Azure platform landing zone. 
 │   └── workloads                   # Workloads running on Azure. 
 ├── modules                         # Terraform modules directory. 
@@ -57,7 +55,8 @@ Minimalistic, light-weight platform landing zone designed for personal use or by
 │   ├── plz-network-hub
 │   ├── plz-observability
 │   ├── swa-free-cloudflaredns
-└── └── vending-iac-backend
+│   ├── vending-iac-backend
+└── utilities                       # Utilities and tools used within the project. 
 ```
 
 ---
