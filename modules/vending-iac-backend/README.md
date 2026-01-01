@@ -4,7 +4,7 @@ This Terraform module creates Azure and GitHub resources used for Terraform remo
 
 ---
 
-# 🌟 Features
+## 🌟 Features
 
 - Automates the provisioning of required resources for new Terraform backends and secure CI/CD connectivity. 
 - Creates a GitHub Actions environment per workload, containing workload specific variables for workload Terraform backend. 
@@ -17,7 +17,7 @@ This Terraform module creates Azure and GitHub resources used for Terraform remo
 
 ---
 
-# 📃 Requirements
+## 📃 Requirements
 
 - **Dedicated IaC Azure Subscription** 
   - Uses a dedicated Infrastructure-as-Code Azure subscription to contain all remote state backend resources. 
@@ -29,7 +29,7 @@ This Terraform module creates Azure and GitHub resources used for Terraform remo
 
 ---
 
-# ▶️ Usage
+## ▶️ Usage
 
 ```hcl
 module "vending_iac_backends" {
@@ -43,7 +43,7 @@ module "vending_iac_backends" {
 }
 ```
 
-## Inputs
+### Inputs
 
 **NOTE:** See `variables.tf` for more details. 
 
@@ -54,9 +54,9 @@ module "vending_iac_backends" {
 
 ---
 
-## Examples
+### Examples
 
-### Remote State Structure
+#### Remote State Structure
 
 ```markdown
 IaC Subscription: mgt-iac-sub
@@ -76,7 +76,7 @@ Workload Subscriptions (workload-sub-02)
 ├── App2 resources
 ```
 
-### GitHub Environment Variables
+#### GitHub Environment Variables
 
 | Environment          | Variable       | Value                           | 
 | -------------------- | -------------- | ------------------------------- |
