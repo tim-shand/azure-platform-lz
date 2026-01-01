@@ -41,7 +41,7 @@ This can be helpful when utilizing a monolithic style repository, as all project
 2. Populate with required variable values.
 3. Execute the Powershell script using the desired action parameter, including the name of the `env` file.
 
-```shell
+```powershell
 # Execute bootstrapping process. 
 powershell -file utilities/bootstrap-azure-github/bootstrap-azure-github.ps1 -EnvFile env.psd1 -Action Create
 ```
@@ -55,7 +55,7 @@ powershell -file utilities/bootstrap-azure-github/bootstrap-azure-github.ps1 -En
 2. Execute Powershell script using the `-Action Remove` parameter.
 3. Approve removal of all created resources when prompted.
 
-```shell
+```powershell
 # Remove bootstrap resources.  
 powershell -file utilities/bootstrap-azure-github/bootstrap-azure-github.ps1 -EnvFile env.psd1 -Action Remove
 ```
