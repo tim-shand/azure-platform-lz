@@ -27,6 +27,55 @@ This Terraform module creates Azure and GitHub resources used for Terraform remo
   - Added as GitHub repository secret, referenced by GitHub Actions workflow.
   - Requires read/write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.
 
+**NOTE:** See `variables.tf` for more details. 
+
+- Resource Group name of the Storage Account for IaC backends. 
+- Storage Account name for IaC backends. 
+- Map of values for GitHub configuration, passed in from GitHub Actions workflow. 
+- Name of projects, used to create GitHub environments, provided in TFVARS file.
+
+<!-- BEGIN_TF_DOCS -->
+### Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | ~> 3.5.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | ~> 4.40.0 |
+| <a name="provider_github"></a> [github](#provider\_github) | ~> 6.7.5 |
+
+### Resources
+
+| Name | Type |
+|------|------|
+| [azuread_application_federated_identity_credential.entra_iac_app_cred](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/application_federated_identity_credential) | resource |
+| [azurerm_storage_container.iac_storage_container](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) | resource |
+| [github_actions_environment_variable.gh_repo_env_var](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_environment_variable) | resource |
+| [github_actions_environment_variable.gh_repo_env_var_key](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_environment_variable) | resource |
+| [github_repository_environment.gh_repo_env](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_environment) | resource |
+| [azuread_application.this_sp](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/application) | data source |
+| [azuread_client_config.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/client_config) | data source |
+| [azurerm_storage_account.iac_storage_account](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/storage_account) | data source |
+
+### Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_create_github_env"></a> [create\_github\_env](#input\_create\_github\_env) | Toggle the creation of Github environment and variables. | `bool` | `false` | no |
+| <a name="input_github_config"></a> [github\_config](#input\_github\_config) | Map of values for GitHub configuration. | `map(string)` | n/a | yes |
+| <a name="input_iac_storage_account_name"></a> [iac\_storage\_account\_name](#input\_iac\_storage\_account\_name) | Storage Account name for IaC backends. | `string` | n/a | yes |
+| <a name="input_iac_storage_account_rg"></a> [iac\_storage\_account\_rg](#input\_iac\_storage\_account\_rg) | Resource Group of the Storage Account for IaC backends. | `string` | n/a | yes |
+| <a name="input_project_name"></a> [project\_name](#input\_project\_name) | Name of project for new IaC backend. | `string` | n/a | yes |
+
+### Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_github_environment_created"></a> [github\_environment\_created](#output\_github\_environment\_created) | Output the variable state: true/false. |
+| <a name="output_github_environment_name"></a> [github\_environment\_name](#output\_github\_environment\_name) | If created, output the name of the environment. |
+| <a name="output_out_gh_env"></a> [out\_gh\_env](#output\_out\_gh\_env) | Name of the newly created Github environment. |
+| <a name="output_out_iac_cn"></a> [out\_iac\_cn](#output\_out\_iac\_cn) | The name of the Container for the IaC backend. |
+<!-- END_TF_DOCS -->
+
 ---
 
 ## ▶️ Usage
@@ -70,16 +119,7 @@ module "vending_iac_backends" {
   project_name             = each.key                     # Prefixed with "tfstate": tfstate-proxmox
   create_github_env        = each.value.create_github_env # Create Github resources TRUE/FALSE.
 }
-```
-
-### Inputs
-
-**NOTE:** See `variables.tf` for more details. 
-
-- Resource Group name of the Storage Account for IaC backends. 
-- Storage Account name for IaC backends. 
-- Map of values for GitHub configuration, passed in from GitHub Actions workflow. 
-- Name of projects, used to create GitHub environments, provided in TFVARS file. 
+``` 
 
 ### Examples
 
