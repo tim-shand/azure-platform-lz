@@ -2,7 +2,7 @@
 
 _Automated, IaC-driven Azure environment implementing governance, automation, and targeting operational best practices._
 
-This repository contains my personal Azure tenant, providing enterprise-style operations and a sandbox for hands-on learning. It includes a platform landing zone, subscription management, monitoring, and CI/CD pipelines, aiming to align with CAF guidelines and best practice principals. 
+This repository contains my personal Azure tenant, providing enterprise-style operations and a sandbox for hands-on learning. It includes a platform landing zone, subscription management, monitoring, and CI/CD pipelines, aiming to align with CAF guidelines and best practice principals where possible. 
 
 ---
 
@@ -20,7 +20,8 @@ Minimalistic, light-weight platform landing zone designed for personal use or by
 - **Networking / Hub-Spoke Architecture**
   - Hub VNet for shared services with workload VNets peered as spokes for isolated environments. 
 - **IaC Backend Vending** 
-  - Dedicated IaC subscription to contain all remote Terraform states, deployed using the custom `IaC Backend Vending` module. 
+  - Uses a dedicated subscription to contain all remote Terraform states. 
+  - Environments/projects are deployed using the `IaC Backend Vending` module. 
   - Blob Containers per project for remote state management, with individual GitHub environments maintaining isolation between workloads. 
 
 ## :gear: Workloads
@@ -43,11 +44,22 @@ Minimalistic, light-weight platform landing zone designed for personal use or by
 ## :jigsaw: Project Structure
 
 ```shell
-environments/        # Global resources, landing zone, and workloads
-modules/             # Reusable Terraform modules (governance, networking, observability, IaC backends)
-docs/                # Architecture overview, STAR talking points, diagrams
-README.md            # Overview and purpose
+├── .github                         # GitHub workflows for automating builds.
+├── docs                            # Design diagrams, build documents, images. 
+├── environments                    # Global resources, landing zone, and workloads.  
+│   ├── global
+│   │   ├── bootstrap-azure-github
+│   │   └── vending-iac-backends
+│   ├── platform-landing-zone       # Azure platform landing zone. 
+│   └── workloads                   # Workloads running on Azure. 
+├── modules                         # Terraform modules directory. 
+│   ├── plz-governance
+│   ├── plz-network-hub
+│   ├── plz-observability
+│   ├── swa-free-cloudflaredns
+└── └── vending-iac-backend
 ```
+
 ---
 
 ## :memo: To Do / Future Improvements
