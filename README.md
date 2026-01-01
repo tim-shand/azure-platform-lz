@@ -1,4 +1,4 @@
-# Azure Platform: Personal Tenant
+# Azure: Platform Landing Zone + Workloads
 
 _Automated, IaC-driven Azure environment implementing governance, automation, and targeting operational best practices._
 
