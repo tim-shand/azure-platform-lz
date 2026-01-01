@@ -2,7 +2,7 @@
 
 _List of tools and utilities used within this project._
 
-## Bootstrap: Azure and GitHub
+## [Bootstrap: Azure and GitHub](./bootstrap-azure-github/)
 
 Custom process using Powershell and Terraform to bootstrap Azure and GitHub for IaC automation. 
 
