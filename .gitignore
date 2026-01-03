@@ -13,11 +13,12 @@
 *.env.ps1
 *env.psd1
 .venv
-env/
+#env/
 venv/
-ENV/
+#ENV/
 env.bak/
 venv.bak/
+env-*.sh
 # Allowed
 !env-example.psd1
 
@@ -35,10 +36,6 @@ tfplan.*
 crash.log
 crash.*.log
 backend.conf
-
-# Exclude prod .tfvars files, which are likely to contain sensitive data, such as password, private keys, and other secrets.
-*.tfvars
-*.tfvars.json
 # Allow example or default TFVARS file.
 !example.tfvars
 !terraform.tfvars

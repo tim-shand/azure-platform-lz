@@ -2,13 +2,11 @@ formatter: "markdown" # this is required
 header-from: main.tf
 
 recursive:
-  enabled: true
+  enabled: false
   path: environments
   include-main: true
 
 sections:
-  hide:
-    - footer
   show:
     - providers
     - modules
