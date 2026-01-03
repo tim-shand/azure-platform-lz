@@ -4,7 +4,7 @@
 
 module "vending_iac_backends" {
   for_each                 = var.projects # Repeat for all listed in terraform.tfvars
-  source                   = "../../../modules/azure/vending-iac-backend"
+  source                   = "../../../modules/vending-iac-backend"
   iac_storage_account_rg   = var.iac_storage_account_rg
   iac_storage_account_name = var.iac_storage_account_name
   github_config            = var.github_config
