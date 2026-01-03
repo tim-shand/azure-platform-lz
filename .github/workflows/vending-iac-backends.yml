@@ -15,16 +15,16 @@ on:
 
   push: # Commits
     paths:
-      - "platforms/azure/global/vending-iac-backends/**"
-      - "modules/azure/vending-iac-backend/**"
+      - "environments/global/vending-iac-backends/**"
+      - "modules/vending-iac-backend/**"
       - ".github/workflows/vending-iac-backends.yml"
     branches:
       - main
-  
+
   pull_request: # PR
     paths:
-      - "platforms/azure/global/vending-iac-backends/**"
-      - "modules/azure/vending-iac-backend/**"
+      - "environments/global/vending-iac-backends/**"
+      - "modules/vending-iac-backend/**"
       - ".github/workflows/vending-iac-backends.yml"
     branches:
       - main
@@ -38,10 +38,10 @@ jobs:
   deploy-iac-backends:
     name: Deploy IaC Backends
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # The entire job will fail if it runs longer than 'x' minutes.
+    timeout-minutes: 30 # The entire job will fail if it runs longer than 'x' minutes.
     defaults:
       run: # Set job defaults for 'run' commands.
-        working-directory: ./platforms/azure/global/vending-iac-backends
+        working-directory: ./environments/global/vending-iac-backends
     env:
       # Backend (IaC subscription)
       TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group
@@ -58,7 +58,7 @@ jobs:
       # Github PAT Auth
       GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # Required by Terraform provider to manage GH environments.
 
-      # Determine which steps should run (on commits, PR, plan and plan-apply). 
+      # Determine which steps should run (on commits, PR, plan and plan-apply).
       RUN_PLAN: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || github.event.inputs.tf_action == 'Plan' || github.event.inputs.tf_action == 'Apply' }}
       RUN_APPLY: ${{ github.event.inputs.tf_action == 'Apply' }}
       RUN_DESTROY: ${{ github.event.inputs.tf_action == 'Destroy' }}
@@ -87,7 +87,7 @@ jobs:
           terraform_version: 1.13.0
 
       - name: Terraform Init
-        timeout-minutes: 5  # This step will fail if it runs longer than 'x' minutes.
+        timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
         run: |
           terraform init \
           -backend-config="resource_group_name=$TF_BACKEND_RG" \
@@ -98,7 +98,7 @@ jobs:
 
       - name: Terraform Plan
         if: env.RUN_PLAN == 'true'
-        timeout-minutes: 5  # This step will fail if it runs longer than 'x' minutes.
+        timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
         run: |
           REPO=$(echo "${{ github.repository }}" | cut -d'/' -f2)
           terraform plan -out=terraform.plan -var-file=terraform.tfvars \
@@ -113,7 +113,7 @@ jobs:
         timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
         run: |
           terraform apply --auto-approve terraform.plan
-    
+
       - name: Terraform Destroy
         if: env.RUN_DESTROY == 'true'
         timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
