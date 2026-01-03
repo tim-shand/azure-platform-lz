@@ -3,7 +3,7 @@ header-from: main.tf
 
 recursive:
   enabled: false
-  path: environments
+  path:
   include-main: true
 
 sections:
