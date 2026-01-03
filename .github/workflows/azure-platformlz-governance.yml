@@ -1,0 +1,95 @@
+name: "Deploy - Platform Landing Zone (Azure)"
+
+on:
+    workflow_dispatch: # Run manually
+        inputs:
+            tf_action:
+                description: "Action: Plan, Apply, Destroy"
+                required: true
+                default: "Plan"
+                type: choice
+                options:
+                    - "Plan"
+                    - "Plan-Apply"
+                    - "Destroy"
+    pull_request: # Trigger on Pull-Request (plan only)
+        paths:
+            - "environments/platform-landing-zone/plz-governance/**"
+            - "modules/plz-governance/**"
+            - ".github/workflows/azure-platformlz-governance.yml"
+        branches:
+            - main
+
+permissions:
+    id-token: write # Required for OIDC auth
+    contents: read
+    issues: read
+
+jobs:
+    deploy-azure-platform-lz:
+        name: Deploy - Platform Landing Zone (STACK = Governance)
+        runs-on: ubuntu-latest
+        timeout-minutes: 30 # The entire job will fail if it runs longer than 'x' minutes.
+        environment: azure-mgt-platformlz # Name of the GitHub environment.
+        defaults:
+            run: # Set job defaults for 'run' commands.
+                working-directory: ./environments/platform-landing-zone/plz-governance
+        env:
+            # Backend (IaC subscription)
+            TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group
+            TF_BACKEND_SA: ${{ vars.TF_BACKEND_SA }} # Backend: Storage Account
+            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }} # Backend: Blob Container
+            TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Backend: State file name
+
+            # Azure OIDC Auth
+            ARM_USE_OIDC: true
+            ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }} # Azure: Tenant ID
+            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure: Service Principal ID
+            ARM_SUBSCRIPTION_ID_IAC: ${{ secrets.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for IaC Backends.
+            ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }} # Azure: Subscription for resources.
+
+            # Determine which steps should be run based on inputs and commits or PRs.
+            RUN_PLAN: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || github.event.inputs.tf_action == 'Plan' || github.event.inputs.tf_action == 'Plan-Apply' }}
+            RUN_APPLY: ${{ github.event.inputs.tf_action == 'Plan-Apply' }}
+            RUN_DESTROY: ${{ github.event.inputs.tf_action == 'Destroy' }}
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: 1.14.0
+
+            - name: Terraform Init
+              timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform init \
+                  -backend-config="resource_group_name=$TF_BACKEND_RG" \
+                  -backend-config="storage_account_name=$TF_BACKEND_SA" \
+                  -backend-config="container_name=$TF_BACKEND_CONTAINER" \
+                  -backend-config="key=$TF_BACKEND_KEY" \
+                  -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID_IAC"
+
+            - name: Terraform Plan
+              if: env.RUN_PLAN == 'true'
+              timeout-minutes: 10 # This step will fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform plan -out=terraform.tfplan \
+                  -var-file="../env/prd/global.tfvars" -var-file="../env/prd/governance.tfvars" \
+                  -var="subscription_id=$ARM_SUBSCRIPTION_ID"
+
+            - name: Terraform Apply
+              if: env.RUN_APPLY == 'true'
+              timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform apply --auto-approve terraform.tfplan
+
+            - name: Terraform Destroy
+              if: env.RUN_DESTROY == 'true'
+              timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform destroy --auto-approve \
+                  -var-file="../env/prd/global.tfvars" -var-file="../env/prd/governance.tfvars" \
+                  -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID"
