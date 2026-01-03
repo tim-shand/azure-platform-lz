@@ -13,7 +13,4 @@ projects = {
   "azure-swa-wwwtshandcom-dev" = {
     create_github_env = true # Enable creation of GitHub repository environment.
   }
-  "proxmox-core-prd" = {
-    create_github_env = true # Enable creation of GitHub repository environment.
-  }
 }
