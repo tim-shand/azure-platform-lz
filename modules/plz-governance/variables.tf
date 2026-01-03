@@ -46,13 +46,21 @@ variable "gov_management_group_list" {
 
 # Governance: Policy Assignments -----------------#
 
+# variable "gov_policy_builtin" {
+#   description = "List of built-in policy initiative display names, required for top-level assignment."
+#   type        = list(string) # Simple list fof display names for built-in policy initiatives. 
+#   validation {
+#     condition     = can(regex("^[a-zA-Z0-9-]+$", var.gov_policy_builtin)) # Only allow alpha-numeric with dashes.
+#     error_message = "Only contain letters, numbers, and dashes (-) are allowed. No spaces or other symbols."
+#   }
+# }
+
 variable "gov_policy_builtin" {
-  description = "List of built-in policy initiative display names, required for top-level assignment."
-  type        = list(string) # Simple list fof display names for built-in policy initiatives. 
-  validation {
-    condition     = can(regex("^[a-zA-Z0-9-]+$", var.gov_policy_builtin)) # Only allow alpha-numeric with dashes.
-    error_message = "Only contain letters, numbers, and dashes (-) are allowed. No spaces or other symbols."
-  }
+  description = "Map of built-in policies and initiatives, required for top-level assignment."
+  type = map(object({
+    id           = string
+    display_name = string
+  }))
 }
 
 variable "gov_policy_allowed_locations" {
