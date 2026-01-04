@@ -5,17 +5,12 @@
 #   This module is used to deploy GitHub environments and IaC backend resources in Azure, 
 #   using an existing IaC Storage Account to house Blob Containers for remote state. 
 #   Creation of GitHub environments is optional. 
-#
-# USAGE:
-#   Example usage or reference to documentation.
-#
 # NOTES:
 # - REQUIRES: 
 #   - Service Principal: Application.ReadWrite.All
 #   - GitHub PAT Token: For creating environments, secrets and variables.
 #   - GitHub provider MUST be defined in child modules to avoid issues with provider mismatch.
 #     Info: https://github.com/integrations/terraform-provider-github/issues/876#issuecomment-1303790559
-#
 # ----------------------------------------------------------------------------------
 */
 
@@ -58,17 +53,18 @@ resource "azurerm_storage_container" "iac_storage_container" {
 }
 
 #=================================================================#
-# Github: Environments, Secrets, and Variables
+# GitHub: Environments, Secrets, and Variables
 #=================================================================#
 
 # Create: Github Repo - Environment
 resource "github_repository_environment" "gh_repo_env" {
-  count       = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
-  environment = var.project_name              # Get from variable map for project. 
-  repository  = var.github_config["repo"]
+  count               = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
+  environment         = var.project_name              # Get from variable map for project. 
+  repository          = var.github_config["repo"]
+  prevent_self_review = false # Allow user deploying to approve reviews. 
 }
 
-# Create: Github Repo - Environment: Variable (Backend Container)
+# Create: GitHub Repo - Environment: Variable (Backend Container)
 resource "github_actions_environment_variable" "gh_repo_env_var" {
   count         = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
   repository    = github_repository_environment.gh_repo_env[count.index].repository
@@ -77,7 +73,7 @@ resource "github_actions_environment_variable" "gh_repo_env_var" {
   value         = azurerm_storage_container.iac_storage_container.name
 }
 
-# Create: Github Repo - Environment: Variable (Backend Key)
+# Create: GitHub Repo - Environment: Variable (Backend Key)
 resource "github_actions_environment_variable" "gh_repo_env_var_key" {
   count         = var.create_github_env ? 1 : 0 # Eval the variable true/false to set count.
   repository    = github_repository_environment.gh_repo_env[count.index].repository
