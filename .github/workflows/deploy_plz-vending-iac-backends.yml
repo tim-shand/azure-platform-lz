@@ -19,7 +19,7 @@ on:
             - "modules/plz-vending-iac-backends/**" # Changes to the module.
             - ".github/workflows/deploy_plz-vending-iac-backends.yml" # Changes to the workflow itself.
         branches:
-            - main
+            - main # Trigger on pull request to main branch.
 
 permissions:
     id-token: write # Required for OIDC auth
@@ -27,13 +27,13 @@ permissions:
     issues: read
 
 jobs:
-    deploy-iac-backends:
-        name: Deploy IaC Backends
+    deploy_stack_iac-backends:
+        name: "Deploy Stack: Vending - IaC Backends"
         runs-on: ubuntu-latest
         timeout-minutes: 30 # The entire job will fail if it runs longer than 'x' minutes.
         defaults:
             run: # Set job defaults for 'run' commands.
-                working-directory: ./environments/global/vending-iac-backends
+                working-directory: ./platform-landing-zone/plz-vending-iac-backends
         env:
             # Backend (IaC subscription)
             TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group
@@ -48,35 +48,21 @@ jobs:
             ARM_SUBSCRIPTION_ID_IAC: ${{ secrets.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for IaC Backends.
 
             # Github PAT Auth
-            GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # Required by Terraform provider to manage GH environments.
+            GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # Required by Terraform provider to deploy GitHub environments.
 
             # Determine which steps should run (on commits, PR, plan and plan-apply).
-            RUN_PLAN: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || github.event.inputs.tf_action == 'Plan' || github.event.inputs.tf_action == 'Apply' }}
-            RUN_APPLY: ${{ github.event.inputs.tf_action == 'Apply' }}
-            RUN_DESTROY: ${{ github.event.inputs.tf_action == 'Destroy' }}
+            RUN_PLAN: ${{ github.event_name == 'pull_request' || github.event.inputs.terraform_action == 'Plan' || github.event.inputs.terraform_action == 'Apply' }}
+            RUN_APPLY: ${{ github.event.inputs.terraform_action == 'Apply' }}
+            RUN_DESTROY: ${{ github.event.inputs.terraform_action == 'Destroy' }}
 
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            # - name: Setup Python (Pip)
-            #   uses: actions/setup-python@v4
-            #   with:
-            #     python-version: "3.x"
-
-            # - name: "Code Scan: Install Checkov"
-            #   run: pip install checkov
-
-            # - name: "Code Scan: Run Checkov"
-            #   working-directory: .
-            #   run: |
-            #     checkov -d ./modules/azure/vending-iac-backend --framework terraform --quiet --skip-check
-            #     checkov -d ./platforms/azure/global/vending-iac-backends --framework terraform --quiet
-
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
               with:
-                  terraform_version: 1.13.0
+                  terraform_version: 1.14.0
 
             - name: Terraform Init
               timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
@@ -87,6 +73,11 @@ jobs:
                   -backend-config="container_name=$TF_BACKEND_CONTAINER" \
                   -backend-config="key=$TF_BACKEND_KEY" \
                   -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID_IAC"
+
+            - name: Terraform Validate
+              timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform validate
 
             - name: Terraform Plan
               if: env.RUN_PLAN == 'true'
