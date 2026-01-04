@@ -15,6 +15,5 @@ git push origin feature-branch-name
 3. Submit a pull request for merge with "main" branch. 
 
 ```bash
-gh pr create --base main --title "Title of the PR" --body "Detailed description of changes"
+gh pr create --base main --title "Removal of unnecessary Terraform output" --body "Removed the 'out_gh_env' output from the Terraform module outputs.tf file."
 ```
-
