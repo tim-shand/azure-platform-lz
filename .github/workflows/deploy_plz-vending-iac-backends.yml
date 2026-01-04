@@ -84,7 +84,8 @@ jobs:
               timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
               run: |
                   REPO=$(echo "${{ github.repository }}" | cut -d'/' -f2)
-                  terraform plan -out=terraform.plan -var-file=terraform.tfvars \
+                  terraform plan -out=terraform.plan \
+                  -var-file="../../env/global.tfvars" -var-file="../../env/vending-iac-backends.tfvars" \
                   -var="iac_storage_account_rg=$TF_BACKEND_RG" \
                   -var="iac_storage_account_name=$TF_BACKEND_SA" \
                   -var="subscription_id=$ARM_SUBSCRIPTION_ID_IAC" \
