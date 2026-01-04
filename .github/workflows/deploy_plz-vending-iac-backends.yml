@@ -1,0 +1,118 @@
+name: "Deploy Stack: Vending - IaC Backends"
+
+on:
+    workflow_dispatch: # Run manually
+        inputs:
+            terraform_action:
+                description: "Action: Plan, Apply, Destroy"
+                required: true
+                default: "Plan"
+                type: choice
+                options:
+                    - "Plan"
+                    - "Apply"
+                    - "Destroy"
+    pull_request: # Pull Request
+        paths:
+            - "env/vending-iac-backends.tfvars" # Changes to the TFVARS file.
+            - "platform-landing-zone/plz-vending-iac-backends/**" # Changes to the stack root module.
+            - "modules/vending-iac-backend/**"
+            - ".github/workflows/deploy_plz-vending-iac-backends.yml" # Changes to the workflow itself.
+        branches:
+            - main
+
+permissions:
+    id-token: write # Required for OIDC auth
+    contents: read
+    issues: read
+
+jobs:
+    deploy-iac-backends:
+        name: Deploy IaC Backends
+        runs-on: ubuntu-latest
+        timeout-minutes: 30 # The entire job will fail if it runs longer than 'x' minutes.
+        defaults:
+            run: # Set job defaults for 'run' commands.
+                working-directory: ./environments/global/vending-iac-backends
+        env:
+            # Backend (IaC subscription)
+            TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group
+            TF_BACKEND_SA: ${{ vars.TF_BACKEND_SA }} # Backend: Storage Account
+            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }} # Backend: Blob Container
+            TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Backend: State file name
+
+            # Azure OIDC Auth
+            ARM_USE_OIDC: true
+            ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }} # Azure: Tenant ID
+            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure: Service Principal ID
+            ARM_SUBSCRIPTION_ID_IAC: ${{ secrets.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for IaC Backends.
+
+            # Github PAT Auth
+            GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # Required by Terraform provider to manage GH environments.
+
+            # Determine which steps should run (on commits, PR, plan and plan-apply).
+            RUN_PLAN: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || github.event.inputs.tf_action == 'Plan' || github.event.inputs.tf_action == 'Apply' }}
+            RUN_APPLY: ${{ github.event.inputs.tf_action == 'Apply' }}
+            RUN_DESTROY: ${{ github.event.inputs.tf_action == 'Destroy' }}
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            # - name: Setup Python (Pip)
+            #   uses: actions/setup-python@v4
+            #   with:
+            #     python-version: "3.x"
+
+            # - name: "Code Scan: Install Checkov"
+            #   run: pip install checkov
+
+            # - name: "Code Scan: Run Checkov"
+            #   working-directory: .
+            #   run: |
+            #     checkov -d ./modules/azure/vending-iac-backend --framework terraform --quiet --skip-check
+            #     checkov -d ./platforms/azure/global/vending-iac-backends --framework terraform --quiet
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: 1.13.0
+
+            - name: Terraform Init
+              timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform init \
+                  -backend-config="resource_group_name=$TF_BACKEND_RG" \
+                  -backend-config="storage_account_name=$TF_BACKEND_SA" \
+                  -backend-config="container_name=$TF_BACKEND_CONTAINER" \
+                  -backend-config="key=$TF_BACKEND_KEY" \
+                  -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID_IAC"
+
+            - name: Terraform Plan
+              if: env.RUN_PLAN == 'true'
+              timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
+              run: |
+                  REPO=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+                  terraform plan -out=terraform.plan -var-file=terraform.tfvars \
+                  -var="iac_storage_account_rg=$TF_BACKEND_RG" \
+                  -var="iac_storage_account_name=$TF_BACKEND_SA" \
+                  -var="subscription_id=$ARM_SUBSCRIPTION_ID_IAC" \
+                  -var="github_token=$GH_PAT_TOKEN" \
+                  -var="github_config={owner=\"${{ github.repository_owner }}\",repo=\"$REPO\"}"
+
+            - name: Terraform Apply
+              if: env.RUN_APPLY == 'true'
+              timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform apply --auto-approve terraform.plan
+
+            - name: Terraform Destroy
+              if: env.RUN_DESTROY == 'true'
+              timeout-minutes: 15 # Fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform destroy --auto-approve -var-file=terraform.tfvars \
+                  -var="iac_storage_account_rg=$TF_BACKEND_RG" \
+                  -var="iac_storage_account_name=$TF_BACKEND_SA" \
+                  -var="subscription_id=$ARM_SUBSCRIPTION_ID_IAC" \
+                  -var="github_token=$GH_PAT_TOKEN" \
+                  -var="github_config={owner=\"${{ github.repository_owner }}\",repo=\"$REPO\"}"
