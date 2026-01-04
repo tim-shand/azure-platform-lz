@@ -50,13 +50,22 @@ resource "azuread_service_principal" "entra_iac_sp" {
 }
 
 # Federated credential for Service Principal (to be used with GitHub OIDC).
-resource "azuread_application_federated_identity_credential" "entra_iac_app_cred" {
+resource "azuread_application_federated_identity_credential" "github-repo-main" {
   application_id = azuread_application.entra_iac_app.id
-  display_name   = "GitHub-OIDC-${var.github_config["owner"]}-${var.github_config["repo"]}"
+  display_name   = "GitHub-OIDC-${var.github_config["owner"]}-${var.github_config["repo"]}-${var.github_config["branch"]}"
   description    = "[Bootstrap]: GitHub CI/CD, federated credentials."
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
   subject        = "repo:${var.github_config["owner"]}/${var.github_config["repo"]}:ref:refs/heads/${var.github_config["branch"]}"
+}
+
+resource "azuread_application_federated_identity_credential" "github-repo-pullrequest" {
+  application_id = azuread_application.entra_iac_app.id
+  display_name   = "GitHub-OIDC-${var.github_config["owner"]}-${var.github_config["repo"]}-pull_request"
+  description    = "[Bootstrap]: GitHub CI/CD, federated credentials."
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = "repo:${var.github_config["owner"]}/${var.github_config["repo"]}:pull_request"
 }
 
 # Assign RBAC roles for SP at top-level tenant root group.
