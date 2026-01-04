@@ -1,6 +1,6 @@
 # Terraform Module: Azure/GitHub IaC Backend Vending
 
-This Terraform module creates Azure and GitHub resources used for Terraform remote state backends, enabling the centralized storage of individual workload state files, located in a _dedicated_ Infrastructure-as-Code Azure subscription.  
+This Terraform module creates Azure and GitHub resources used for Terraform remote state backends, enabling the centralised storage of individual workload state files, located in a _dedicated_ Infrastructure-as-Code Azure subscription.  
 
 ---
 
