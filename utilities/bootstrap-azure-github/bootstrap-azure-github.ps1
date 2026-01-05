@@ -203,9 +203,8 @@ if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?")) {
 # MAIN: Stage 3 - Prepare Terraform
 #================================================#
 
-if (!($Action -eq "Remove")) {
-    # Generate TFVARS file.
-    $tfVARS = @"
+# Generate TFVARS file.
+$tfVARS = @"
 # !! DO NOT COMMIT !! - If using public repository or including sensitive values.
 # General: Azure and GitHub Configuration ---------------------------------|
 global = {
@@ -267,18 +266,18 @@ deployment_stacks = {
 }
 "@
 
-    # Write out TFVARS file (only if not already exists,offer to overwrite existing).
-    if (! (Test-Path -Path "$PSScriptRoot/terraform/bootstrap.tfvars") ) {
+# Write out TFVARS file (only if not already exists,offer to overwrite existing).
+if (! (Test-Path -Path "$PSScriptRoot/terraform/bootstrap.tfvars") ) {
+    $tfVARS | Out-File -Encoding utf8 -FilePath "$PSScriptRoot/terraform/bootstrap.tfvars" -Force
+}
+else {
+    Write-Host ""
+    Write-Host -ForegroundColor $WRN "[!] WARNING: An existing TFVARS file is present."
+    if (Get-UserConfirm -prompt "Do you wish to replace the existing file (Y) or keep original (N) [Y/N]?") {
         $tfVARS | Out-File -Encoding utf8 -FilePath "$PSScriptRoot/terraform/bootstrap.tfvars" -Force
     }
-    else {
-        Write-Host ""
-        Write-Host -ForegroundColor $WRN "[!] WARNING: An existing TFVARS file is present."
-        if (Get-UserConfirm -prompt "Do you wish to replace the existing file (Y) or keep original (N) [Y/N]?") {
-            $tfVARS | Out-File -Encoding utf8 -FilePath "$PSScriptRoot/terraform/bootstrap.tfvars" -Force
-        }
-    }
 }
+
 
 # Terraform: Initialize
 Write-Host ""
