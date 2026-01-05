@@ -404,7 +404,6 @@ terraform {
     else {
         Write-Host -ForegroundColor $WRN "[!] Terraform state migration aborted by user."
         Remove-Item -Path "$PSScriptRoot/terraform/backend.tf" -Force -ErrorAction SilentlyContinue
-        exit 1
     }
 }
 
