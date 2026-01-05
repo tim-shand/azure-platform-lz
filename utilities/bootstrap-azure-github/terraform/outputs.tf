@@ -28,7 +28,7 @@ output "bootstrap_iac_cn" {
 
 output "stacks" {
   description = "List of deployments stacks to configure."
-  value       = [for env in values(github_repository_environment.gh_env) : env.environment]
+  value       = [for env in values(github_repository_environment.repo_env) : env.environment]
 }
 
 output "service_principal_oidc" {
