@@ -17,57 +17,71 @@ resource "github_actions_secret" "gh_secret_tenant_id" {
 }
 
 # GitHub: Repo [SECRET] - Azure IaC Subscription
-resource "github_actions_secret" "gh_secret_subscription_id_iac" {
+resource "github_actions_secret" "repo_secret_subscription_id_iac" {
   repository      = data.github_repository.repo.name
   secret_name     = "ARM_SUBSCRIPTION_ID_IAC"
   plaintext_value = var.deployment_stacks.bootstrap.bootstrap.subscription_id # Subscription ID to be used for IaC.
 }
 
 # GitHub: Repo [SECRET] - Service Principal Client ID
-resource "github_actions_secret" "gh_secret_client_id" {
+resource "github_actions_secret" "repo_secret_client_id" {
   repository      = data.github_repository.repo.name
   secret_name     = "ARM_CLIENT_ID"
   plaintext_value = azuread_application.entra_iac_app.client_id # Service Principal federated credential ID.
 }
 
+# GitHub: Repo [VARIABLE] - Backend: Resource Group
+resource "github_actions_variable" "repo_var_rg" {
+  repository    = data.github_repository.repo.name
+  variable_name = "TF_BACKEND_RG"
+  value         = azurerm_resource_group.iac_rg["platform"].name
+}
+
+# GitHub: Repo [VARIABLE] - Backend: Storage Account
+resource "github_actions_variable" "repo_var_sa" {
+  repository    = data.github_repository.repo.name
+  variable_name = "TF_BACKEND_SA"
+  value         = azurerm_storage_account.iac_sa["platform"].name
+}
+
 # GitHub: Environments + IaC Backend Configuration --------------------------------|
 
 # Create GitHub environments per deployment stack. 
-resource "github_repository_environment" "gh_env" {
+resource "github_repository_environment" "repo_env" {
   for_each    = local.repo_env_stacks # Using map of stacks that require repo environment. 
   environment = each.value.stack_name
   repository  = data.github_repository.repo.name
 }
 
 # Create variables per environment. 
-resource "github_actions_environment_variable" "gh_env_var_sub" {
+resource "github_actions_environment_variable" "repo_env_var_sub" {
   for_each      = local.repo_env_stacks
   repository    = data.github_repository.repo.name
   environment   = each.value.stack_name # Loop for each stack environment. 
   variable_name = "ARM_SUBSCRIPTION_ID"
   value         = each.value.subscription_id
   depends_on = [
-    github_repository_environment.gh_env[each.key] # Resolve dependency issue (chicken-egg). 
+    github_repository_environment.repo_env # Resolve dependency issue (chicken-egg). Requires all envs to exist first.  
   ]
 }
 
-resource "github_actions_environment_variable" "gh_env_var_rg" {
-  for_each      = local.repo_env_stacks
-  repository    = data.github_repository.repo.name
-  environment   = each.value.stack_name # Loop for each stack environment. 
-  variable_name = "TF_BACKEND_RG"
-  value         = azurerm_resource_group.iac_rg[each.value.category].name
-}
+# resource "github_actions_environment_variable" "gh_env_var_rg" {
+#   for_each      = local.repo_env_stacks
+#   repository    = data.github_repository.repo.name
+#   environment   = each.value.stack_name # Loop for each stack environment. 
+#   variable_name = "TF_BACKEND_RG"
+#   value         = azurerm_resource_group.iac_rg[each.value.category].name
+# }
 
-resource "github_actions_environment_variable" "gh_env_var_sa" {
-  for_each      = local.repo_env_stacks
-  repository    = data.github_repository.repo.name
-  environment   = each.value.stack_name # Loop for each stack environment. 
-  variable_name = "TF_BACKEND_SA"
-  value         = azurerm_storage_account.iac_sa[each.value.category].name
-}
+# resource "github_actions_environment_variable" "gh_env_var_sa" {
+#   for_each      = local.repo_env_stacks
+#   repository    = data.github_repository.repo.name
+#   environment   = each.value.stack_name # Loop for each stack environment. 
+#   variable_name = "TF_BACKEND_SA"
+#   value         = azurerm_storage_account.iac_sa[each.value.category].name
+# }
 
-resource "github_actions_environment_variable" "gh_env_var_cn" {
+resource "github_actions_environment_variable" "repo_env_var_cn" {
   for_each      = local.repo_env_stacks
   repository    = data.github_repository.repo.name
   environment   = each.value.stack_name # Loop for each stack environment. 
@@ -75,13 +89,13 @@ resource "github_actions_environment_variable" "gh_env_var_cn" {
   value         = azurerm_storage_container.iac_cn[each.key].name
 }
 
-resource "github_actions_environment_variable" "gh_env_var_key" {
+resource "github_actions_environment_variable" "repo_env_var_key" {
   for_each      = local.repo_env_stacks
   repository    = data.github_repository.repo.name
   environment   = each.value.stack_name # Loop for each stack environment. 
   variable_name = "TF_BACKEND_KEY"
   value         = "azure-${each.value.stack_name}.tfstate"
   depends_on = [
-    github_repository_environment.gh_env[each.key] # Resolve dependency issue (chicken-egg). 
+    github_repository_environment.repo_env # Resolve dependency issue (chicken-egg). Requires all envs to exist first. 
   ]
 }
