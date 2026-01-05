@@ -278,7 +278,6 @@ else {
     }
 }
 
-
 # Terraform: Initialize
 Write-Host ""
 Write-Host -ForegroundColor $HD1 "[*] Performing Action: Initialize Terraform configuration... " -NoNewLine
