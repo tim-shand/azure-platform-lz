@@ -416,7 +416,7 @@ Remove-Item -Path "$PSScriptRoot/terraform/bootstrap.plan" -Force -ErrorAction S
 Remove-Item -Path "$PSScriptRoot/terraform/.terraform*" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "$PSScriptRoot/terraform/.terraform.*" -Force -ErrorAction SilentlyContinue
 Write-Host ""
-if (!($Action -ne "Remove")) {
+if ($Action -ne "Remove") {
     Write-Host -ForegroundColor $WRN "NOTE: Manual approval may be required for pending API permissions assigned to the Service Principal."
 }
 Write-Host ""
