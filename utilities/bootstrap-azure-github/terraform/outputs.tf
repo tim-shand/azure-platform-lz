@@ -25,3 +25,8 @@ output "bootstrap_iac_cn" {
   description = "The name of the Storage Account Container for the bootstrap backend."
   value       = azurerm_storage_container.iac_cn["bootstrap.bootstrap"].name # Keyed by the flattened stack key.
 }
+
+output "stacks" {
+  description = "List of deployments stacks to configure."
+  value       = [for env in values(github_repository_environment.gh_env) : env.environment]
+}

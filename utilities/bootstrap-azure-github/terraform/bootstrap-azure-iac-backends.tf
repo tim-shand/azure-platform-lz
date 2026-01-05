@@ -31,10 +31,10 @@ locals {
     ]) : item.key => item # Sets the key in the resulting map. 
   }
 
-  # Filter for stacks with configuration where create_github_env = true. 
-  github_env_stacks = {
+  # Filter for stacks with configuration where create_repo_env = true. 
+  repo_env_stacks = {
     for k, v in local.stacks_flat : k => v
-    if try(v.create_github_env, false)
+    if try(v.create_repo_env, false)
   }
 }
 

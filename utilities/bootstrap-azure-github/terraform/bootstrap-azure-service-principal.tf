@@ -33,22 +33,22 @@ resource "azuread_service_principal" "entra_iac_sp" {
 }
 
 # Federated credential for Service Principal (to be used with GitHub OIDC).
-resource "azuread_application_federated_identity_credential" "github_repo_main" {
+resource "azuread_application_federated_identity_credential" "repo_main" {
   application_id = azuread_application.entra_iac_app.id
-  display_name   = "oidc-github_${var.github_config.owner}_${var.github_config.repo}_${var.github_config.branch}"
-  description    = "[Bootstrap]: GitHub OIDC federated credentials (${var.github_config.branch})."
+  display_name   = "oidc-github_${var.repo_config.owner}_${var.repo_config.repo}_${var.repo_config.branch}"
+  description    = "[Bootstrap]: OIDC federated credentials (${var.repo_config.branch})."
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${var.github_config.owner}/${var.github_config.repo}:ref:refs/heads/${var.github_config.branch}"
+  subject        = "repo:${var.repo_config.owner}/${var.repo_config.repo}:ref:refs/heads/${var.repo_config.branch}"
 }
 
-resource "azuread_application_federated_identity_credential" "github_repo_pullrequest" {
+resource "azuread_application_federated_identity_credential" "repo_pr" {
   application_id = azuread_application.entra_iac_app.id
-  display_name   = "oidc-github_${var.github_config.owner}_${var.github_config.repo}_pull-request"
-  description    = "[Bootstrap]: GitHub OIDC federated credentials (Pull Request). Allows GitHub Actions to deploy on pull request."
+  display_name   = "oidc-github_${var.repo_config.owner}_${var.repo_config.repo}_pull-request"
+  description    = "[Bootstrap]: OIDC federated credentials (Pull Request). Allows pipeline to execute on pull request."
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${var.github_config.owner}/${var.github_config.repo}:pull_request"
+  subject        = "repo:${var.repo_config.owner}/${var.repo_config.repo}:pull_request"
 }
 
 # Assign RBAC roles for SP at top-level tenant root group. 

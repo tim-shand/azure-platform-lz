@@ -4,7 +4,7 @@
 
 # Get data for existing GitHub Repository.
 data "github_repository" "repo" {
-  full_name = "${var.github_config.owner}/${var.github_config.repo}"
+  full_name = "${var.repo_config.owner}/${var.repo_config.repo}"
 }
 
 # GitHub: Global -----------------------------------------------|
@@ -34,14 +34,14 @@ resource "github_actions_secret" "gh_secret_client_id" {
 
 # Create GitHub environments per deployment stack. 
 resource "github_repository_environment" "gh_env" {
-  for_each    = local.github_env_stacks
+  for_each    = local.repo_env_stacks # Using map of stacks that require repo environment. 
   environment = each.value.stack_name
   repository  = data.github_repository.repo.name
 }
 
 # Create variables per environment. 
 resource "github_actions_environment_variable" "gh_env_var_sub" {
-  for_each      = local.github_env_stacks
+  for_each      = local.repo_env_stacks
   repository    = data.github_repository.repo.name
   environment   = each.value.stack_name # Loop for each stack environment. 
   variable_name = "ARM_SUBSCRIPTION_ID"
@@ -49,7 +49,7 @@ resource "github_actions_environment_variable" "gh_env_var_sub" {
 }
 
 resource "github_actions_environment_variable" "gh_env_var_rg" {
-  for_each      = local.github_env_stacks
+  for_each      = local.repo_env_stacks
   repository    = data.github_repository.repo.name
   environment   = each.value.stack_name # Loop for each stack environment. 
   variable_name = "TF_BACKEND_RG"
@@ -57,7 +57,7 @@ resource "github_actions_environment_variable" "gh_env_var_rg" {
 }
 
 resource "github_actions_environment_variable" "gh_env_var_sa" {
-  for_each      = local.github_env_stacks
+  for_each      = local.repo_env_stacks
   repository    = data.github_repository.repo.name
   environment   = each.value.stack_name # Loop for each stack environment. 
   variable_name = "TF_BACKEND_SA"
@@ -65,7 +65,7 @@ resource "github_actions_environment_variable" "gh_env_var_sa" {
 }
 
 resource "github_actions_environment_variable" "gh_env_var_cn" {
-  for_each      = local.github_env_stacks
+  for_each      = local.repo_env_stacks
   repository    = data.github_repository.repo.name
   environment   = each.value.stack_name # Loop for each stack environment. 
   variable_name = "TF_BACKEND_CONTAINER"
@@ -73,7 +73,7 @@ resource "github_actions_environment_variable" "gh_env_var_cn" {
 }
 
 resource "github_actions_environment_variable" "gh_env_var_key" {
-  for_each      = local.github_env_stacks
+  for_each      = local.repo_env_stacks
   repository    = data.github_repository.repo.name
   environment   = each.value.stack_name # Loop for each stack environment. 
   variable_name = "TF_BACKEND_KEY"
