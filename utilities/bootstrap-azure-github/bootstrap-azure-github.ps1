@@ -420,5 +420,5 @@ if (!($Action -ne "Remove")) {
     Write-Host -ForegroundColor $WRN "NOTE: Manual approval may be required for pending API permissions assigned to the Service Principal."
 }
 Write-Host ""
-Write-Host -ForegroundColor $HD1 "===== BOOT STRAP SCRIPT COMPLETE ====="
+Write-Host -ForegroundColor $HD1 "===== BOOTSTRAP SCRIPT COMPLETE ====="
 Write-Host ""
