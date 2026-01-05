@@ -46,6 +46,9 @@ resource "github_actions_environment_variable" "gh_env_var_sub" {
   environment   = each.value.stack_name # Loop for each stack environment. 
   variable_name = "ARM_SUBSCRIPTION_ID"
   value         = each.value.subscription_id
+  depends_on = [
+    github_repository_environment.gh_env[each.key] # Resolve dependency issue (chicken-egg). 
+  ]
 }
 
 resource "github_actions_environment_variable" "gh_env_var_rg" {
@@ -78,4 +81,7 @@ resource "github_actions_environment_variable" "gh_env_var_key" {
   environment   = each.value.stack_name # Loop for each stack environment. 
   variable_name = "TF_BACKEND_KEY"
   value         = "azure-${each.value.stack_name}.tfstate"
+  depends_on = [
+    github_repository_environment.gh_env[each.key] # Resolve dependency issue (chicken-egg). 
+  ]
 }
