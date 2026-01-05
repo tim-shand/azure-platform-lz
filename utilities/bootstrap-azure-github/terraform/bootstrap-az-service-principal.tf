@@ -78,7 +78,7 @@ resource "azuread_application_federated_identity_credential" "repo_pr" {
 }
 
 # OIDC for each deployment stack/environment. Required for each repo environment. 
-resource "azuread_application_federated_identity_credential" "repo_pr" {
+resource "azuread_application_federated_identity_credential" "repo_env" {
   for_each       = local.repo_env_stacks # Using map of stacks that require repo environment.
   application_id = azuread_application.entra_iac_app.id
   display_name   = "oidc_${var.repo_config.owner}_${var.repo_config.repo}_ENV_${each.value.stack_name}"
