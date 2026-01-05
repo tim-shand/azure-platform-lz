@@ -7,14 +7,16 @@
 #=================================================================#
 
 # Set default naming conventions.
-locals {
-  name_full  = "${var.naming["prefix"]}-${var.naming["service"]}-${var.naming["project"]}-${var.naming["environment"]}"
-  name_short = "${var.naming["prefix"]}${var.naming["service"]}${var.naming["project"]}${var.naming["environment"]}"
-  # Naming: Dynamically truncate string to a specified maximum length (max 24 chars for Storage Account naming).
-  sa_name_max_length = 19 # Random integer suffix will add 5 chars, so max = 19 for base name.
-  sa_name_base       = "${local.name_short}sa${random_integer.rndint.result}"
-  sa_name_truncated  = length(local.sa_name_base) > local.sa_name_max_length ? substr(local.sa_name_base, 0, local.sa_name_max_length - 5) : local.sa_name_base
-}
+# locals {
+#   resource_group_name    = "${var.naming["prefix"]}-${var.naming["service"]}-${var.naming["project"]}-${var.naming["environment"]}-rg"
+#   service_principal_name = "${var.naming["prefix"]}-${var.naming["service"]}-${var.naming["project"]}-deploy-sp"
+#   # Naming: Dynamically truncate string to a specified maximum length (max 24 chars for Storage Account naming).
+#   sa_name_max_length    = 24 # Random integer suffix will add 5 chars, so max = 19 for base name.
+#   sa_name_random_length = 5  # Number of random characters to add to storage account name. 
+#   sa_name_base          = "${var.naming["prefix"]}${var.naming["service"]}${var.naming["project"]}sa${random_integer.rndint.result}"
+#   # If the full length Storage Account name is greater than max allowed, trim it down to max length minus 5 characters, then add random number. 
+#   sa_name_final = length(local.sa_name_base) > local.sa_name_max_length ? "${substr(local.sa_name_base, 0, local.sa_name_max_length - 5)}${random_integer.rndint.result}" : local.sa_name_base
+# }
 
 #=====================================================================#
 # Azure: Entra ID
@@ -23,172 +25,62 @@ locals {
 # Info: https://learn.microsoft.com/en-us/graph/permissions-reference
 #=====================================================================#
 
-# Create App Registration and Service Principal for IaC.
-resource "azuread_application" "entra_iac_app" {
-  display_name = "${local.name_full}-sp"                        # Use long naming convention.
-  logo_image   = filebase64("./logo.png")                       # Image file for SP logo.
-  owners       = [data.azuread_client_config.current.object_id] # Set current user as owner.
-  notes        = "Bootstrap: Service Principal for IaC."        # Descriptive notes on purpose of the SP.
-  required_resource_access {
-    resource_app_id = "00000003-0000-0000-c000-000000000000" # Microsoft Graph API.
-    resource_access {
-      id   = "1bfefb4e-e0b5-418b-a88f-73c46d2cc8e9" # Application.ReadWrite.All
-      type = "Role"                                 # Will require a GA to provide consent. Required to allow SP to modify itself and others. 
-    }
-    resource_access {
-      id   = "7ab1d382-f21e-4acd-a863-ba3e13f7da61" # Directory.Read.All
-      type = "Role"                                 # Will require a GA to provide consent. Required to allow SP to modify itself and others. 
-    }
-  }
-}
 
-# Service Principal for the App Registration.
-resource "azuread_service_principal" "entra_iac_sp" {
-  client_id                    = azuread_application.entra_iac_app.client_id
-  app_role_assignment_required = false
-  owners                       = [data.azuread_client_config.current.object_id]
-}
 
-# Federated credential for Service Principal (to be used with GitHub OIDC).
-resource "azuread_application_federated_identity_credential" "github_repo_main" {
-  application_id = azuread_application.entra_iac_app.id
-  display_name   = "oidc-github_${var.github_config["owner"]}_${var.github_config["repo"]}_${var.github_config["branch"]}"
-  description    = "[Bootstrap]: GitHub OIDC federated credentials (${var.github_config["branch"]})."
-  audiences      = ["api://AzureADTokenExchange"]
-  issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${var.github_config["owner"]}/${var.github_config["repo"]}:ref:refs/heads/${var.github_config["branch"]}"
-}
 
-resource "azuread_application_federated_identity_credential" "github_repo_pullrequest" {
-  application_id = azuread_application.entra_iac_app.id
-  display_name   = "oidc-github_${var.github_config["owner"]}_${var.github_config["repo"]}_pull-request"
-  description    = "[Bootstrap]: GitHub OIDC federated credentials (Pull Request)."
-  audiences      = ["api://AzureADTokenExchange"]
-  issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${var.github_config["owner"]}/${var.github_config["repo"]}:pull_request"
-}
-
-# Assign RBAC roles for SP at top-level tenant root group.
-resource "azurerm_role_assignment" "rbac_sp1" {
-  scope                = data.azurerm_management_group.mg_tenant_root.id # Tenant Root MG ID.
-  role_definition_name = "Contributor"
-  principal_id         = azuread_service_principal.entra_iac_sp.object_id # Service Principal ID.
-}
-resource "azurerm_role_assignment" "rbac_sp2" {
-  scope                = data.azurerm_management_group.mg_tenant_root.id
-  role_definition_name = "User Access Administrator"
-  principal_id         = azuread_service_principal.entra_iac_sp.object_id
-}
-resource "azurerm_role_assignment" "rbac_kv_01" {
-  scope                = data.azurerm_management_group.mg_tenant_root.id
-  role_definition_name = "Key Vault Administrator"
-  principal_id         = azuread_service_principal.entra_iac_sp.object_id
-}
-resource "azurerm_role_assignment" "rbac_kv_02" {
-  scope                = data.azurerm_management_group.mg_tenant_root.id
-  role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = azuread_service_principal.entra_iac_sp.object_id
-}
 
 #=================================================================#
 # Azure: Backend Resources
 #=================================================================#
 
 # Generate a random integer to use for suffix uniqueness.
-resource "random_integer" "rndint" {
-  min = 100000
-  max = 999999
-}
+# resource "random_integer" "rndint" {
+#   min = 10000
+#   max = 99999
+# }
 
 # Resource Group.
-resource "azurerm_resource_group" "iac_rg" {
-  name     = "${local.name_full}-rg"
-  location = var.location
-  tags     = var.tags
-}
+# resource "azurerm_resource_group" "iac_rg" {
+#   name     = local.resource_group_name
+#   location = var.location
+#   tags     = var.tags
+# }
 
 # Storage Account.
-resource "azurerm_storage_account" "iac_sa" {
-  name                       = "${local.sa_name_truncated}${random_integer.rndint.result}"
-  resource_group_name        = azurerm_resource_group.iac_rg.name
-  location                   = azurerm_resource_group.iac_rg.location
-  account_tier               = "Standard"
-  account_replication_type   = "LRS"
-  account_kind               = "StorageV2"
-  tags                       = var.tags
-  https_traffic_only_enabled = true # Enforce secure file transfer. 
-}
+# resource "azurerm_storage_account" "iac_sa" {
+#   name                       = local.sa_name_final
+#   resource_group_name        = azurerm_resource_group.iac_rg.name
+#   location                   = azurerm_resource_group.iac_rg.location
+#   account_tier               = "Standard"
+#   account_replication_type   = "LRS"
+#   account_kind               = "StorageV2"
+#   tags                       = var.tags
+#   https_traffic_only_enabled = true # Enforce secure file transfer. 
+#   lifecycle {
+#     precondition {
+#       condition     = length(local.sa_name_final) < local.sa_name_max_length
+#       error_message = "Storage Account must be less than 24 characters total."
+#     }
+#   }
+# }
 
-# Storage Account Blob Container.
-resource "azurerm_storage_container" "iac_sa_cn" {
-  name                  = "tfstate-${var.naming["service"]}-management"
-  storage_account_id    = azurerm_storage_account.iac_sa.id
-  container_access_type = "private"
-}
+# # Storage Account Blob Container.
+# resource "azurerm_storage_container" "iac_sa_cn" {
+#   name                  = "tfstate-${var.naming["service"]}-bootstrap"
+#   storage_account_id    = azurerm_storage_account.iac_sa.id
+#   container_access_type = "private"
+# }
 
-# RBAC: Assign 'Storage Data Contributor' role for current user.
-resource "azurerm_role_assignment" "rbac_sa_cu" {
-  scope                = azurerm_storage_account.iac_sa.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = data.azuread_client_config.current.object_id
-}
+# # RBAC: Assign 'Storage Data Contributor' role for current user.
+# resource "azurerm_role_assignment" "rbac_sa_cu" {
+#   scope                = azurerm_storage_account.iac_sa.id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = data.azuread_client_config.current.object_id
+# }
 
-# RBAC: Assign 'Storage Data Contributor' role for SP.
-resource "azurerm_role_assignment" "rbac_sa_sp" {
-  scope                = azurerm_storage_account.iac_sa.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.entra_iac_sp.object_id
-}
-
-#=================================================================#
-# GitHub: Secrets and Variables
-#=================================================================#
-
-# Get data for existing GitHub Repository.
-data "github_repository" "gh_repository" {
-  full_name = "${var.github_config["owner"]}/${var.github_config["repo"]}"
-}
-
-# GitHub: Secrets - Add Federated Identity Credential (OIDC).
-resource "github_actions_secret" "gh_secret_tenant_id" {
-  repository      = data.github_repository.gh_repository.name
-  secret_name     = "ARM_TENANT_ID"
-  plaintext_value = data.azuread_client_config.current.tenant_id
-}
-
-resource "github_actions_secret" "gh_secret_subscription_id_iac" {
-  repository      = data.github_repository.gh_repository.name
-  secret_name     = "ARM_SUBSCRIPTION_ID_IAC"
-  plaintext_value = var.subscription_id_iac # Subscription ID to be used for IaC.
-}
-
-resource "github_actions_secret" "gh_secret_client_id" {
-  repository      = data.github_repository.gh_repository.name
-  secret_name     = "ARM_CLIENT_ID"
-  plaintext_value = azuread_application.entra_iac_app.client_id # Service Principal federated credential ID.
-}
-
-# GitHub: Variables - Terraform Backend details (to be called during GHA workflows).
-resource "github_actions_variable" "gh_var_iac_rg" {
-  repository    = data.github_repository.gh_repository.name
-  variable_name = "TF_BACKEND_RG"
-  value         = azurerm_resource_group.iac_rg.name
-}
-
-resource "github_actions_variable" "gh_var_iac_sa" {
-  repository    = data.github_repository.gh_repository.name
-  variable_name = "TF_BACKEND_SA"
-  value         = azurerm_storage_account.iac_sa.name
-}
-
-resource "github_actions_variable" "gh_var_iac_cn" {
-  repository    = data.github_repository.gh_repository.name
-  variable_name = "TF_BACKEND_CONTAINER"
-  value         = azurerm_storage_container.iac_sa_cn.name
-}
-
-resource "github_actions_variable" "gh_var_iac_key" {
-  repository    = data.github_repository.gh_repository.name
-  variable_name = "TF_BACKEND_KEY" # Terraform state file name.
-  value         = "azure-${var.naming["service"]}-management.tfstate"
-}
+# # RBAC: Assign 'Storage Data Contributor' role for SP.
+# resource "azurerm_role_assignment" "rbac_sa_sp" {
+#   scope                = azurerm_storage_account.iac_sa.id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = azuread_service_principal.entra_iac_sp.object_id
+# }
