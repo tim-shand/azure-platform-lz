@@ -381,6 +381,7 @@ terraform {
     storage_account_name = "$($tf_sa)"
     container_name       = "$($tf_cn)"
     key                  = "azure-iac-bootstrap.tfstate"
+    use_azuread_auth     = true # Enable for Entra ID only authentication.
   }
 }
 "@
