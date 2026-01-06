@@ -28,20 +28,34 @@ This bootstrap deployment will create resources in both Azure and GitHub, requir
 
 ## :hammer_and_wrench: Created Resources
 
-- **Entra ID: Service Principal (App Registration)**
+- **Azure: Entra ID - Service Principal (App Registration)**
   - Dedicated, privileged identity for executing changes in the Azure tenant. 
   - Uses federated credentials (OIDC) for authentication with GitHub Actions workflows. 
-- **GitHub: Repository Environment, Secrets and Variables**
-  - Creates repository environments per deployment stack. 
-  - Adds Entra ID service principal details to repository secrets. 
-  - Adds Azure resources used for remote backend per deployment stack environment. 
 - **Azure: Remote Backend Resources**
   - Uses dedicated Azure subscription to contain remote states for all IaC projects. 
   - **Resource Group:** Logical container for deployment categories (platform, bootstrap, workloads). 
   - **Storage Account:** Holds all storage containers in one account per deployment category (platform, bootstrap, workloads). 
   - **Containers:** Logical grouping of remote states per deployment stack (plz-governance, plz-management, etc). 
+- **GitHub: Repository Environment, Secrets and Variables**
+  - Creates repository environments per deployment stack. 
+  - Adds Entra ID service principal details to repository secrets. 
+  - Adds Azure resources used for remote backend per deployment stack environment. 
+
+---
 
 ## ❓ Example Resource Structure
+
+Resources are grouped by categories and their child stacks. 
+
+- **Categories:** 
+  - Bootstrap
+  - Platform
+  - Workloads
+- **Stacks:** 
+  - Platform -> Governance (plz-governance)
+  - Platform -> Connectivity (plz-connectivity)
+  - Platform -> Management (plz-management)
+  - Platform -> Identity (plz-identity)
 
 ```text
 org-iac-bootstrap-rg
