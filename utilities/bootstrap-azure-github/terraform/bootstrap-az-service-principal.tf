@@ -56,11 +56,6 @@ resource "azurerm_role_assignment" "rbac_sp_kvo" {
   role_definition_name = "Key Vault Secrets Officer" # Required to read generated Key Vault Secrets. 
   principal_id         = azuread_service_principal.entra_iac_sp.object_id
 }
-resource "azurerm_role_assignment" "rbac_sp_stc" {
-  scope                = data.azurerm_management_group.mg_tenant_root.id
-  role_definition_name = "Storage Blob Data Contributor" # Required to update blob storage properties. 
-  principal_id         = azuread_service_principal.entra_iac_sp.object_id
-}
 
 # OIDC Federated Credentials ----------------------------------------------------|
 # Federated credential for Service Principal.

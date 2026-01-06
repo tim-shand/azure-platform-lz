@@ -54,6 +54,12 @@ $requiredApps = @(
 # Set direcotry for Terraform files.
 $tfDir = "$PSScriptRoot/terraform"
 
+# URL for API to get public IP. Used to secure Storage Account access. 
+$ip_url = "https://api.ipify.org"
+
+# Terraform state file name.
+$tf_state_key = "azure-iac-bootstrap.tfstate"
+
 # Terminal Colours.
 $INF = "Green"
 $WRN = "Yellow"
@@ -99,13 +105,27 @@ function Get-UserConfirm ($prompt) {
     }
 }
 
+
+
 #=============================================#
 # MAIN: Stage 1 - Validations & Pre-Checks
 #=============================================#
 Clear-Host
 Write-Host -ForegroundColor $HD1 "======================================================"
-Write-Host -ForegroundColor $HD2 "     Bootstrap Script: Azure | Github | Terraform     "
+Write-Host -ForegroundColor $HD2 "     Bootstrap Script: Azure | GitHub | Terraform     "
 Write-Host -ForegroundColor $HD1 "======================================================`r`n"
+
+# Get current public IP address to add to Storage Account allowed list. 
+Write-Host -ForegroundColor $HD1 -NoNewLine "[*] Obtaining public IP address for Storage Account allowed list... "
+Try {
+    $current_ip = (Invoke-RestMethod -Uri $ip_url)
+    Write-Host -ForegroundColor $INF "PASS"
+}
+Catch {
+    Write-Host -ForegroundColor $ERR "FAIL"
+    Write-Host "ERROR: Failed to get current public IP address. $_"
+    exit 1
+}
 
 # Validation: Provided variables file. Check path exists and values can be queried. 
 $env_file = Join-Path -Path $PSScriptRoot -ChildPath $EnvFile
@@ -184,6 +204,7 @@ Write-Host "- Tenant Name: $($azSession.tenantDisplayName)"
 Write-Host "- Subscription ID: $($azAccess.subscriptionId)"
 Write-Host "- Subscription Name: $($azAccess.displayName)"
 Write-Host "- Default Location: $($config.global.location)"
+Write-Host "- Current Public IP: $($current_ip)"
 Write-Host ""
 Write-Host -ForegroundColor $HD1 "Repository: " -NoNewLine; Write-Host -ForegroundColor Yellow "(User: $($ghSession.login))"
 Write-Host "- Owner/Org: $(($ghSession.html_url).Replace('https://github.com/',''))"
@@ -209,6 +230,7 @@ $tfVARS = @"
 # General: Azure and GitHub Configuration ---------------------------------|
 global = {
   location    = "$($config.global.location)" # Default preferred location for IaC backend resources. 
+  public_ip   = "$($current_ip)"             # Used for secure access to Storage Accounts.  
 }
 naming = {
   prefix      = "$($config.naming.prefix)"  # Short name of organization ("abc"). Used in resource naming.
@@ -295,24 +317,44 @@ else {
 #===================================================#
 
 if ($Action -eq "Remove") {
+    # Migrate remote state back to local and remove backend file. 
+    Write-Host -ForegroundColor $HD1 "[*] Pulling remote Terraform state from Azure... " -NoNewline
+    if (Test-Path -Path "$tfDir/backend.tf") {
+        terraform -chdir="$($tfDir)" state pull > "$tfDir/$($tf_state_key).bak" # Backup remote.
+        terraform -chdir="$($tfDir)" state pull > "$tfDir/terraform.tfstate" # Rename local copy. 
+        if (Test-Path -Path "$tfDir/$($tf_state_key).bak") {
+            Write-Host -ForegroundColor $INF "PASS"
+            Remove-Item -Path "$tfDir/backend.tf" -Force -ErrorAction SilentlyContinue
+            # Re-initialise Terraform post state migration. 
+            terraform -chdir="$($tfDir)" -reconfigure
+        }
+        else {
+            Write-Host -ForegroundColor $WRN "WARN"
+            Write-Host -ForegroundColor $WRN "[x] Failed to pull Terraform state back to local. Please check configuration."
+        }
+    }
+    else {
+        Write-Host -ForegroundColor $WRN "WARN"
+        Write-Host -ForegroundColor $WRN "[x] Backend configuration is missing. Defaulting to local."
+    }
+
     # Check for local file (download from remote storage and place in Terraform directory).
     Write-Host -ForegroundColor $HD1 "[*] Checking for local state file... " -NoNewline
-    if (Test-Path -Path "$tfDir/*.tfstate") {
-        Rename-Item -Path "$tfDir/*.tfstate" -NewName "$tfDir/terraform.tfstate"
+    if (Test-Path -Path "$tfDir/terraform.tfstate") {
         Write-Host -ForegroundColor $INF "PASS"
         terraform -chdir="$($tfDir)" destroy -var-file="bootstrap.tfvars"
     }
     else {
         Write-Host -ForegroundColor $ERR "FAIL"
         Write-Host -ForegroundColor $ERR "[x] Local state file is missing. Please download from remote storage and try again." 
+        exit 1
     }
 }
 else {
     # Terraform: Plan
     Write-Host ""
     Write-Host -ForegroundColor $HD1 "[*] Performing Action: Running Terraform plan... " -NoNewLine
-    if (terraform -chdir="$($tfDir)" plan --out=bootstrap.plan `
-            -var-file="bootstrap.tfvars"
+    if (terraform -chdir="$($tfDir)" plan --out=bootstrap.plan -var-file="bootstrap.tfvars"
     ) {
         Write-Host -ForegroundColor $INF "PASS" 
         terraform -chdir="$($tfDir)" show bootstrap.plan
@@ -380,7 +422,8 @@ terraform {
     resource_group_name  = "$($tf_rg)"
     storage_account_name = "$($tf_sa)"
     container_name       = "$($tf_cn)"
-    key                  = "azure-iac-bootstrap.tfstate"
+    key                  = "$($tf_state_key)"
+    use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
   }
 }
 "@
@@ -393,7 +436,7 @@ terraform {
         Write-Host -ForegroundColor $HD1 "[*] Migrating Terraform state to Azure... " -NoNewline
         if (terraform -chdir="$($tfDir)" init -migrate-state -force-copy -input=false) {
             Write-Host -ForegroundColor $INF "PASS"
-            #Remove-Item -Path "$PSScriptRoot/terraform/*.tfstate*" -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "$PSScriptRoot/terraform/terraform.tfstate" -Force -ErrorAction SilentlyContinue
         }
         else {
             Write-Host -ForegroundColor $ERR "FAIL"

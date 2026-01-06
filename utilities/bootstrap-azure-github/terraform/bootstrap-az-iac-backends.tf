@@ -30,7 +30,9 @@ resource "azurerm_storage_account" "iac_sa" {
   account_replication_type        = "LRS"
   account_kind                    = "StorageV2"
   https_traffic_only_enabled      = true  # Enforce secure file transfer. 
-  allow_nested_items_to_be_public = false # Prevent anonymous/public access to Storage Accounts.  
+  allow_nested_items_to_be_public = false # Prevent anonymous/public access to Storage Accounts. 
+  shared_access_key_enabled       = false # SECURITY: Disable Shared Key Access in favour of Entra ID authorisation. 
+  #public_network_access_enabled   = false # TEST: Disable public network access. Changes needed to allow GitHub runners. 
   lifecycle {
     precondition {
       condition     = length(each.value.storage_account_name) < local.sa_name_max_length
@@ -46,4 +48,21 @@ resource "azurerm_storage_container" "iac_cn" {
   name                  = "tfstate-${each.value.stack_name}"
   storage_account_id    = azurerm_storage_account.iac_sa[each.value.category].id
   container_access_type = "private"
+}
+
+# RBAC ---------------------------------------------------------------|
+# Service Principal: Required when 'shared_access_key_enabled=false'. 
+resource "azurerm_role_assignment" "rbac_sp_rg" {
+  for_each             = local.resource_stack_mapping
+  scope                = azurerm_resource_group.iac_rg[each.key].id
+  role_definition_name = "Storage Blob Data Contributor" # Required to access and update blob storage properties. 
+  principal_id         = azuread_service_principal.entra_iac_sp.object_id
+}
+
+# Current Global Admin User: Required when 'shared_access_key_enabled=false'. 
+resource "azurerm_role_assignment" "rbac_ga_rg" {
+  for_each             = local.resource_stack_mapping
+  scope                = azurerm_resource_group.iac_rg[each.key].id
+  role_definition_name = "Storage Blob Data Contributor" # Required to access and update blob storage properties. 
+  principal_id         = data.azuread_client_config.current.object_id
 }
