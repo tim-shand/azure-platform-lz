@@ -30,7 +30,6 @@ resource "azurerm_storage_account" "iac_sa" {
   account_replication_type        = "LRS"
   account_kind                    = "StorageV2"
   https_traffic_only_enabled      = true  # Enforce secure file transfer. 
-  shared_access_key_enabled       = false # Disable authorization via Shared Keys/Shared Access Signature (Entra ID only). 
   allow_nested_items_to_be_public = false # Prevent anonymous/public access to Storage Accounts.  
   lifecycle {
     precondition {
