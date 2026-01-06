@@ -41,7 +41,7 @@ This bootstrap deployment will create resources in both Azure and GitHub, requir
   - **Storage Account:** Holds all storage containers in one account per deployment category (platform, bootstrap, workloads). 
   - **Containers:** Logical grouping of remote states per deployment stack (plz-governance, plz-management, etc). 
 
-### Example Structure
+## ❓ Example Resource Structure
 
 ```text
 org-iac-bootstrap-rg
@@ -59,22 +59,22 @@ org-iac-workloads-rg
 └── orgiacworkloadssa12345
 ```
 
-| Object                  | Created per  | Example                  |
-| ----------------------- | ------------ | ------------------------ |
-| Resource Group          | **Category** | org-plz-bootstrap-rg     |
-| Resource Group          | **Category** | org-plz-platform-rg      |
-| Resource Group          | **Category** | org-plz-workloads-rg     |
-| Storage Account         | **Category** | orgplzbootstrapsa12345   |
-| Storage Account         | **Category** | orgplzplatformsa12345    |
-| Storage Account         | **Category** | orgplzworkloadssa12345   |
-| Blob Container          | **Stack**    | tfstate-plz-governance   |
-| Blob Container          | **Stack**    | tfstate-plz-connectivity |
-| Blob Container          | **Stack**    | tfstate-plz-management   |
-| Blob Container          | **Stack**    | tfstate-plz-identity     |
-| Repository Environment  | **Stack**    | plz-governance           |
-| Repository Environment  | **Stack**    | plz-connectivity         |
-| Repository Environment  | **Stack**    | plz-management           |
-| Repository Environment  | **Stack**    | plz-identity             |
+| Object                  | Created per  | Example                  | Purpose |
+| ----------------------- | ------------ | ------------------------ | ------- |
+| Resource Group          | **Category** | org-plz-bootstrap-rg     | Resource group containing components for bootstrapping.   |
+| Resource Group          | **Category** | org-plz-platform-rg      | Resource group containing components for platform LZ.     |
+| Resource Group          | **Category** | org-plz-workloads-rg     | Resource group containing components for future workloads.|
+| Storage Account         | **Category** | orgplzbootstrapsa12345   | Holds blob container for bootstrapping deployment.        |
+| Storage Account         | **Category** | orgplzplatformsa12345    | Holds blob containers per platform deployment stack.      |
+| Storage Account         | **Category** | orgplzworkloadssa12345   | Holds blob containers per workload deployment stack.      |
+| Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow. |
+| Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow. |
+| Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow. |
+| Blob Container          | **Stack**    | tfstate-plz-identity     | Contains remote state file, referenced by stack workflow. |
+| Repository Environment  | **Stack**    | plz-governance           | Repository environment, contains stack related variables. |
+| Repository Environment  | **Stack**    | plz-connectivity         | Repository environment, contains stack related variables. |
+| Repository Environment  | **Stack**    | plz-management           | Repository environment, contains stack related variables. |
+| Repository Environment  | **Stack**    | plz-identity             | Repository environment, contains stack related variables. |
 
 ---
 
