@@ -30,7 +30,10 @@ resource "azurerm_storage_account" "iac_sa" {
   account_replication_type        = "LRS"
   account_kind                    = "StorageV2"
   https_traffic_only_enabled      = true  # Enforce secure file transfer. 
-  allow_nested_items_to_be_public = false # Prevent anonymous/public access to Storage Accounts.  
+  allow_nested_items_to_be_public = false # Prevent anonymous/public access to Storage Accounts. 
+  shared_access_key_enabled       = false # SECURITY: Disable Shared Key Access in favour of Entra ID authorisation. 
+  #public_network_access_enabled   = false # TEST: Disable public network access. Changes needed to allow GitHub runners. 
+  #default_to_oauth_authentication = true  # TEST: Default to Entra ID authorization in the Azure portal when accessing the Storage Account.
   lifecycle {
     precondition {
       condition     = length(each.value.storage_account_name) < local.sa_name_max_length
