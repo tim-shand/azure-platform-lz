@@ -19,16 +19,19 @@ resource "azurerm_resource_group" "iac_rg" {
 
 # Storage Accounts ----------------------------------------------------|
 # Create separate Storage Accounts per stack category, in their own Resource Groups. 
+# INFO: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account#arguments-reference
 resource "azurerm_storage_account" "iac_sa" {
-  for_each                   = local.resource_stack_mapping
-  name                       = length(each.value.storage_account_name) > local.sa_name_max_length ? "${substr("${each.value.storage_account_name}", 0, local.sa_name_max_length - local.sa_name_random_length)}${random_integer.rndint.result}" : "${each.value.storage_account_name}"
-  resource_group_name        = azurerm_resource_group.iac_rg[each.key].name
-  location                   = azurerm_resource_group.iac_rg[each.key].location
-  tags                       = azurerm_resource_group.iac_rg[each.key].tags
-  account_tier               = "Standard"
-  account_replication_type   = "LRS"
-  account_kind               = "StorageV2"
-  https_traffic_only_enabled = true # Enforce secure file transfer. 
+  for_each                        = local.resource_stack_mapping
+  name                            = length(each.value.storage_account_name) > local.sa_name_max_length ? "${substr("${each.value.storage_account_name}", 0, local.sa_name_max_length - local.sa_name_random_length)}${random_integer.rndint.result}" : "${each.value.storage_account_name}"
+  resource_group_name             = azurerm_resource_group.iac_rg[each.key].name
+  location                        = azurerm_resource_group.iac_rg[each.key].location
+  tags                            = azurerm_resource_group.iac_rg[each.key].tags
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  account_kind                    = "StorageV2"
+  https_traffic_only_enabled      = true  # Enforce secure file transfer. 
+  shared_access_key_enabled       = false # Disable authorization via Shared Keys/Shared Access Signature (Entra ID only). 
+  allow_nested_items_to_be_public = false # Prevent anonymous/public access to Storage Accounts.  
   lifecycle {
     precondition {
       condition     = length(each.value.storage_account_name) < local.sa_name_max_length

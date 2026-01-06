@@ -3,11 +3,11 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.40.0"
+      version = "~> 4.57.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = "~> 3.5.0"
+      version = "~> 3.7.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -15,15 +15,16 @@ terraform {
     }
     github = {
       source  = "integrations/github"
-      version = "~> 6.6.0"
+      version = "~> 6.9.0"
     }
   }
 }
 provider "random" {}
 provider "azurerm" {
   features {}
-  tenant_id       = data.azuread_client_config.current.tenant_id
-  subscription_id = var.deployment_stacks.bootstrap.bootstrap.subscription_id # Use dedicated IaC subscription.
+  tenant_id           = data.azuread_client_config.current.tenant_id
+  subscription_id     = var.deployment_stacks.bootstrap.bootstrap.subscription_id # Use dedicated IaC subscription.
+  storage_use_azuread = true                                                      # Use Entra ID only for interacting with Storage services. 
 }
 provider "github" {}
 
