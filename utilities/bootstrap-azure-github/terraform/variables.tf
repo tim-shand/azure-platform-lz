@@ -2,30 +2,39 @@
 # Azure Bootstrap: Variables
 #=================================================================#
 
-variable "subscription_id_iac" {
-  description = "Target Azure subscription for IaC."
-  type        = string
-}
-
-variable "location" {
-  description = "Azure region to deploy resources into."
-  type        = string
+variable "global" {
+  description = "Map of global settings for the Azure environment."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "naming" {
-  description = "A map of naming parameters to use with resources."
+  description = "Map of naming parameters to use with resources."
   type        = map(string)
+  nullable    = false
   default     = {}
 }
 
 variable "tags" {
-  description = "A map of tags to apply to resources."
+  description = "Map of tags to apply to resources."
   type        = map(string)
+  nullable    = false
   default     = {}
 }
 
-variable "github_config" {
-  description = "A map of Github settings."
+variable "repo_config" {
+  description = "Map of repository settings (org/owner, repo, branch)."
   type        = map(string)
+  nullable    = false
   default     = {}
+}
+
+variable "deployment_stacks" {
+  description = "Map of objects listing the deployment stack (category: Platform, stacks: ...)"
+  type = map(map(object({
+    stack_name      = string
+    subscription_id = string
+    create_repo_env = bool # Enable creation of repo environment. 
+  })))
 }

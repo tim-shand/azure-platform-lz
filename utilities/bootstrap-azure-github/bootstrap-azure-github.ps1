@@ -41,14 +41,14 @@ $requiredApps = @(
         Command     = "az"; 
         AuthCheck   = "az account show --only-show-errors | ConvertFrom-JSON"; 
         LoginCmd    = "az login --use-device-code";
-        AccessCheck = 'az account subscription show --subscription-id $config.Azure.SubscriptionIAC -o json --only-show-errors | ConvertFrom-JSON'
+        AccessCheck = 'az account subscription show --subscription-id $config.global.subscription_iac_bootstrap -o json --only-show-errors | ConvertFrom-JSON'
     }
     [PSCustomObject]@{ 
         Name        = "GitHub CLI"; 
         Command     = "gh"; 
         AuthCheck   = "gh api user | ConvertFrom-JSON"; 
         LoginCmd    = "gh auth login";
-        AccessCheck = '(gh api /repos/$($config.GitHub.Owner)/$($config.GitHub.Repo)/collaborators/$($config.GitHub.Owner)/permission | ConvertFrom-JSON).user.permissions'
+        AccessCheck = '(gh api /repos/$($config.repo_config.Owner)/$($config.repo_config.Repo)/collaborators/$($config.repo_config.Owner)/permission | ConvertFrom-JSON).user.permissions'
     }
 )
 # Set direcotry for Terraform files.
@@ -119,7 +119,7 @@ else {
     Try {
         # Import variables from file into '$config' variable.
         $config = Import-PowerShellDataFile -Path $env_file
-        if ($config.azure.naming.prefix) {
+        if ($config.naming.prefix) {
             Write-Host -ForegroundColor $INF "PASS"
         }
         else {
@@ -183,11 +183,11 @@ Write-Host "- Tenant ID: $($azSession.tenantId)"
 Write-Host "- Tenant Name: $($azSession.tenantDisplayName)"
 Write-Host "- Subscription ID: $($azAccess.subscriptionId)"
 Write-Host "- Subscription Name: $($azAccess.displayName)"
-Write-Host "- Default Location: $($config.Azure.Location)"
+Write-Host "- Default Location: $($config.global.location)"
 Write-Host ""
-Write-Host -ForegroundColor $HD1 "GitHub: " -NoNewLine; Write-Host -ForegroundColor Yellow "(User: $($ghSession.login))"
+Write-Host -ForegroundColor $HD1 "Repository: " -NoNewLine; Write-Host -ForegroundColor Yellow "(User: $($ghSession.login))"
 Write-Host "- Owner/Org: $(($ghSession.html_url).Replace('https://github.com/',''))"
-Write-Host "- Repository: $($config.GitHub.Repo) [$($config.GitHub.Branch)]"
+Write-Host "- Repository: $($config.repo_config.repo) [$($config.repo_config.Branch)]"
 Write-Host "- Access: $(($ghAccess.PSObject.Properties | Where-Object {$_.Value -eq $true} | ForEach-Object {$_.Name}) -join ", ")"
 Write-Host ""
 Write-Host -ForegroundColor $HD1 "Deployment Action: " -NoNewLine; 
@@ -203,51 +203,78 @@ if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?")) {
 # MAIN: Stage 3 - Prepare Terraform
 #================================================#
 
-if (!($Action -eq "Remove")) {
-    # Generate TFVARS file.
-    $tfVARS = @"
-# SAFE TO COMMIT
-# This file contains only non-sensitive configuration data (no credentials or secrets).
-# All secrets are to be stored securely in GitHub Secrets or environment variables.
-
-# Azure Settings.
-location = "$($config.Azure.Location)" # Desired location for resources to be deployed in Azure.
-
-# Naming Settings (used for resource names).
+# Generate TFVARS file.
+$tfVARS = @"
+# !! DO NOT COMMIT !! - If using public repository or including sensitive values.
+# General: Azure and GitHub Configuration ---------------------------------|
+global = {
+  location    = "$($config.global.location)" # Default preferred location for IaC backend resources. 
+}
 naming = {
-  environment = "$($config.Azure.Naming.Environment)" # Environment for resources/project (dev, tst, prd).
-  prefix = "$($config.Azure.Naming.Prefix)" # Short name of organization (abc).
-  project = "$($config.Azure.Naming.Project)" # Project name for related resources (platform, webapp01).
-  service = "$($config.Azure.Naming.Service)" # Service name used in the project (iac, mgt, sec, con, gov).
+  prefix      = "$($config.naming.prefix)"  # Short name of organization ("abc"). Used in resource naming.
+  project     = "$($config.naming.project)" # Project name for related resources (platform, webapp01). 
+  service     = "$($config.naming.service)" # Service name used in the project (gov, con, sec, mgt, wrk). 
+  environment = "$($config.naming.environment)" # Environment for resources/project (dev, tst, prd, sys).
 }
-
-# Tags (assigned to bootstrap resources).
 tags = {
-  Environment = "$($config.Azure.Tags.Environment)" # dev, tst, prd, alz
-  Project = "$($config.Azure.Tags.Project)" # Name of the project the resources are for.
-  Owner = "$($config.Azure.Tags.Owner)" # Team responsible for the resources.
-  Creator = "$($config.Azure.Tags.Creator)" # Person or process that created the bootstrap resources.
-  Deployed = "$(Get-Date -f "yyyyMMdd.HHmmss")" # Timestamp for identifying deployment.
+  Environment = "$($config.tags.Environment)" # dev, tst, prd. 
+  Project     = "$($config.tags.Project)" # Name of the project. 
+  Owner       = "$($config.tags.Owner)" # Team responsible for the resources. 
+  Creator     = "$($config.tags.Creator)" # Person or process that created the initial resources. 
+}
+repo_config = {
+  owner  = "$($config.repo_config.owner)" # Org/owner, target repository, and branch name.
+  repo   = "$($config.repo_config.repo)"
+  branch = "$($config.repo_config.branch)"
 }
 
-# GitHub Settings.
-github_config = {
-    owner = "$($config.GitHub.Owner)" # Taken from current Github CLI session. 
-    repo = "$($config.GitHub.Repo)" # Replace with your new desired GitHub repository name. Must be unique within the organization and empty.
-    branch = "$($config.GitHub.Branch)" # Replace with your preferred branch name.
+# Stacks: Configuration ---------------------------------|
+deployment_stacks = {
+  bootstrap = {
+      bootstrap = {
+      stack_name        = "iac-bootstrap"
+      subscription_id   = "$($config.global.subscription_iac_bootstrap)"
+      create_repo_env = false # No need for separate bootstrap environment in GitHub. 
+    }
+  }
+  platform = {
+    connectivity = {
+      stack_name        = "plz-connectivity"
+      subscription_id   = "$($config.global.subscription_plz_connectivity)"
+      create_repo_env = true
+    }
+    governance = {
+      stack_name        = "plz-governance"
+      subscription_id   = "$($config.global.subscription_plz_governance)"
+      create_repo_env = true
+    }
+    management = {
+      stack_name        = "plz-management"
+      subscription_id   = "$($config.global.subscription_plz_management)"
+      create_repo_env = true
+    }
+    identity = {
+      stack_name        = "plz-identity"
+      subscription_id   = "$($config.global.subscription_plz_identity)"
+      create_repo_env = true
+    }
+  }
+  workloads = {
+    # Placeholder to ensure resource group and storage account structure is created. 
+    # To be used in future for workload IaC Backend Vending. 
+  }
 }
 "@
 
-    # Write out TFVARS file (only if not already exists,offer to overwrite existing).
-    if (! (Test-Path -Path "$PSScriptRoot/terraform/bootstrap.tfvars") ) {
+# Write out TFVARS file (only if not already exists,offer to overwrite existing).
+if (! (Test-Path -Path "$PSScriptRoot/terraform/bootstrap.tfvars") ) {
+    $tfVARS | Out-File -Encoding utf8 -FilePath "$PSScriptRoot/terraform/bootstrap.tfvars" -Force
+}
+else {
+    Write-Host ""
+    Write-Host -ForegroundColor $WRN "[!] WARNING: An existing TFVARS file is present."
+    if (Get-UserConfirm -prompt "Do you wish to replace the existing file (Y) or keep original (N) [Y/N]?") {
         $tfVARS | Out-File -Encoding utf8 -FilePath "$PSScriptRoot/terraform/bootstrap.tfvars" -Force
-    }
-    else {
-        Write-Host ""
-        Write-Host -ForegroundColor $WRN "[!] WARNING: An existing TFVARS file is present."
-        if (Get-UserConfirm -prompt "Do you wish to replace the existing file (Y) or keep original (N) [Y/N]?") {
-            $tfVARS | Out-File -Encoding utf8 -FilePath "$PSScriptRoot/terraform/bootstrap.tfvars" -Force
-        }
     }
 }
 
@@ -273,9 +300,7 @@ if ($Action -eq "Remove") {
     if (Test-Path -Path "$tfDir/*.tfstate") {
         Rename-Item -Path "$tfDir/*.tfstate" -NewName "$tfDir/terraform.tfstate"
         Write-Host -ForegroundColor $INF "PASS"
-        terraform -chdir="$($tfDir)" destroy `
-            -var-file="bootstrap.tfvars" `
-            -var="subscription_id_iac=$($config.Azure.SubscriptionIAC)"
+        terraform -chdir="$($tfDir)" destroy -var-file="bootstrap.tfvars"
     }
     else {
         Write-Host -ForegroundColor $ERR "FAIL"
@@ -287,8 +312,7 @@ else {
     Write-Host ""
     Write-Host -ForegroundColor $HD1 "[*] Performing Action: Running Terraform plan... " -NoNewLine
     if (terraform -chdir="$($tfDir)" plan --out=bootstrap.plan `
-            -var-file="bootstrap.tfvars" `
-            -var="subscription_id_iac=$($config.Azure.SubscriptionIAC)"
+            -var-file="bootstrap.tfvars"
     ) {
         Write-Host -ForegroundColor $INF "PASS" 
         terraform -chdir="$($tfDir)" show bootstrap.plan
@@ -333,9 +357,9 @@ if (!($Action -eq "Remove")) {
     # Get Github variables from Terraform output.
     Write-Host -ForegroundColor $HD1 "[*] Retrieving Terraform backend details from output... " -NoNewLine
     Try {
-        $tf_rg = terraform -chdir="$($tfDir)" output -raw out_bootstrap_iac_rg
-        $tf_sa = terraform -chdir="$($tfDir)" output -raw out_bootstrap_iac_sa
-        $tf_cn = terraform -chdir="$($tfDir)" output -raw out_bootstrap_iac_cn
+        $tf_rg = terraform -chdir="$($tfDir)" output -raw bootstrap_iac_rg
+        $tf_sa = terraform -chdir="$($tfDir)" output -raw bootstrap_iac_sa
+        $tf_cn = terraform -chdir="$($tfDir)" output -raw bootstrap_iac_cn
         Write-Host -ForegroundColor $INF "PASS"
         Write-Host ""
         Write-Host "- Resource Group: $tf_rg"
@@ -356,7 +380,7 @@ terraform {
     resource_group_name  = "$($tf_rg)"
     storage_account_name = "$($tf_sa)"
     container_name       = "$($tf_cn)"
-    key                  = "azure-bootstrap.tfstate"
+    key                  = "azure-iac-bootstrap.tfstate"
   }
 }
 "@
@@ -369,6 +393,7 @@ terraform {
         Write-Host -ForegroundColor $HD1 "[*] Migrating Terraform state to Azure... " -NoNewline
         if (terraform -chdir="$($tfDir)" init -migrate-state -force-copy -input=false) {
             Write-Host -ForegroundColor $INF "PASS"
+            #Remove-Item -Path "$PSScriptRoot/terraform/*.tfstate*" -Force -ErrorAction SilentlyContinue
         }
         else {
             Write-Host -ForegroundColor $ERR "FAIL"
@@ -377,19 +402,21 @@ terraform {
     }
     else {
         Write-Host -ForegroundColor $WRN "[!] Terraform state migration aborted by user."
-        exit 1
+        Remove-Item -Path "$PSScriptRoot/terraform/backend.tf" -Force -ErrorAction SilentlyContinue
     }
 }
 
 #================================================#
 # MAIN: Stage 6 - Clean Up
 #================================================#
-Remove-Item -Path "$PSScriptRoot/terraform/backend.tf" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$PSScriptRoot/terraform/bootstrap.tfvars" -Force -ErrorAction SilentlyContinue
+#Remove-Item -Path "$PSScriptRoot/terraform/bootstrap.tfvars" -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "$PSScriptRoot/terraform/bootstrap.plan" -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "$PSScriptRoot/terraform/.terraform*" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "$PSScriptRoot/terraform/.terraform.*" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$PSScriptRoot/terraform/*.tfstate*" -Force -ErrorAction SilentlyContinue
 Write-Host ""
-Write-Host -ForegroundColor $HD1 "===== COMPLETE ====="
+if ($Action -ne "Remove") {
+    Write-Host -ForegroundColor $WRN "NOTE: Manual approval may be required for pending API permissions assigned to the Service Principal."
+}
+Write-Host ""
+Write-Host -ForegroundColor $HD1 "===== BOOTSTRAP SCRIPT COMPLETE ====="
 Write-Host ""

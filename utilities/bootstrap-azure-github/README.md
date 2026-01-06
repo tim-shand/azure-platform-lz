@@ -1,41 +1,100 @@
 # Bootstrap: Azure & GitHub Actions for Terraform IaC Management
 
-_Run-once Powershell/Terraform deployment to bootstrap Azure and GitHub platforms for IaC and CI/CD management._
+_Run-once Powershell/Terraform deployment to bootstrap Azure and GitHub for IaC and CI/CD management._
 
-This bootstrap deployment will create resources in both Azure and GitHub, required for future deployments using Github Actions workflows, allowing for centralized storage of workload and platform project state files.
+This bootstrap deployment will create resources in both Azure and GitHub, required for future deployments using Github Actions workflows, allowing for centralized storage of workload and platform project state files. All project state files can be managed from a single IaC subscription.
 
-This can be helpful when utilizing a monolithic style repository, as all project state files can be managed from the one location.
+- Designed for use with multiple deployment stacks to deploy an Azure platform landing zone. 
+- Automates initial bootstrapping process using combination of Powershell and Terraform executed locally. 
+- Automates the bootstrap state migration post-setup, from local to newly created Azure resources. 
+
+---
 
 ## :green_book: Requirements
 
 ### Accounts
 
-- **Azure:** Existing Azure account with `contributor` role assigned to a _dedicated_ subscription for IaC.
+- **Azure:** Existing Azure account with required roles assigned to a _dedicated_ subscription for IaC.
+  - **Roles:** `Contributor`, `Storage Blob Data Contributor`, `User Access Administrator`. 
 - **GitHub:** Existing GitHub account with a repository for the Azure project.
 
 ### Required Applications (Installed & Authenticated Locally)
 
 - **[Terraform](https://developer.hashicorp.com/terraform/install):** Used to deploy resources to target Azure environment.
 - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):** Required by Terraform `AzureRM` provider to connect to Azure.
-- **[GitHub CLI](https://cli.github.com/):** Connected and authenticated to target Github organization.
+- **[GitHub CLI](https://cli.github.com/):** Connected and authenticated to target GitHub organization.
+
+---
 
 ## :hammer_and_wrench: Created Resources
 
-- **Entra ID: Service Principal (App Registration)**
-  - Dedicated, privileged identity for executing changes in the Azure tenant.
-  - Uses federated credentials (OIDC) for authentication with GitHub Actions workflows.
-- **GitHub: Repository Secrets and Variables**
-  - Adds Entra ID service principal details to repository secrets.
-  - Added Azure resources used for remote backend storage to GitHub Actions variables.
+- **Azure: Entra ID - Service Principal (App Registration)**
+  - Dedicated, privileged identity for executing changes in the Azure tenant. 
+  - Uses federated credentials (OIDC) for authentication with GitHub Actions workflows. 
 - **Azure: Remote Backend Resources**
-  - Uses dedicated Azure subscription to contain remote states for all IaC projects.
-  - **Resource Group:** Logical container for IaC related resources.
-  - **Storage Account:** Holds all storage containers in one account.
-  - **Containers:** Logical grouping of remote states per IaC project.
+  - Uses dedicated Azure subscription to contain remote states for all IaC projects. 
+  - **Resource Group:** Logical container for deployment categories (platform, bootstrap, workloads). 
+  - **Storage Account:** Holds all storage containers in one account per deployment category (platform, bootstrap, workloads). 
+  - **Containers:** Logical grouping of remote states per deployment stack (plz-governance, plz-management, etc). 
+- **GitHub: Repository Environment, Secrets and Variables**
+  - Creates repository environments per deployment stack. 
+  - Adds Entra ID service principal details to repository secrets. 
+  - Adds Azure resources used for remote backend per deployment stack environment. 
+
+---
+
+## ❓ Example Resource Structure
+
+Resources are grouped by categories and their child stacks. 
+
+- **Categories:** 
+  - Bootstrap
+  - Platform
+  - Workloads
+- **Stacks:** 
+  - Platform -> Governance (plz-governance)
+  - Platform -> Connectivity (plz-connectivity)
+  - Platform -> Management (plz-management)
+  - Platform -> Identity (plz-identity)
+
+```text
+org-iac-bootstrap-rg
+└── orgiacbootstrapsa12345
+    └── tfstate-iac-bootstrap
+
+org-iac-platform-rg
+└── orgiacplatformsa12345
+    ├── tfstate-plz-governance
+    ├── tfstate-plz-connectivity
+    ├── tfstate-plz-management
+    └── tfstate-plz-identity
+
+org-iac-workloads-rg
+└── orgiacworkloadssa12345
+```
+
+| Object                  | Created per  | Example                  | Purpose |
+| ----------------------- | ------------ | ------------------------ | ------- |
+| Resource Group          | **Category** | org-plz-bootstrap-rg     | Resource group containing components for bootstrapping.   |
+| Resource Group          | **Category** | org-plz-platform-rg      | Resource group containing components for platform LZ.     |
+| Resource Group          | **Category** | org-plz-workloads-rg     | Resource group containing components for future workloads.|
+| Storage Account         | **Category** | orgplzbootstrapsa12345   | Holds blob container for bootstrapping deployment.        |
+| Storage Account         | **Category** | orgplzplatformsa12345    | Holds blob containers per platform deployment stack.      |
+| Storage Account         | **Category** | orgplzworkloadssa12345   | Holds blob containers per workload deployment stack.      |
+| Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow. |
+| Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow. |
+| Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow. |
+| Blob Container          | **Stack**    | tfstate-plz-identity     | Contains remote state file, referenced by stack workflow. |
+| Repository Environment  | **Stack**    | plz-governance           | Repository environment, contains stack related variables. |
+| Repository Environment  | **Stack**    | plz-connectivity         | Repository environment, contains stack related variables. |
+| Repository Environment  | **Stack**    | plz-management           | Repository environment, contains stack related variables. |
+| Repository Environment  | **Stack**    | plz-identity             | Repository environment, contains stack related variables. |
+
+---
 
 ## :arrow_forward: Usage
 
-### Create
+### ➕ Create
 
 1. Copy/rename Powershell data file `env-example.psd1`.
 2. Populate with required variable values.
@@ -49,13 +108,13 @@ powershell -file utilities/bootstrap-azure-github/bootstrap-azure-github.ps1 -En
 4. Verify all resources have been deployed in Azure and GitHub.
 5. \[Optional\]: Migrate local state file to Azure when prompted.
 
-### Remove
+### ➖ Remove
 
-1. Download the remote state file from Azure and place in `utilities/bootstrap-azure-github/` directory.
-2. Execute Powershell script using the `-Action Remove` parameter.
-3. Approve removal of all created resources when prompted.
+1. Download the remote state file from Azure and place in `utilities/bootstrap-azure-github/terraform` directory. 
+2. Execute Powershell script using the `-Action Remove` parameter. 
+3. Approve removal of all created resources when prompted. 
 
 ```powershell
-# Remove bootstrap resources.  
+# Remove bootstrap resources. 
 powershell -file utilities/bootstrap-azure-github/bootstrap-azure-github.ps1 -EnvFile env.psd1 -Action Remove
 ```

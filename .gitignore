@@ -6,6 +6,7 @@
 *.log
 *.test/
 *.dev/
+*.plan
 
 # Environments
 .env
@@ -36,6 +37,8 @@ tfplan.*
 crash.log
 crash.*.log
 backend.conf
+**/*bootstrap*/**/backend.tf
+bootstrap.tfvars
 # Allow example or default TFVARS file.
 !example.tfvars
 !terraform.tfvars

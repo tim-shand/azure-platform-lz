@@ -1,28 +1,30 @@
 # !! DO NOT COMMIT !! - If using public repository or including sensitive values.
 # NOTE: This is a Powershell data file that requires a specific format to be followed.
 @{
-    # Azure
-    Azure = @{
-        Location = "westus2" # Default preferred location for IaC backend resources.
-        SubscriptionIAC = "123456-1234-1234-123456-1234" # Subscription: IaC
-        Naming = @{
-            Environment = "prd" # Environment for resources/project (dev, tst, prd).
-            Prefix = "abc" # Short name of organization ("abc"). Used in resource naming.
-            Service = "mgt" # Service name used in the project (gov, con, sec, mgt, wrk).
-            Project = "iac" # Project name for related resources (platform, webapp01).    
-        }
-        Tags = @{
-            Environment = "prd" # dev, tst, prd.
-            Project = "Platform" # Name of the project the resources are for.
-            Owner = "CloudOps" # Team responsible for the resources.
-            Creator = "Bootstrap" # Person or process that created the initial resources.
-        }
+    # General: Azure and Repo Configuration ---------------------------------|
+    global      = @{
+        location                      = "westus2" # Default preferred location for IaC backend resources. 
+        subscription_iac_bootstrap    = "1a2b3c4d-1234-abcd-1234-1a2b3c4d5e6f"
+        subscription_plz_connectivity = "1a2b3c4d-1234-abcd-1234-1a2b3c4d5e6f"
+        subscription_plz_governance   = "1a2b3c4d-1234-abcd-1234-1a2b3c4d5e6f"
+        subscription_plz_management   = "1a2b3c4d-1234-abcd-1234-1a2b3c4d5e6f"
+        subscription_plz_identity     = "1a2b3c4d-1234-abcd-1234-1a2b3c4d5e6f"
     }
-
-    # GitHub: Org/owner, target repository, and branch name.
-    GitHub = @{
-        Owner = "my-org"
-        Repo = "repo-name"
-        Branch = "main"
+    naming      = @{
+        prefix      = "abc"      # Short acronym name of organization ("abc"). Used in resource naming.
+        project     = "platform" # Project name for related resources (platform, webapp01). 
+        service     = "iac"      # Service name used in the project (gov, con, sec, mgt, wrk). 
+        environment = "prd"      # Environment for resources/project (dev, tst, prd, sys).
+    }
+    tags        = @{
+        Environment = "prd"                 # dev, tst, prd. 
+        Project     = "PlatformLandingZone" # Name of the project. 
+        Owner       = "CloudOps"            # Team responsible for the resources. 
+        Creator     = "Bootstrap"           # Person or process that created the initial resources. 
+    }
+    repo_config = @{
+        owner  = "my-org" # Org/owner, target repository, and branch name.
+        repo   = "azure-platform-lz"
+        branch = "main"
     }
 }

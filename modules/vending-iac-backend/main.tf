@@ -28,7 +28,7 @@ data "azuread_application" "this_sp" {
 resource "azuread_application_federated_identity_credential" "entra_iac_app_cred" {
   count          = var.create_github_env ? 1 : 0 # Only needed if GH environment is created.
   application_id = data.azuread_application.this_sp.id
-  display_name   = "oidc-github-${var.github_config["repo"]}-${var.project_name}"
+  display_name   = "oidc-github_${var.github_config["repo"]}_${var.project_name}"
   description    = "[GitHub-Actions]: ${var.github_config["owner"]}/${var.github_config["repo"]} ENV:${var.project_name}"
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"

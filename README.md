@@ -56,7 +56,6 @@ Light-weight platform landing zone designed for personal use or by small organiz
 
 ## 📝 To Do / Future Improvements
 
-- [ ] Fix broken module paths. 
 - [ ] Platform Landing Zone: Governance
 - [ ] Platform Landing Zone: Management
 - [ ] Platform Landing Zone: Connectivity

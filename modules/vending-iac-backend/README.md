@@ -6,14 +6,22 @@ This Terraform module creates Azure and GitHub resources used for Terraform remo
 
 ## 🌟 Features
 
-- Automates the provisioning of required resources for new Terraform backends and secure CI/CD connectivity. 
-- Creates a GitHub Actions environment per project, containing project specific variables for project Terraform backend. 
-- Creates a project specific Blob Container in the existing Storage Account, within the dedicated IaC Azure subscription. 
+- Automates the provisioning of required resources for new Terraform backends and secure CI/CD connectivity via OIDC. 
+- Creates dedicated Blob Container per project, located in a dedicated IaC subscription. 
+- Creates a GitHub Actions environment per project, containing environment variables for each individual Terraform backend. 
 - Adds federated credentials (OIDC) for each GitHub Actions environment to the IaC Service Principal in Entra ID. 
 - Enables container level RBAC role assignment to manage access and permission to state files. 
 - **NOTE:** Requires _MANUAL_ actions:
   - Add the `ARM_SUBSCRIPTION_ID` secret to the new GitHub environments to keep subscription IDs out of code base. 
   - One-time grant admin consent for Service Principal API permissions (`Application.ReadWrite.All`) in Entra ID. 
+
+---
+
+## Benefits
+
+- **Separate state and environment per stack:** Limit blast radius, reduces risk of changes to a single stack affecting others. 
+- **Decouple Deployments:** Enables deployments to be managed as separate "stacks", enabling staged deployments if required. 
+- **Separation of Concerns:** Separation of duties, networking and governance can be managed by differnet teams. 
 
 ---
 
