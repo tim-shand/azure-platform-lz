@@ -1,7 +1,6 @@
 # Governance: General -----------------#
 
-stack_code      = "gov" # Shor code used for resource naming. 
-subscription_id = "8cf80f38-0042-413a-a0ac-c65663dda28e"
+stack_code = "gov" # Shor code used for resource naming. 
 
 # Governance: Management Groups -----------------#
 

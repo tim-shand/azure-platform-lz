@@ -1,0 +1,104 @@
+name: "Deploy Stack: PLZ - Governance"
+
+on: # Define triggers.
+    workflow_dispatch: # Manual Run
+        inputs:
+            action:
+                description: "Action: Plan, Apply, Destroy"
+                required: true
+                default: "Plan" # Default to this if no value provided (example during PR trigger).
+                type: choice
+                options:
+                    - "Plan" # Run Terraform PLAN only.
+                    - "Apply" # Run Terraform PLAN + APPLY.
+                    - "Destroy" # Run Terraform DESTROY only.
+    pull_request: # Trigger on Pull Request
+        paths: # Limit trigger to specific files and directories.
+            - ".github/workflows/*governance*.yml" # Changes to the workflow itself.
+            - "env/governance.tfvars" # Changes to the TFVARS file.
+            - "platform-landing-zone/*governance*/**" # Changes to the stack root module.
+            - "modules/*plz-gov*/**" # Changes any of the stack child modules.
+        branches:
+            - main # Trigger on pull request to main branch only.
+permissions: # Define workflow permissions.
+    id-token: write # Required for OIDC authentication to Azure.
+    contents: read # Gives the workflow read-only access to repository contents.
+
+jobs: # List jobs to execute.
+    deploy_stack: # Job
+        name: "Deploy Stack"
+        runs-on: ubuntu-latest
+        environment: plz-governance # Define the stack environment for the workflow to use.
+        timeout-minutes: 45 # The entire job will fail if it runs longer than 'x' minutes.
+        defaults:
+            run: # Set job defaults for 'run' commands.
+                working-directory: ./platform-landing-zone/stack-plz-governance # Default working dir for commands.
+
+        env: # Setup environment variables.
+            # NOTE: If variable exists at both repo and environment level, the environment value takes priority.
+            # Terraform Backend
+            TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group [Repo Variable]
+            TF_BACKEND_SA: ${{ vars.TF_BACKEND_SA }} # Backend: Storage Account [Repo Variable]
+            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }} # Backend: Blob Container [Env Variable]
+            TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Backend: State file name [Env Variable]
+            TF_VARS_DIR: "../../env" # Location of variable files in relation to working directory.
+            TF_VARS_FILE: "governance.tfvars" # Variables file for the target stack.
+
+            # Azure OIDC Auth
+            ARM_USE_OIDC: true # Azure: Force use of OIDC/Federated credentials, configured during bootstrap process.
+            ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }} # Azure: Tenant ID [Repo Secret]
+            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure: Service Principal ID [Repo Secret]
+            ARM_SUBSCRIPTION_ID_IAC: ${{ secrets.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for all IaC Backends [Repo Secret].
+
+            # Determine which steps should run (based on input and pull request triggers).
+            RUN_PLAN: ${{ github.event_name == 'pull_request' || github.event.inputs.action == 'Plan' || github.event.inputs.action == 'Apply' }}
+            RUN_APPLY: ${{ github.event.inputs.action == 'Apply' }}
+            RUN_DESTROY: ${{ github.event.inputs.action == 'Destroy' }}
+
+        steps: # Define steps within the job.
+            - name: Checkout Repository # Pull down the repo to local filesystem on workflow runner instance.
+              uses: actions/checkout@v4
+
+            - name: Setup Terraform # Configure Terraform on the runner instance.
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: 1.14.0
+
+            - name: "Terraform: Init" # Initialize Terraform. Use IaC backend subscription in this step.
+              timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform init \
+                  -backend-config="resource_group_name=$TF_BACKEND_RG" \
+                  -backend-config="storage_account_name=$TF_BACKEND_SA" \
+                  -backend-config="container_name=$TF_BACKEND_CONTAINER" \
+                  -backend-config="key=$TF_BACKEND_KEY" \
+                  -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID_IAC"
+
+            - name: "Terraform: Validate"
+              timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform validate
+
+            - name: "Terraform: Plan" # Using target subscription from environment variable, not repo level.
+              if: env.RUN_PLAN == 'true'
+              timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform plan -out=terraform.plan \
+                  -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
+                  -var-file="$TF_VARS_DIR/global.tfvars" \
+                  -var-file="$TF_VARS_DIR/$TF_VARS_FILE"
+
+            - name: "Terraform: Apply"
+              if: env.RUN_APPLY == 'true'
+              timeout-minutes: 30 # Fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform apply --auto-approve terraform.plan
+
+            - name: "Terraform: Destroy"
+              if: env.RUN_DESTROY == 'true'
+              timeout-minutes: 30 # Fail if it runs longer than 'x' minutes.
+              run: |
+                  terraform destroy --auto-approve \
+                  -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
+                  -var-file="$TF_VARS_DIR/global.tfvars" \
+                  -var-file="$TF_VARS_DIR/$TF_VARS_FILE"
