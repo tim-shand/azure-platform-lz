@@ -5,5 +5,5 @@ output "mg_root" {
 
 output "mg_child" {
   description = "List of Management Groups and subscription associations."
-  value       = local.mg_subscription_ids
+  value       = azurerm_management_group.mg_child #local.mg_subscription_ids
 }

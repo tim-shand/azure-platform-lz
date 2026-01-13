@@ -1,0 +1,55 @@
+{
+    "properties": {
+        "displayName": "Required Tags on Resources",
+        "policyType": "Custom",
+        "mode": "Indexed",
+        "description": "Enforces existence of defined tags. Does not apply to resource groups.",
+        "metadata": {
+            "category": "Tags"
+        },
+        "parameters": {
+            "tagNames": {
+                "type": "Array",
+                "metadata": {
+                    "displayName": "Tag Names",
+                    "description": "Names of the tags, such as 'environment'"
+                }
+            },
+            "effect": {
+                "type": "String",
+                "defaultValue": "Audit",
+                "allowedValues": [
+                    "Audit",
+                    "Deny",
+                    "Disabled"
+                ],
+                "metadata": {
+                    "description": "Effect defines what happens if policy conditions are met.",
+                    "strongType": "effect",
+                    "displayName": "Effect"
+                }
+            }
+        },
+        "policyRule": {
+            "if": {
+                "anyOf": [
+                    {
+                        "field": "[concat('tags[', parameters('requiredTags')[0], ']')]",
+                        "equals": ""
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('requiredTags')[1], ']')]",
+                        "equals": ""
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('requiredTags')[3], ']')]",
+                        "equals": ""
+                    }
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effect')]"
+            }
+        }
+    }
+}

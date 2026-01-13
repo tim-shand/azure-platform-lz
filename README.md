@@ -66,6 +66,7 @@ Deployed and managed using infrastructure as Code (IaC), providing shared resour
 
 ## 📝 To Do / Future Improvements
 
+- [ ] PLZ: Governance - Policy Assignments (revisit)
 - [ ] Workload Backend Vending (re-visit)
 - [ ] Subscription Vending
 - [ ] Optional on-prem connectivity (VPN Gateway)

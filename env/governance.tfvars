@@ -27,15 +27,21 @@ management_group_list = {
 
 # Governance: Policy Assignments -----------------#
 
-policy_allowed_locations = [
-  "australiaeast",
-  "australiasoutheast",
-  "newzealandnorth",
-  "westus2"
-]
-
-policy_required_tags = [
-  "Owner",
-  "Environment",
-  "Project"
-]
+policy_builtin_initiatives = ["New Zealand ISM"]
+policy_custom_allowed_locations = {
+  effect = "Audit" # Audit, Deny, Disabled
+  locations = [
+    "australiaeast",
+    "australiasoutheast",
+    "newzealandnorth",
+    "westus2"
+  ]
+}
+policy_custom_required_tags = {
+  effect = "Audit" # Audit, Deny, Disabled
+  tags = [
+    "Owner",
+    "Environment",
+    "Project"
+  ]
+}
