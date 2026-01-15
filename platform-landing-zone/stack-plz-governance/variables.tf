@@ -69,6 +69,12 @@ variable "policy_builtin_initiatives" {
   nullable    = true
 }
 
+variable "policy_builtin_initiative_enforce" {
+  description = "Enable to enforce the built-in policy initiative."
+  type        = bool
+  default     = false
+}
+
 variable "policy_custom_allowed_locations" {
   description = "Object of policy settings that determine values and effect for allowed locations."
   type = object({
