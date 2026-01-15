@@ -3,8 +3,8 @@
 # All secrets are stored securely in Github Secrets or environment variables.
 
 global = {
-  location                  = "newzealandnorth" # Default preferred location for IaC backend resources. 
-  global_outputs_table_name = "globaloutputs"   # Name of table containing global shared resource details.
+  location                = "newzealandnorth" # Default preferred location for IaC backend resources. 
+  log_analytics_workspace = "tjs-plz-mgt-law" # Pre-determined name for Log Analytics Workspace. Referenced by Governance stack, used by Management Stack. 
 }
 naming = {
   prefix  = "tjs" # Short name of organization ("abc"). Used in resource naming.
