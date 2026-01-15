@@ -5,11 +5,6 @@ variable "subscription_id" {
   type        = string
 }
 
-variable "stack_code" {
-  description = "Short code used for stack resource naming."
-  type        = string
-}
-
 variable "global" {
   description = "Map of static global variables (location etc) used for all deployments."
   type        = map(string)
@@ -25,6 +20,16 @@ variable "naming" {
 variable "tags" {
   description = "A map of tags to apply to resources."
   type        = map(string)
+}
+
+variable "stack_code" {
+  description = "Short code used for stack resource naming."
+  type        = string
+}
+
+variable "stack_name" {
+  description = "Full name used for stack resource naming."
+  type        = string
 }
 
 # Governance: Management Groups -----------------#

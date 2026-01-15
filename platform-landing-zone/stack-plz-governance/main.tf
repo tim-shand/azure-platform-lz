@@ -2,7 +2,21 @@
 
 locals {
   prefix            = "${var.naming.prefix}-${var.naming.project}-${var.stack_code}" # Pre-configure resource naming. 
-  plz_log_analytics = "${prefix}-law"                                                # Name of shared Log Analystics Workspace for central logging. 
+  tags_merged       = merge(var.tags, { Stack = "${var.stack_name}" })
+  plz_log_analytics = "${prefix}-law"
+}
+
+# Governance: Resource Group, Storage, Global Table
+resource "azurerm_resource_group" "plz_gov_rg" {
+  name     = "${local.prefix}-rg"
+  location = var.global.location
+  tags     = local.tags_merged
+}
+
+module "plz_gov_sa" {
+  source               = "../../modules/gen-secure-storage-account"
+  storage_account_name = "${prefix}-sa"
+
 }
 
 # Governance: Management Groups
