@@ -37,7 +37,7 @@ variable "account_replication_type" {
   type        = string
   default     = "LRS"
   validation {
-    condition     = contains(["Standard", "Premium"], var.account_replication_type)
+    condition     = contains(["LRS", "GRS", "RAGRS", "ZRS", "GZRS", "RAGZRS"], var.account_replication_type)
     error_message = "Valid values for account_replication_type are (LRS, GRS, RAGRS, ZRS, GZRS and RAGZRS)."
   }
 }

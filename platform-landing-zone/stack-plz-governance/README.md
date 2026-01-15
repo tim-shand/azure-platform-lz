@@ -15,6 +15,8 @@ This stack deploys a light-weight, CAF-aligned governance layer. This stack prov
 - Deploy policy definitions & initiatives. 
 - Deploy policy assignments. 
 
+- Creates Storage Account and Table to contain "global outputs"; details of shared services resources (Hub VNet, Log Analytics Workspace). 
+
 ---
 
 <!-- BEGIN_TF_DOCS -->

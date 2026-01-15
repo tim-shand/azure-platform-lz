@@ -1,12 +1,6 @@
 # Stack: Governance [Main] ----------------------------------#
 
-locals {
-  prefix            = "${var.naming.prefix}-${var.naming.project}-${var.stack_code}" # Pre-configure resource naming. 
-  tags_merged       = merge(var.tags, { Stack = "${var.stack_name}" })
-  plz_log_analytics = "${prefix}-law"
-}
-
-# Governance: Resource Group, Storage, Global Table
+# Governance: Resource Group, Storage Account
 resource "azurerm_resource_group" "plz_gov_rg" {
   name     = "${local.prefix}-rg"
   location = var.global.location
@@ -15,7 +9,7 @@ resource "azurerm_resource_group" "plz_gov_rg" {
 
 module "plz_gov_sa" {
   source                   = "../../modules/gen-secure-storage-account"
-  storage_account_name     = "${prefix}-sa"
+  storage_account_name     = "${local.prefix}-logs-sa"
   resource_group_name      = azurerm_resource_group.plz_gov_rg.name
   location                 = azurerm_resource_group.plz_gov_rg.location
   tags                     = local.tags_merged

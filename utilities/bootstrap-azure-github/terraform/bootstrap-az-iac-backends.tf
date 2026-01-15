@@ -50,6 +50,14 @@ resource "azurerm_storage_container" "iac_cn" {
   container_access_type = "private"
 }
 
+# Global Outputs: ----------------------------------------------------|
+# Setup Global Outputs Table in Platform Storage Account. 
+
+resource "azurerm_storage_table" "global_outputs" {
+  name                 = local.global_outputs_table_name
+  storage_account_name = azurerm_storage_account.iac_sa["platform"].name
+}
+
 # RBAC ---------------------------------------------------------------|
 # Service Principal: Required when 'shared_access_key_enabled=false'. 
 resource "azurerm_role_assignment" "rbac_sp_rg" {
