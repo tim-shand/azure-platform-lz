@@ -10,7 +10,8 @@ naming = {
   project = "plz" # Project name for related resources (plz, platform, webapp01). 
 }
 tags = {
-  Project = "PlatformLandingZone" # Name of the project. 
-  Owner   = "CloudOps"            # Team responsible for the resources. 
-  Creator = "Bootstrap"           # Person or process that created the initial resources. 
+  Project     = "PlatformLandingZone" # Name of the project. 
+  Owner       = "CloudOps"            # Team responsible for the resources. 
+  Creator     = "Bootstrap"           # Person or process that created the initial resources. 
+  Environment = "Shared Services"
 }
