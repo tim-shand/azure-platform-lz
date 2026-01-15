@@ -29,11 +29,6 @@ management_group_list = {
 # Governance: Policy Assignments -----------------#
 
 policy_builtin_initiatives = ["New Zealand ISM"]
-
-policy_builtin_initiatives_v2 = {
-  core = "New Zealand ISM"
-}
-
 policy_custom_allowed_locations = {
   effect = "Audit" # Audit, Deny, Disabled
   locations = [
