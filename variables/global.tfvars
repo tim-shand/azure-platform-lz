@@ -4,10 +4,14 @@
 
 # Global Variables
 global = {
-  location = "newzealandnorth" # Default preferred location for IaC backend resources. 
-  naming = {                   # Naming Convention - Example: "tjs-plz-gov-logs-law"
-    prefix  = "tjs"            # Short name of organization ("abc"). Used in resource naming.
-    project = "plz"            # Project name for related resources (plz, platform, webapp01). 
+  locations = {
+    default = "newzealandnorth" # Default preferred location for IaC backend resources. 
+    second  = "australiaeast"   # Secondary preference. 
+  }
+  naming = {                 # Naming Convention - Example: "tjs-plz-gov-logs-law"
+    org_prefix  = "tjs"      # Short name of organization ("abc"). Used in resource naming.
+    project     = "platform" # Project name for related resources (plz, platform, webapp01). 
+    environment = "plz"
   }
   tags = {
     Project     = "PlatformLandingZone" # Name of the project. 

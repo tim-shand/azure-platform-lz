@@ -2,12 +2,6 @@
 # Bootstrap: Azure - Iac Backend Resources (RG, SA, Containers)
 #=================================================================#
 
-# Generate a random integer to use for suffix uniqueness in Storage Account naming. 
-resource "random_integer" "rndint" {
-  min = 100000
-  max = 999999
-}
-
 # Resource Groups ----------------------------------------------------|
 # Create separate Resource Groups per deployment category. 
 resource "azurerm_resource_group" "iac_rg" {
@@ -41,14 +35,16 @@ resource "azurerm_resource_group" "iac_rg" {
 #   }
 # }
 
+# Storage Accounts ----------------------------------------------------|
+# Create separate Storage Accounts per stack category, in their own Resource Groups. 
+# INFO: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account#arguments-reference
 module "iac_sa" {
-  source               = "../../../modules/gen-secure-storage-account"
+  source               = "../../../modules/storage-account-secure"
   for_each             = local.resource_stack_mapping
-  storage_account_name = "${var.global.naming.prefix}-${var.global.naming.project}"
-  resource_group_name  = azurerm_resource_group.iac_rg.name
-  location             = azurerm_resource_group.iac_rg.location
-  tags                 = var.global.tags
-
+  storage_account_name = each.value.storage_account_name
+  resource_group_name  = azurerm_resource_group.iac_rg[each.key].name
+  location             = azurerm_resource_group.iac_rg[each.key].location
+  tags                 = azurerm_resource_group.iac_rg[each.key].tags
 }
 
 # Blob Containers ----------------------------------------------------|
@@ -56,23 +52,23 @@ module "iac_sa" {
 resource "azurerm_storage_container" "iac_cn" {
   for_each              = local.stacks_flat
   name                  = "tfstate-${each.value.stack_name}"
-  storage_account_id    = azurerm_storage_account.iac_sa[each.value.category].id
+  storage_account_id    = module.iac_sa[each.value.category].id
   container_access_type = "private"
 }
 
 # RBAC ---------------------------------------------------------------|
 # Service Principal: Required when 'shared_access_key_enabled=false'. 
-resource "azurerm_role_assignment" "rbac_sp_rg" {
-  for_each             = local.resource_stack_mapping
-  scope                = azurerm_resource_group.iac_rg[each.key].id
-  role_definition_name = "Storage Blob Data Contributor" # Required to access and update blob storage properties. 
-  principal_id         = azuread_service_principal.entra_iac_sp.object_id
-}
+# resource "azurerm_role_assignment" "rbac_sp_rg" {
+#   for_each             = local.resource_stack_mapping
+#   scope                = azurerm_resource_group.iac_rg[each.key].id
+#   role_definition_name = "Storage Blob Data Contributor" # Required to access and update blob storage properties. 
+#   principal_id         = azuread_service_principal.entra_iac_sp.object_id
+# }
 
-# Current Global Admin User: Required when 'shared_access_key_enabled=false'. 
-resource "azurerm_role_assignment" "rbac_ga_rg" {
-  for_each             = local.resource_stack_mapping
-  scope                = azurerm_resource_group.iac_rg[each.key].id
-  role_definition_name = "Storage Blob Data Contributor" # Required to access and update blob storage properties. 
-  principal_id         = data.azuread_client_config.current.object_id
-}
+# # Current Global Admin User: Required when 'shared_access_key_enabled=false'. 
+# resource "azurerm_role_assignment" "rbac_ga_rg" {
+#   for_each             = local.resource_stack_mapping
+#   scope                = azurerm_resource_group.iac_rg[each.key].id
+#   role_definition_name = "Storage Blob Data Contributor" # Required to access and update blob storage properties. 
+#   principal_id         = data.azuread_client_config.current.object_id
+# }
