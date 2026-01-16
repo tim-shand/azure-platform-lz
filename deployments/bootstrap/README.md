@@ -2,7 +2,7 @@
 
 _Run-once Powershell/Terraform deployment to bootstrap Azure and GitHub for IaC and CI/CD management._
 
-This bootstrap deployment will create resources in both Azure and GitHub, required for future deployments using Github Actions workflows, allowing for centralized storage of workload and platform project state files. All project state files can be managed from a single IaC subscription.
+This bootstrap deployment will create resources in both Azure and GitHub, required for future deployments using Github Actions workflows, allowing for centralized storage of platform state files. All state files can be managed from a single IaC subscription.
 
 - Designed for use with multiple deployment stacks to deploy an Azure platform landing zone. 
 - Automates initial bootstrapping process using combination of Powershell and Terraform executed locally. 
@@ -15,8 +15,9 @@ This bootstrap deployment will create resources in both Azure and GitHub, requir
 ### Accounts
 
 - **Azure:** Existing Azure account with required roles assigned to a _dedicated_ subscription for IaC.
-  - **Roles:** `Contributor`, `Storage Blob Data Contributor`, `User Access Administrator`. 
+  - **Roles:** `Contributor`, `User Access Administrator`, `[optional] Global Admin`. 
 - **GitHub:** Existing GitHub account with a repository for the Azure project.
+  - **Roles:** Read and Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.  
 
 ### Required Applications (Installed & Authenticated Locally)
 
@@ -30,12 +31,12 @@ This bootstrap deployment will create resources in both Azure and GitHub, requir
 
 - **Azure: Entra ID - Service Principal (App Registration)**
   - Dedicated, privileged identity for executing changes in the Azure tenant. 
-  - Uses federated credentials (OIDC) for authentication with GitHub Actions workflows. 
+  - Uses federated credentials (OIDC) for authentication within GitHub Actions workflows. 
 - **Azure: Remote Backend Resources**
   - Uses dedicated Azure subscription to contain remote states for all IaC projects. 
-  - **Resource Group:** Logical container for deployment categories (platform, bootstrap, workloads). 
-  - **Storage Account:** Holds all storage containers in one account per deployment category (platform, bootstrap, workloads). 
-  - **Containers:** Logical grouping of remote states per deployment stack (plz-governance, plz-management, etc). 
+  - **Resource Group:** Created per deployment categories (platform, bootstrap, workloads). 
+  - **Storage Account:** One account per deployment category (platform, bootstrap, workloads). 
+  - **Containers:** Holds remote states per deployment stack (plz-governance, plz-management, etc). 
 - **GitHub: Repository Environment, Secrets and Variables**
   - Creates repository environments per deployment stack. 
   - Adds Entra ID service principal details to repository secrets. 
@@ -92,7 +93,7 @@ org-iac-platform-rg
 
 1. Copy/rename Powershell data file `env-example.psd1`.
 2. Populate with required variable values.
-3. Execute the Powershell script using the desired action parameter, including the name of the `env` file.
+3. Execute the Powershell script using the `-Action Create` parameter. 
 
 ```powershell
 # Execute bootstrapping process. 
@@ -105,7 +106,7 @@ powershell -file deployments/bootstrap/bootstrap-azure-github.ps1 -Action Create
 ### ➖ Remove
 
 1. Download the remote state file from Azure and place in `deployments/bootstrap/terraform` directory. 
-2. Execute Powershell script using the `-Action Remove` parameter. 
+2. Execute the Powershell script using the `-Action Remove` parameter. 
 3. Approve removal of all created resources when prompted. 
 
 ```powershell
