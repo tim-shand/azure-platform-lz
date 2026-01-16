@@ -13,7 +13,7 @@ Designed to be light-weight and cost efficient, utilizing free or low-cost optio
 
 Deployed and managed using infrastructure as Code (IaC), providing shared resources, connectivity, governance, monitoring and observability, with an aim to align with CAF guidelines and best practices where possible. 
 
-- **[Bootstrapping (Powershell + Terraform)](./utilities/bootstrap-azure-github)** 
+- **[Bootstrapping (Powershell + Terraform)](./deployments/bootstrap)** 
   - Provides the initial setup process to configure Azure and GitHub for automation and IaC. 
   - Using templated Terraform configuration and triggering post-deployment state migration to new resources in Azure. 
   - Creates Entra ID Service Principal:
@@ -23,18 +23,18 @@ Deployed and managed using infrastructure as Code (IaC), providing shared resour
     - Maintaining isolation and independence per stack.  
     - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads).
     - One state file per stack (governance, connectivity, management, identity). 
-- **[Management](./platform-landing-zone/stack-plz-management)**
+- **[Management](./deployments/platform-landing-zone/stack-plz-management)**
   - Centralized Log Analytics workspace for monitoring and observability. 
   - Diagnostic settings (applied via policy). 
   - Microsoft Defender for Cloud (Foundational CSPM) providing security posture and recommendations. 
-- **[Governance](./platform-landing-zone/stack-plz-governance)**
+- **[Governance](./deployments/platform-landing-zone/stack-plz-governance)**
   - Management groups for policy assignment hierarchy and subscription management. 
   - Automated mapping of subscriptions to target management groups using an identifier value. 
   - RBAC and policy assignments providing guard rails to secure the environment and reduce unwanted spend. 
-- **[Connectivity](./platform-landing-zone/stack-plz-connectivity)**
+- **[Connectivity](./deployments/platform-landing-zone/stack-plz-connectivity)**
   - Hub-Spoke architecture, providing centralized network management and flow control. 
   - Workload VNets peered as spokes, isolating and securing environments. 
-- **[Identity](./platform-landing-zone/stack-plz-identity)**
+- **[Identity](./deployments/platform-landing-zone/stack-plz-identity)**
   - Create base groups within Entra ID for RBAC assignments. 
   - Automate the creation and management of groups, users, and PIM role assignments. 
 
@@ -42,7 +42,7 @@ Deployed and managed using infrastructure as Code (IaC), providing shared resour
 
 ## ▶️ Deployment Process & Stacks
 
-1. **Bootstrap:** Execute [bootstrap script](./utilities/bootstrap-azure-github) to begin deployment process. 
+1. **Bootstrap:** Execute [bootstrap script](./deployments/bootstrap) to begin deployment process. 
 2. **Governance:** Deploy Management Group structure and assign policies at management group levels. 
 3. **Management:** Create monitoring/observability resources, referenced by policies in Governance stack. 
 4. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized control. 
