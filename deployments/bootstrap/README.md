@@ -50,7 +50,6 @@ Resources are grouped by categories and their child stacks.
 - **Categories:** 
   - Bootstrap
   - Platform
-  - Workloads
 - **Stacks:** 
   - Platform -> Governance (plz-governance)
   - Platform -> Connectivity (plz-connectivity)
@@ -68,19 +67,14 @@ org-iac-platform-rg
     ├── tfstate-plz-connectivity
     ├── tfstate-plz-management
     └── tfstate-plz-identity
-
-org-iac-workloads-rg
-└── orgiacworkloadssa12345
 ```
 
 | Object                  | Created per  | Example                  | Purpose |
 | ----------------------- | ------------ | ------------------------ | ------- |
 | Resource Group          | **Category** | org-plz-bootstrap-rg     | Resource group containing components for bootstrapping.   |
 | Resource Group          | **Category** | org-plz-platform-rg      | Resource group containing components for platform LZ.     |
-| Resource Group          | **Category** | org-plz-workloads-rg     | Resource group containing components for future workloads.|
 | Storage Account         | **Category** | orgplzbootstrapsa12345   | Holds blob container for bootstrapping deployment.        |
 | Storage Account         | **Category** | orgplzplatformsa12345    | Holds blob containers per platform deployment stack.      |
-| Storage Account         | **Category** | orgplzworkloadssa12345   | Holds blob containers per workload deployment stack.      |
 | Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow. |
 | Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow. |
 | Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow. |
@@ -102,7 +96,7 @@ org-iac-workloads-rg
 
 ```powershell
 # Execute bootstrapping process. 
-powershell -file utilities/bootstrap-azure-github/bootstrap-azure-github.ps1 -EnvFile env.psd1 -Action Create
+powershell -file deployments/bootstrap/bootstrap-azure-github.ps1 -Action Create
 ```
 
 4. Verify all resources have been deployed in Azure and GitHub.
@@ -110,11 +104,11 @@ powershell -file utilities/bootstrap-azure-github/bootstrap-azure-github.ps1 -En
 
 ### ➖ Remove
 
-1. Download the remote state file from Azure and place in `utilities/bootstrap-azure-github/terraform` directory. 
+1. Download the remote state file from Azure and place in `deployments/bootstrap/terraform` directory. 
 2. Execute Powershell script using the `-Action Remove` parameter. 
 3. Approve removal of all created resources when prompted. 
 
 ```powershell
 # Remove bootstrap resources. 
-powershell -file utilities/bootstrap-azure-github/bootstrap-azure-github.ps1 -EnvFile env.psd1 -Action Remove
+powershell -file deployments/bootstrap/bootstrap-azure-github.ps1 -Action Remove
 ```

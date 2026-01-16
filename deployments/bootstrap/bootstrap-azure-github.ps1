@@ -10,27 +10,27 @@ Bootstrap script to prepare Azure tenant for management via Terraform and GitHub
 - Checks for required local applications (see variable `$requiredApps`).
 - Confirms required user-defined variables have been set.
 - Validates Azure CLI authentication, obtains Azure tenant information from current session.
-- Validates Github CLI authentication, confirms access to provided target repository.
+- Validates GitHub CLI authentication, confirms access to provided target repository.
 - Azure:
   - Creates Service Principal (App Registration) in Entra ID to be used for IaC.
   - Adds federated credentials (OIDC) for GitHub repository/branch to the Service Principal.
   - Assigns RBAC roles to Service Principal for managing tenant root group.
   - Set current user and Service Principal to the "owner" of the Service Principal.
-  - Assign Microsoft Graph API permissions to allow self-updating of federated credentials for IaC backend vending.
-  - Create IaC backend resources: Resource Group, Storage Account, Blob Container. 
+  - Assign Microsoft Graph API permissions to allow self-updating of federated credentials for future vending.
+  - Create IaC backend resources: Resource Groups, Storage Accounts, Blob Containers. 
 - GitHub:
   - Add Azure tenant and subscription details as repository secrets. 
-  - Add created Azure resource details for IaC backend as repository variables.
+  - Create GitHub repository environments per deployment stack. 
+  - Add created Azure resource details as repository environment variables.
 
 # USAGE:
-./scripts/bootstrap-azure-github/bootstrap-azure-github.ps1 -EnvFile "env.psd1" -Action Create/Remove
+./deployments/bootstrap/bootstrap-azure-github.ps1 -EnvFile "env.psd1" -Action Create/Remove
 #=======================================================#>
 
 # SCRIPT VARIABLES =============================================#
 # Command line input parameters.
 param(
     #[switch]$Action = , # Add switch parameter for delete option.
-    [Parameter(Mandatory = $true)][string]$EnvFile,
     [Parameter(Mandatory = $true)][ValidateSet("Create", "Remove")][string]$Action
 )
 
@@ -41,7 +41,7 @@ $requiredApps = @(
         Command     = "az"; 
         AuthCheck   = "az account show --only-show-errors | ConvertFrom-JSON"; 
         LoginCmd    = "az login --use-device-code";
-        AccessCheck = 'az account subscription show --subscription-id $config.global.subscription_iac_bootstrap -o json --only-show-errors | ConvertFrom-JSON'
+        AccessCheck = 'az account subscription show --subscription-id $config.subscription_iac_id -o json --only-show-errors | ConvertFrom-JSON'
     }
     [PSCustomObject]@{ 
         Name        = "GitHub CLI"; 
@@ -51,14 +51,14 @@ $requiredApps = @(
         AccessCheck = '(gh api /repos/$($config.repo_config.Owner)/$($config.repo_config.Repo)/collaborators/$($config.repo_config.Owner)/permission | ConvertFrom-JSON).user.permissions'
     }
 )
-# Set direcotry for Terraform files.
-$tfDir = "$PSScriptRoot/terraform"
 
-# URL for API to get public IP. Used to secure Storage Account access. 
-$ip_url = "https://api.ipify.org"
-
-# Terraform state file name.
-$tf_state_key = "azure-iac-bootstrap.tfstate"
+# Directories, Files and Misc.
+$env_file = "$PSScriptRoot/env.psd1" # PowerShell variables file. 
+$tf_dir = "$PSScriptRoot/terraform" # Location of Terraform files. 
+$var_dir = "./variables" # Location of Terraform variable files (in relation to script). 
+$tfvar_dir = "../../../$var_dir" # Location of Terraform variable files (in relation to Terraform).
+$tf_state_key = "azure-iac-bootstrap.tfstate" # Terraform state file name.
+$ip_url = "https://api.ipify.org" # URL for API to get public IP. Used to secure Storage Account access. 
 
 # Terminal Colours.
 $INF = "Green"
@@ -105,8 +105,6 @@ function Get-UserConfirm ($prompt) {
     }
 }
 
-
-
 #=============================================#
 # MAIN: Stage 1 - Validations & Pre-Checks
 #=============================================#
@@ -128,7 +126,7 @@ Catch {
 }
 
 # Validation: Provided variables file. Check path exists and values can be queried. 
-$env_file = Join-Path -Path $PSScriptRoot -ChildPath $EnvFile
+#$env_file = Join-Path -Path $PSScriptRoot -ChildPath $EnvFile
 Write-Host -ForegroundColor $HD1 -NoNewLine "[*] Validating provided variables file... "
 if (!(Test-Path -Path $env_file)) {
     Write-Host -ForegroundColor $ERR "FAIL"
@@ -139,7 +137,7 @@ else {
     Try {
         # Import variables from file into '$config' variable.
         $config = Import-PowerShellDataFile -Path $env_file
-        if ($config.naming.prefix) {
+        if ($config.global.naming.org_prefix) {
             Write-Host -ForegroundColor $INF "PASS"
         }
         else {
@@ -203,7 +201,7 @@ Write-Host "- Tenant ID: $($azSession.tenantId)"
 Write-Host "- Tenant Name: $($azSession.tenantDisplayName)"
 Write-Host "- Subscription ID: $($azAccess.subscriptionId)"
 Write-Host "- Subscription Name: $($azAccess.displayName)"
-Write-Host "- Default Location: $($config.global.location)"
+Write-Host "- Default Location: $($config.global.locations.default)"
 Write-Host "- Current Public IP: $($current_ip)"
 Write-Host ""
 Write-Host -ForegroundColor $HD1 "Repository: " -NoNewLine; Write-Host -ForegroundColor Yellow "(User: $($ghSession.login))"
@@ -224,86 +222,92 @@ if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?")) {
 # MAIN: Stage 3 - Prepare Terraform
 #================================================#
 
-# Generate TFVARS file.
-$tfVARS = @"
-# !! DO NOT COMMIT !! - If using public repository or including sensitive values.
-# General: Azure and GitHub Configuration ---------------------------------|
+# Generate required TFVARS files.
+$tfVARS_global = @"
+# SAFE TO COMMIT - Ensure no sensitive values are added.
+
+# Global Variables
 global = {
-  location    = "$($config.global.location)" # Default preferred location for IaC backend resources. 
-  public_ip   = "$($current_ip)"             # Used for secure access to Storage Accounts.  
+  locations = {
+    default = "$($config.global.locations.default)"     # Default preferred location for IaC backend resources. 
+    second  = "$($config.global.locations.secondary)"   # Secondary preference. 
+  }
+  naming = {  # Naming Convention - Example: "abc-plz-gov-logs-law"
+    org_prefix  = "$($config.global.naming.org_prefix)"      # Short name of organization ("abc"). Used in resource naming.
+    project     = "$($config.global.naming.project)" # Project name for related resources (plz, platform, webapp01). 
+    environment = "$($config.global.naming.environment)" # PLZ = Platform Landing Zone
+  }
+  tags = {
+    Project     = "$($config.global.tags.Project)"       # Name of the project. 
+    Owner       = "$($config.global.tags.Owner)"         # Team responsible for the resources. 
+    Creator     = "$($config.global.tags.Creator)"       # Person or process that created the initial resources. 
+    Environment = "$($config.global.tags.Environment)"   # Environment: Shared Services, prd, dev, tst
+  }
 }
-naming = {
-  prefix      = "$($config.naming.prefix)"  # Short name of organization ("abc"). Used in resource naming.
-  project     = "$($config.naming.project)" # Project name for related resources (platform, webapp01). 
-  service     = "$($config.naming.service)" # Service name used in the project (gov, con, sec, mgt, wrk). 
-  environment = "$($config.naming.environment)" # Environment for resources/project (dev, tst, prd, sys).
-}
-tags = {
-  Environment = "$($config.tags.Environment)" # dev, tst, prd. 
-  Project     = "$($config.tags.Project)" # Name of the project. 
-  Owner       = "$($config.tags.Owner)" # Team responsible for the resources. 
-  Creator     = "$($config.tags.Creator)" # Person or process that created the initial resources. 
-}
+
+# Repository Configuration
 repo_config = {
   owner  = "$($config.repo_config.owner)" # Org/owner, target repository, and branch name.
   repo   = "$($config.repo_config.repo)"
   branch = "$($config.repo_config.branch)"
 }
+"@
 
-# Stacks: Configuration ---------------------------------|
+$tfVARS_bootstrap = @"
+# !! DO NOT COMMIT !! - If using public repository or including sensitive values.
+
+# Bootstrap Variables
+naming = {
+  stack_name = "Bootstrap" # Full stack name. Used with tag assignment and naming. 
+  stack_code = "iac"       # Short code used for resource naming. 
+}
+tags = {
+  Deployment = "Bootstrap" # Deployment specific tags (merged with global tags). 
+}
+
+# Deployment Stacks
 deployment_stacks = {
   bootstrap = {
-      bootstrap = {
-      stack_name        = "iac-bootstrap"
-      subscription_id   = "$($config.global.subscription_iac_bootstrap)"
-      create_repo_env = false # No need for separate bootstrap environment in GitHub. 
-    }
+    category        = "bootstrap"
+    stack_name      = "iac-bootstrap"
+    subscription_id = "$($config.subscription_iac_id)"
+    create_repo_env = false
   }
-  platform = {
-    connectivity = {
-      stack_name        = "plz-connectivity"
-      subscription_id   = "$($config.global.subscription_plz_connectivity)"
-      create_repo_env = true
-    }
-    governance = {
-      stack_name        = "plz-governance"
-      subscription_id   = "$($config.global.subscription_plz_governance)"
-      create_repo_env = true
-    }
-    management = {
-      stack_name        = "plz-management"
-      subscription_id   = "$($config.global.subscription_plz_management)"
-      create_repo_env = true
-    }
-    identity = {
-      stack_name        = "plz-identity"
-      subscription_id   = "$($config.global.subscription_plz_identity)"
-      create_repo_env = true
-    }
+  connectivity = {
+    category        = "platform"
+    stack_name      = "plz-connectivity"
+    subscription_id = "$($config.subscription_con_id)"
+    create_repo_env = true
   }
-  workloads = {
-    # Placeholder to ensure resource group and storage account structure is created. 
-    # To be used in future for workload IaC Backend Vending. 
+  governance = {
+    category        = "platform"
+    stack_name      = "plz-governance"
+    subscription_id = "$($config.subscription_gov_id)"
+    create_repo_env = true
+  }
+  management = {
+    category        = "platform"
+    stack_name      = "plz-management"
+    subscription_id = "$($config.subscription_mgt_id)"
+    create_repo_env = true
+  }
+  identity = {
+    category        = "platform"
+    stack_name      = "plz-identity"
+    subscription_id = "$($config.subscription_idn_id)"
+    create_repo_env = true
   }
 }
 "@
 
-# Write out TFVARS file (only if not already exists,offer to overwrite existing).
-if (! (Test-Path -Path "$PSScriptRoot/terraform/bootstrap.tfvars") ) {
-    $tfVARS | Out-File -Encoding utf8 -FilePath "$PSScriptRoot/terraform/bootstrap.tfvars" -Force
-}
-else {
-    Write-Host ""
-    Write-Host -ForegroundColor $WRN "[!] WARNING: An existing TFVARS file is present."
-    if (Get-UserConfirm -prompt "Do you wish to replace the existing file (Y) or keep original (N) [Y/N]?") {
-        $tfVARS | Out-File -Encoding utf8 -FilePath "$PSScriptRoot/terraform/bootstrap.tfvars" -Force
-    }
-}
+# Write out each TFVARS file (overwrites existing).
+$tfVARS_global | Out-File -Encoding utf8 -FilePath "$var_dir/global.tfvars" -Force
+$tfVARS_bootstrap | Out-File -Encoding utf8 -FilePath "$var_dir/bootstrap.tfvars" -Force
 
 # Terraform: Initialize
 Write-Host ""
 Write-Host -ForegroundColor $HD1 "[*] Performing Action: Initialize Terraform configuration... " -NoNewLine
-if (terraform -chdir="$($tfDir)" init -upgrade) {
+if (terraform -chdir="$($tf_dir)" init -upgrade) {
     Write-Host -ForegroundColor $INF "PASS"
 }
 else {
@@ -319,14 +323,14 @@ else {
 if ($Action -eq "Remove") {
     # Migrate remote state back to local and remove backend file. 
     Write-Host -ForegroundColor $HD1 "[*] Pulling remote Terraform state from Azure... " -NoNewline
-    if (Test-Path -Path "$tfDir/backend.tf") {
-        terraform -chdir="$($tfDir)" state pull > "$tfDir/$($tf_state_key).bak" # Backup remote.
-        terraform -chdir="$($tfDir)" state pull > "$tfDir/terraform.tfstate" # Rename local copy. 
-        if (Test-Path -Path "$tfDir/$($tf_state_key).bak") {
+    if (Test-Path -Path "$tf_dir/backend.tf") {
+        terraform -chdir="$($tf_dir)" state pull > "$tf_dir/$($tf_state_key).bak" # Backup remote.
+        terraform -chdir="$($tf_dir)" state pull > "$tf_dir/terraform.tfstate" # Rename local copy. 
+        if (Test-Path -Path "$tf_dir/$($tf_state_key).bak") {
             Write-Host -ForegroundColor $INF "PASS"
-            Remove-Item -Path "$tfDir/backend.tf" -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "$tf_dir/backend.tf" -Force -ErrorAction SilentlyContinue
             # Re-initialise Terraform post state migration. 
-            terraform -chdir="$($tfDir)" -reconfigure
+            terraform -chdir="$($tf_dir)" -reconfigure
         }
         else {
             Write-Host -ForegroundColor $WRN "WARN"
@@ -340,9 +344,9 @@ if ($Action -eq "Remove") {
 
     # Check for local file (download from remote storage and place in Terraform directory).
     Write-Host -ForegroundColor $HD1 "[*] Checking for local state file... " -NoNewline
-    if (Test-Path -Path "$tfDir/terraform.tfstate") {
+    if (Test-Path -Path "$tf_dir/terraform.tfstate") {
         Write-Host -ForegroundColor $INF "PASS"
-        terraform -chdir="$($tfDir)" destroy -var-file="bootstrap.tfvars"
+        terraform -chdir="$($tf_dir)" destroy -var-file="$tfvar_dir/bootstrap.tfvars" -var-file="$tfvar_dir/global.tfvars"
     }
     else {
         Write-Host -ForegroundColor $ERR "FAIL"
@@ -354,20 +358,19 @@ else {
     # Terraform: Plan
     Write-Host ""
     Write-Host -ForegroundColor $HD1 "[*] Performing Action: Running Terraform plan... " -NoNewLine
-    if (terraform -chdir="$($tfDir)" plan --out=bootstrap.plan -var-file="bootstrap.tfvars"
-    ) {
+    if (terraform -chdir="$($tf_dir)" plan --out=bootstrap.plan -var-file="$tfvar_dir/bootstrap.tfvars" -var-file="$tfvar_dir/global.tfvars") {
         Write-Host -ForegroundColor $INF "PASS" 
-        terraform -chdir="$($tfDir)" show bootstrap.plan
+        terraform -chdir="$($tf_dir)" show bootstrap.plan
     }
     else {
         Write-Host -ForegroundColor $ERR "FAIL" 
-        Write-Host -ForegroundColor $ERR "[x] ERROR: Terraform plan failed. Please check configuration and try again."
+        Write-Host -ForegroundColor $ERR "[x] ERROR: Terraform plan failed. Please check configuration and try again ($($tfvar_dir)))."
         exit 1
     }
     
     # Terraform: Apply
     Write-Host ""
-    if (Test-Path -Path "$PSScriptRoot/terraform/bootstrap.plan") {
+    if (Test-Path -Path "$tf_dir/bootstrap.plan") {
         Write-Host -ForegroundColor $WRN "[!] Terraform will now deploy changes. This may take several minutes to complete."
         if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?") ) {
             Write-Host -ForegroundColor $ERR "[x] ERROR: User aborted process. Please confirm intended configuration and try again."
@@ -376,7 +379,7 @@ else {
         else {
             Write-Host -ForegroundColor $HD1 "[*] Performing Action: Running Terraform apply... "
             Try {
-                terraform -chdir="$($tfDir)" apply bootstrap.plan
+                terraform -chdir="$($tf_dir)" apply bootstrap.plan
             }
             Catch {
                 Write-Host "FAIL" -ForegroundColor $ERR
@@ -399,9 +402,9 @@ if (!($Action -eq "Remove")) {
     # Get Github variables from Terraform output.
     Write-Host -ForegroundColor $HD1 "[*] Retrieving Terraform backend details from output... " -NoNewLine
     Try {
-        $tf_rg = terraform -chdir="$($tfDir)" output -raw bootstrap_iac_rg
-        $tf_sa = terraform -chdir="$($tfDir)" output -raw bootstrap_iac_sa
-        $tf_cn = terraform -chdir="$($tfDir)" output -raw bootstrap_iac_cn
+        $tf_rg = terraform -chdir="$($tf_dir)" output -raw bootstrap_iac_rg
+        $tf_sa = terraform -chdir="$($tf_dir)" output -raw bootstrap_iac_sa
+        $tf_cn = terraform -chdir="$($tf_dir)" output -raw bootstrap_iac_cn
         Write-Host -ForegroundColor $INF "PASS"
         Write-Host ""
         Write-Host "- Resource Group: $tf_rg"
@@ -427,16 +430,16 @@ terraform {
   }
 }
 "@
-    $tfBackend | Out-File -Encoding utf8 -FilePath "$PSScriptRoot/terraform/backend.tf" -Force
+    $tfBackend | Out-File -Encoding utf8 -FilePath "$tf_dir/backend.tf" -Force
 
     # Terraform: Migrate State
     Write-Host -ForegroundColor $WRN "[!] Terraform will now migrate state to Azure... "
     if (Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?") {
         Write-Host ""
         Write-Host -ForegroundColor $HD1 "[*] Migrating Terraform state to Azure... " -NoNewline
-        if (terraform -chdir="$($tfDir)" init -migrate-state -force-copy -input=false) {
+        if (terraform -chdir="$($tf_dir)" init -migrate-state -force-copy -input=false) {
             Write-Host -ForegroundColor $INF "PASS"
-            Remove-Item -Path "$PSScriptRoot/terraform/terraform.tfstate" -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "$tf_dir/terraform.tfstate" -Force -ErrorAction SilentlyContinue
         }
         else {
             Write-Host -ForegroundColor $ERR "FAIL"
@@ -445,7 +448,7 @@ terraform {
     }
     else {
         Write-Host -ForegroundColor $WRN "[!] Terraform state migration aborted by user."
-        Remove-Item -Path "$PSScriptRoot/terraform/backend.tf" -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$tf_dir/backend.tf" -Force -ErrorAction SilentlyContinue
     }
 }
 
@@ -453,9 +456,9 @@ terraform {
 # MAIN: Stage 6 - Clean Up
 #================================================#
 #Remove-Item -Path "$PSScriptRoot/terraform/bootstrap.tfvars" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$PSScriptRoot/terraform/bootstrap.plan" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$PSScriptRoot/terraform/.terraform*" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$PSScriptRoot/terraform/.terraform.*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$tf_dir/bootstrap.plan" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$tf_dir.terraform*" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$tf_dir.terraform.*" -Force -ErrorAction SilentlyContinue
 Write-Host ""
 if ($Action -ne "Remove") {
     Write-Host -ForegroundColor $WRN "NOTE: Manual approval may be required for pending API permissions assigned to the Service Principal."
