@@ -7,21 +7,34 @@ stack_code = "gov"        # Short code used for resource naming.
 
 management_group_root = "Core" # Top level Management Group name.
 management_group_list = {
-  platform = {
+  platform = {                           # Platform Landing Zone
     display_name            = "Platform" # Cosmetic name for Management Group.
     subscription_identifier = "plz"      # Used to identify existing subscriptions to add to the Management Groups. 
+    sub_groups              = {}         # No child management groups required. 
   }
-  workloads = {
+  workloads = { # Workloads
     display_name            = "Workloads"
-    subscription_identifier = "app"
+    subscription_identifier = "app" # If subscription name contains, then auto-group under this management group.
+    sub_groups = {                  # Define child management groups to be contaiend under this second level MG.
+      production = {
+        display_name            = "Production"
+        subscription_identifier = "prd" # If subscription name contains, then auto-group under this management group.
+      }
+      development = {
+        display_name            = "Development"
+        subscription_identifier = "dev" # If subscription name contains, then auto-group under this management group.
+      }
+    }
   }
-  sandbox = {
+  sandbox = { # Testing Environment
     display_name            = "Sandbox"
-    subscription_identifier = "dev"
+    subscription_identifier = "tst"
+    sub_groups              = {} # No child management groups required.
   }
-  decom = {
+  decom = { # Decommission Subscriptions
     display_name            = "Decommission"
     subscription_identifier = "decom"
+    sub_groups              = {} # No child management groups required.
   }
 }
 

@@ -3,7 +3,7 @@
 #=================================================================#
 
 variable "global" {
-  description = "Map of global settings for the Azure environment."
+  description = "Map of global settings for the deployment (naming, tags, location)."
   type        = map(string)
   nullable    = false
   default     = {}
@@ -28,6 +28,16 @@ variable "repo_config" {
   type        = map(string)
   nullable    = false
   default     = {}
+}
+
+variable "stack_code" {
+  description = "Short code used for stack resource naming."
+  type        = string
+}
+
+variable "stack_name" {
+  description = "Full name used for stack resource naming."
+  type        = string
 }
 
 variable "deployment_stacks" {

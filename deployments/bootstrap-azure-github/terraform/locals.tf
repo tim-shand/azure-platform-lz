@@ -1,9 +1,4 @@
 locals {
-  # Configure Storage Account naming. 
-  resource_prefix       = "${var.naming.prefix}-${var.naming.service}"
-  sa_name_max_length    = 24 # Used to automatically modify Storage Account names to fit naming restrictions. 
-  sa_name_random_length = 6  # Set length of random string to use with Storage Account naming. 
-
   # Map resource groups to create, along with a single storage account name to be created inside of it. 
   resource_stack_mapping = {
     for category, stacks in var.deployment_stacks :

@@ -65,22 +65,6 @@ resource "github_actions_environment_variable" "repo_env_var_sub" {
   ]
 }
 
-# resource "github_actions_environment_variable" "gh_env_var_rg" {
-#   for_each      = local.repo_env_stacks
-#   repository    = data.github_repository.repo.name
-#   environment   = each.value.stack_name # Loop for each stack environment. 
-#   variable_name = "TF_BACKEND_RG"
-#   value         = azurerm_resource_group.iac_rg[each.value.category].name
-# }
-
-# resource "github_actions_environment_variable" "gh_env_var_sa" {
-#   for_each      = local.repo_env_stacks
-#   repository    = data.github_repository.repo.name
-#   environment   = each.value.stack_name # Loop for each stack environment. 
-#   variable_name = "TF_BACKEND_SA"
-#   value         = azurerm_storage_account.iac_sa[each.value.category].name
-# }
-
 resource "github_actions_environment_variable" "repo_env_var_cn" {
   for_each      = local.repo_env_stacks
   repository    = data.github_repository.repo.name
