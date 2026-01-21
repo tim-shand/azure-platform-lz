@@ -2,11 +2,6 @@
 # Bootstrap: GitHub - Environments, Secrets, and Variables
 #=================================================================#
 
-# Get data for existing GitHub Repository.
-data "github_repository" "repo" {
-  full_name = "${var.repo_config.owner}/${var.repo_config.repo}"
-}
-
 # GitHub: Global -----------------------------------------------|
 
 # GitHub: Repo [SECRET] - Azure Tenant ID

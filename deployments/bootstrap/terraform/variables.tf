@@ -2,12 +2,12 @@
 # Azure Bootstrap: Variables
 #=================================================================#
 
-variable "repo_config" {
-  description = "Map of repository settings (org/owner, repo, branch)."
-  type        = map(string)
-  nullable    = false
-  default     = {}
-}
+# variable "repo_config" {
+#   description = "Map of repository settings (org/owner, repo, branch)."
+#   type        = map(string)
+#   nullable    = false
+#   default     = {}
+# }
 
 variable "global" {
   description = "Map of global settings (naming, tags, location)."

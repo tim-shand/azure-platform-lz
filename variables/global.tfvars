@@ -4,7 +4,7 @@ global = {
     default   = "newzealandnorth" # Primary region to use for resource creation. 
     secondary = "australiaeast"   # Secondary region to use for resource creation. 
   }
-  naming = {                  # [resource_type]-[project]-[environment]-[category1]-[cateogory2]-[instance], vnet-platform-alz-con-hub-01. 
+  naming = {
     org_code     = "tjs"      # Short code of the organisation, can be used with resource naming. 
     project_name = "platform" # Name of the project or workload: platform, mywebapp. 
     environment  = "plz"      # Workload environment: dev, tst, prd, alz. 
