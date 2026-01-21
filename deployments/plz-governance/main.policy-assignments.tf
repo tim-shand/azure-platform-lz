@@ -12,7 +12,7 @@ module "naming_policy_initiative_builtin" {
 module "policy_initiatives_builtin" {
   source                     = "../../modules/gov-policy-initiatives-builtin"
   count                      = var.policy_initiatives_builtin_enable ? 1 : 0     # Enable policy assignment (turns it on/off). 
-  naming_prefix              = module.naming_policy_initiative_builtin           # Pass in naming prefix for policy initiative display names. 
+  naming_prefix              = module.naming_policy_initiative_builtin.full_name # Pass in naming prefix for policy initiative display names. 
   builtin_initiatives        = var.policy_initiatives_builtin                    # List of builtin initiative display names. 
   enforce                    = var.policy_initiatives_builtin_enforce            # Enforce policy controls (audit vs enforce).
   target_management_group_id = module.management_groups.management_group_root_id # Target management group for assignment. 
