@@ -2,15 +2,6 @@
 
 _List of tools and utilities used within this project._
 
-## [Bootstrap: Azure and GitHub](./bootstrap-azure-github/)
-
-Custom process using Powershell and Terraform to bootstrap Azure and GitHub for IaC automation. 
-
-```shell
-# Execute bootstrapping process. 
-powershell -file utilities/bootstrap-azure-github/bootstrap-azure-github.ps1 -EnvFile env.psd1 -Action Create
-```
-
 ## [Terraform Docs](https://terraform-docs.io/)
 
 Used to produce Terraform module information, such as required providers, inputs and outputs. 
