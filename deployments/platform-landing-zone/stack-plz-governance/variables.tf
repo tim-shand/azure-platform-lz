@@ -5,6 +5,13 @@ variable "subscription_id" {
   type        = string
 }
 
+variable "repo_config" {
+  description = "Map of repository settings (org/owner, repo, branch)."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "global" {
   description = "Map of global settings (naming, tags, location)."
   type        = map(map(string))
@@ -38,22 +45,6 @@ variable "management_group_root" {
   }
 }
 
-# variable "management_group_list" {
-#   description = "Map of Management Group configuration to deploy."
-#   type = map(object({ # Use object variable name as management group 'name'.
-#     display_name            = string
-#     subscription_identifier = optional(string) # Used to identify existing subscriptions to add to the management group.
-#     parent_mg_name          = optional(string) # Used to determine parent management group. 
-#   }))
-#   validation {
-#     condition = alltrue([
-#       for key in keys(var.management_group_list) : # Ensure that provided Management Group IDs are valid.
-#       can(regex("^[a-zA-Z0-9-]+$", key))           # Check each object key to ensure it fits the regex requirements. 
-#     ])
-#     error_message = "Management Group IDs can only contain letters, numbers, and dashes (-). No spaces or other symbols are allowed."
-#   }
-# }
-
 variable "subscription_prefixes" {
   description = "A map of Management Group to Subscritpion membership."
   type        = map(list(string))
@@ -62,17 +53,23 @@ variable "subscription_prefixes" {
 
 # Governance: Policy Parameters -----------------#
 
-variable "policy_builtin_initiatives" {
+variable "policy_initiatives_builtin" {
   description = "Set of display name for built-in policy initiatives to assign at root management group."
   type        = set(string)
   default     = []
   nullable    = true
 }
 
-variable "policy_builtin_initiative_enforce" {
+variable "policy_initiatives_builtin_enforce" {
   description = "Enable to enforce the built-in policy initiative."
   type        = bool
   default     = false
+}
+
+variable "policy_initiatives_builtin_enable" {
+  description = "Enable assignment of the built-in policy initiative (turns it on/off)."
+  type        = bool
+  default     = true
 }
 
 variable "policy_custom_allowed_locations" {

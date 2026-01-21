@@ -31,15 +31,15 @@ resource "azurerm_storage_container" "iac_cn" {
 # Service Principal: Required when 'shared_access_key_enabled=false'. 
 resource "azurerm_role_assignment" "rbac_sp_rg" {
   for_each             = local.stacks_by_category
-  scope                = azurerm_resource_group.iac_rg[each.key].id
-  role_definition_name = "Storage Blob Data Contributor" # Required to access and update blob storage properties. 
+  scope                = azurerm_resource_group.iac_rg[each.key].id # Must be assigned on the resource plane, cannot be inherited from MG. 
+  role_definition_name = "Storage Blob Data Contributor"            # Required to access and update blob storage properties. 
   principal_id         = azuread_service_principal.entra_iac_sp.object_id
 }
 
 # Current Global Admin User: Required when 'shared_access_key_enabled=false'. 
 resource "azurerm_role_assignment" "rbac_ga_rg" {
   for_each             = local.stacks_by_category
-  scope                = azurerm_resource_group.iac_rg[each.key].id
-  role_definition_name = "Storage Blob Data Contributor" # Required to access and update blob storage properties. 
+  scope                = azurerm_resource_group.iac_rg[each.key].id # Must be assigned on the resource plane, cannot be inherited from MG.
+  role_definition_name = "Storage Blob Data Contributor"            # Required to access and update blob storage properties. 
   principal_id         = data.azuread_client_config.current.object_id
 }

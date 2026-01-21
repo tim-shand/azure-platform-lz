@@ -13,14 +13,14 @@ output "mg_workloads" {
   value       = azurerm_management_group.workloads
 }
 
-output "mg_workloads_production" {
+output "mg_workloads_prd" {
   description = "Object of the workloads (production) management group."
-  value       = azurerm_management_group.production
+  value       = azurerm_management_group.workloads_prd
 }
 
-output "mg_workloads_development" {
+output "mg_workloads_dev" {
   description = "Object of the workloads (development) management group."
-  value       = azurerm_management_group.development
+  value       = azurerm_management_group.workloads_dev
 }
 
 output "mg_sandbox" {

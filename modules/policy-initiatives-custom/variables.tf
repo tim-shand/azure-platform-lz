@@ -18,3 +18,14 @@ variable "policy_custom_def_path" {
   type        = string
   default     = "./policy_definitions"
 }
+
+variable "policy_groups" {
+  description = "Map of policy groups keyed by initiative name (output from policy definitions)."
+  type = map(
+    map(object({
+      name = string
+      id   = string
+    }))
+  )
+}
+

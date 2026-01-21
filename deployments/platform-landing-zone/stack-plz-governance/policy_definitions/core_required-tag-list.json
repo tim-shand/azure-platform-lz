@@ -1,11 +1,11 @@
 {
     "properties": {
         "displayName": "Required Tags on Resources",
+        "description": "Enforces existence of defined tags. Does not apply to resource groups.",
         "policyType": "Custom",
         "mode": "Indexed",
-        "description": "Enforces existence of defined tags. Does not apply to resource groups.",
         "metadata": {
-            "category": "Tags"
+            "category": "Governance"
         },
         "parameters": {
             "tagNames": {

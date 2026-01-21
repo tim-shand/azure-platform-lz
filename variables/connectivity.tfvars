@@ -1,5 +1,4 @@
-# Connectivity: Network (Hub) -----------------#
-
+# Connectivity: Network (Hub)
 hub_vnet_space = "10.250.0.0/16"
 hub_subnets = {
   "AzureManagementSubnet" = {

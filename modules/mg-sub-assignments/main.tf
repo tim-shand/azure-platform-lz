@@ -6,19 +6,19 @@
 data "azurerm_subscriptions" "all" {} # Get all subscriptions visible to current user or Service Principal. 
 
 locals {
-  # Map matching subscriptions to management groups. 
+  # Map matching subscriptions to management groups based on first three segments of the subscription ID. 
   management_group_subscriptions = {
     platform = [
       for s in data.azurerm_subscriptions.all.subscriptions : s.subscription_id
       if contains(var.subscription_prefixes.platform, join("-", slice(split("-", s.subscription_id), 0, 3)))
     ]
-    workload_production = [
+    workloads_prd = [
       for s in data.azurerm_subscriptions.all.subscriptions : s.subscription_id
-      if contains(var.subscription_prefixes.workloads_production, join("-", slice(split("-", s.subscription_id), 0, 3)))
+      if contains(var.subscription_prefixes.workloads_prd, join("-", slice(split("-", s.subscription_id), 0, 3)))
     ]
-    workload_development = [
+    workloads_dev = [
       for s in data.azurerm_subscriptions.all.subscriptions : s.subscription_id
-      if contains(var.subscription_prefixes.workloads_development, join("-", slice(split("-", s.subscription_id), 0, 3)))
+      if contains(var.subscription_prefixes.workloads_dev, join("-", slice(split("-", s.subscription_id), 0, 3)))
     ]
     sandbox = [
       for s in data.azurerm_subscriptions.all.subscriptions : s.subscription_id
@@ -66,16 +66,16 @@ resource "azurerm_management_group" "workloads" {
 }
 
 # Management Groups: Level 2 -----------------------------------|
-resource "azurerm_management_group" "production" {
+resource "azurerm_management_group" "workloads_prd" {
   name                       = lower("${var.naming.org_prefix}-production-mg") # Force lower-case for resource name.
   display_name               = "Production"
-  parent_management_group_id = azurerm_management_group.workloads.id                    # Nested under workloads management group. 
-  subscription_ids           = local.management_group_subscriptions.workload_production # Assign mapped subscriptions.
+  parent_management_group_id = azurerm_management_group.workloads.id              # Nested under workloads management group. 
+  subscription_ids           = local.management_group_subscriptions.workloads_prd # Assign mapped subscriptions.
 }
 
-resource "azurerm_management_group" "development" {
+resource "azurerm_management_group" "workloads_dev" {
   name                       = lower("${var.naming.org_prefix}-development-mg") # Force lower-case for resource name.
   display_name               = "Development"
-  parent_management_group_id = azurerm_management_group.workloads.id                     # Nested under workloads management group. 
-  subscription_ids           = local.management_group_subscriptions.workload_development # Assign mapped subscriptions.
+  parent_management_group_id = azurerm_management_group.workloads.id              # Nested under workloads management group. 
+  subscription_ids           = local.management_group_subscriptions.workloads_dev # Assign mapped subscriptions.
 }
