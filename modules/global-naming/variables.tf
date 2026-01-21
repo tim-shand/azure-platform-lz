@@ -1,7 +1,12 @@
+# variable "sections" {
+#   description = "Map of name sections. Key = section name, Value = string. Example: {org_prefix = 'abc', project = 'platform'}."
+#   type        = map(string)
+#   default     = {}
+# }
+
 variable "sections" {
-  description = "Map of name sections. Key = section name, Value = string. Example: {org_prefix = 'abc', project = 'platform'}."
-  type        = map(string)
-  default     = {}
+  type        = list(string)
+  description = "Ordered list of name sections: org, project, category1, category2."
 }
 
 variable "delimiter" {

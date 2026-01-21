@@ -6,18 +6,15 @@ data "azurerm_subscriptions" "all" {} # Get all subscriptions visible to current
 
 # Naming: Generate uniform, consistent name outputs to be used with resources. 
 module "naming_management_groups" {
-  source = "../../modules/global-naming-v2"
-  sections = {
-    resource_type = "mg"
-    org_prefix    = var.global.naming.org_code
-  }
+  source   = "../../modules/global-naming"
+  sections = ["mg", var.global.naming.org_code]
 }
 
 # Management Groups: Organisation and hierarchy, contain relevant subscriptions and assign policy. 
 module "management-groups" {
   source                   = "../../modules/gov-management-groups"
-  global                   = var.global # Global configuration. 
-  naming_prefix            = module.naming_management_groups.full_name
+  global                   = var.global                                   # Global configuration. 
+  naming_prefix            = module.naming_management_groups.full_name    # Provide a name prefix used for resource naming (mg-abc). 
   subscriptions            = data.azurerm_subscriptions.all.subscriptions # Pass in all subscriptions from data call. 
   management_group_root    = var.management_group_root                    # Root: Top-level MG representign the organisation. 
   management_groups_level1 = var.management_groups_level1                 # Level 1: Nested under root MG. 

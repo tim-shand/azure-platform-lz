@@ -1,7 +1,7 @@
 locals {
   base_name = join( # Build base name from provided sections. 
     var.delimiter, compact([
-      for s in values(var.sections) : lower(replace(s, "/[^a-z0-9]/", "")) # Enforce lower-case, remove any non-alpha-numeric characters. 
+      for s in var.sections : lower(replace(s, "/[^a-z0-9]/", "")) # Enforce lower-case, remove any non-alpha-numeric characters. 
     ])
   )
   # Add environment section if provided, else just use base name. 
