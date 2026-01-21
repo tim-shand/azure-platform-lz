@@ -7,6 +7,7 @@
 *.test/
 *.dev/
 *.plan
+*packer_cache/
 
 # Environments
 .env
@@ -14,14 +15,12 @@
 *.env.ps1
 *env.psd1
 .venv
-#env/
+env/
 venv/
-#ENV/
+ENV/
 env.bak/
 venv.bak/
 env-*.sh
-# Allowed
-!env-example.psd1
 
 # Terraform directories, CLI config and state files.
 **/.terraform/*
@@ -38,13 +37,7 @@ crash.log
 crash.*.log
 backend.conf
 backend.tf
-**/*bootstrap*/**/backend.tf
 bootstrap.tfvars
-# Allow example or default TFVARS file.
-!example.tfvars
-!terraform.tfvars
-!env-dev.tfvars
-!env-prd.tfvars
 
 # Ignore override files as they are usually used to override resources locally.
 override.tf
@@ -52,5 +45,10 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Packer Files
-*packer_cache/
+# OVERRIDE: Allowed
+# Allow example or default TFVARS file.
+!example.tfvars
+!terraform.tfvars
+!env-dev.tfvars
+!env-prd.tfvars
+!env-example.psd1

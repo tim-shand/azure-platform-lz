@@ -14,10 +14,10 @@ on: # Define triggers.
                     - "Destroy" # Run Terraform DESTROY only.
     pull_request: # Trigger on Pull Request
         paths: # Limit trigger to specific files and directories.
-            - ".github/workflows/*governance*.yml" # Changes to the workflow itself.
-            - "env/governance.tfvars" # Changes to the TFVARS file.
-            - "platform-landing-zone/*governance*/**" # Changes to the stack root module.
-            - "modules/*plz-gov*/**" # Changes any of the stack child modules.
+            - ".github/workflows/stack-plz-governance.yml" # Changes to the workflow itself.
+            - "variables/governance.tfvars" # Changes to the TFVARS file.
+            - "deployments/plz-governance/**" # Changes to the stack root module.
+            - "modules/gov*/**" # Changes any of the stack child modules.
         branches:
             - main # Trigger on pull request to main branch only.
 permissions: # Define workflow permissions.
@@ -32,7 +32,7 @@ jobs: # List jobs to execute.
         timeout-minutes: 45 # The entire job will fail if it runs longer than 'x' minutes.
         defaults:
             run: # Set job defaults for 'run' commands.
-                working-directory: ./platform-landing-zone/stack-plz-governance # Default working dir for commands.
+                working-directory: ./deployments/plz-governance # Default working dir for commands.
 
         env: # Setup environment variables.
             # NOTE: If variable exists at both repo and environment level, the environment value takes priority.
@@ -41,7 +41,7 @@ jobs: # List jobs to execute.
             TF_BACKEND_SA: ${{ vars.TF_BACKEND_SA }} # Backend: Storage Account [Repo Variable]
             TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }} # Backend: Blob Container [Env Variable]
             TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Backend: State file name [Env Variable]
-            TF_VARS_DIR: "../../env" # Location of variable files in relation to working directory.
+            TF_VARS_DIR: "../../variables" # Location of variable files in relation to working directory.
             TF_VARS_FILE: "governance.tfvars" # Variables file for the target stack.
 
             # Azure OIDC Auth

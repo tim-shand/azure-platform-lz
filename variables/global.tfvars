@@ -1,28 +1,24 @@
-# SAFE TO COMMIT - Ensure no sensitive values are added.
-
-# Global Variables
+# Variables: Global
 global = {
   locations = {
-    default = "newzealandnorth" # Default preferred location for IaC backend resources. 
-    second  = "australiaeast"   # Secondary preference. 
+    default   = "newzealandnorth" # Primary region to use for resource creation. 
+    secondary = "australiaeast"   # Secondary region to use for resource creation. 
   }
-  naming = {                   # Naming Convention - Example: "abc-plz-gov-logs-law"
-    org_prefix    = "tjs"      # Short name of organization ("abc"). Used in resource naming.
-    project_long  = "platform" # Project name for related resources (plz, platform, webapp01). 
-    project_short = "plz"      # Project name for related resources (plz, platform, webapp01). 
-    environment   = "plz"      # PLZ = Platform Landing Zone
+  naming = {                  # [resource_type]-[project]-[environment]-[category1]-[cateogory2]-[instance], vnet-platform-alz-con-hub-01. 
+    org_code     = "tjs"      # Short code of the organisation, can be used with resource naming. 
+    project_name = "platform" # Name of the project or workload: platform, mywebapp. 
+    environment  = "plz"      # Workload environment: dev, tst, prd, alz. 
   }
   tags = {
-    Project     = "PlatformLandingZone" # Name of the project. 
-    Owner       = "CloudOps"            # Team responsible for the resources. 
-    Creator     = "IaC-Terraform"       # Person or process that created the initial resources. 
-    Environment = "SharedServices"      # Environment: Shared Services, prd, dev, tst
+    Organisation = "TJS"                 # Name or abbreviation used to identify the organisation. 
+    Owner        = "PlatformTeam"        # Name of the team that owns the project. 
+    Environment  = "plz"                 # Workload environment: dev, tst, prd, alz, plz. 
+    Project      = "PlatformLandingZone" # Project name, used to group and identify related resources. 
+    CreatedBy    = "IaC-Terraform"       # Name of the user or service that created the resources. 
   }
-}
-
-# Repository Configuration
-repo_config = {
-  owner  = "tim-shand" # Org/owner, target repository, and branch name.
-  repo   = "azure-platform-lz"
-  branch = "main"
+  repo_config = {
+    org    = "tim-shand"         # Name of the repository organisation owner. 
+    repo   = "azure-platform-lz" # Repository where this project is stored. 
+    branch = "main"              # Name of the default repository branch. 
+  }
 }
