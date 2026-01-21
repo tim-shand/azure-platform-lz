@@ -3,7 +3,7 @@
 #=====================================================#
 
 # EXAMPLE:
-# {org_prefix}-{project}-{?_category_1}-{?_category_2}-{environment}
+# {org_prefix}-{project}-{category_1}-{category_2}-{environment}-{resource}
 # Full: abc-platform-con-hub-plz
 # Short: abcplatformgovlogplz
 
