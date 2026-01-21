@@ -22,17 +22,3 @@ module "management_groups" {
   management_groups_level3 = var.management_groups_level3                 # Level 3: Nested under level 2 MGs. Leave blank "{}" if not required. 
   management_groups_level4 = var.management_groups_level4                 # Level 4: Nested under level 3 MGs. Leave blank "{}" if not required. 
 }
-
-module "naming" {
-  source = "github.com/your-org/terraform-azure-naming"
-
-  org_prefix       = "abc"
-  project          = "platform"
-  category1        = "con"
-  category2        = "hub"
-  environment      = "plz"
-  delimiter        = "-"
-  short_max_length = 24
-  append_random    = true
-  random_length    = 6
-}
