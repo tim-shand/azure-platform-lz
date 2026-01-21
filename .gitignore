@@ -1,4 +1,4 @@
-# Ignore
+# General
 .notes/
 .notes.md
 .token
@@ -13,7 +13,7 @@
 .env
 *.env
 *.env.ps1
-*env.psd1
+*.psd1
 .venv
 env/
 venv/
