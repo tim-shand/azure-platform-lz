@@ -11,7 +11,7 @@ module "naming_management_groups" {
 }
 
 # Management Groups: Organisation and hierarchy, contain relevant subscriptions and assign policy. 
-module "management-groups" {
+module "management_groups" {
   source                   = "../../modules/gov-management-groups"
   global                   = var.global                                   # Global configuration. 
   naming_prefix            = module.naming_management_groups.full_name    # Provide a name prefix used for resource naming (mg-abc). 

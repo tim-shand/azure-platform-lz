@@ -1,7 +1,6 @@
-variable "naming" {
-  description = "A map of naming values to use with resources."
-  type        = map(string)
-  default     = {}
+variable "naming_prefix" {
+  description = "String value used for resource naming."
+  type        = string
 }
 
 variable "builtin_initiatives" {

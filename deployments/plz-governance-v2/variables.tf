@@ -88,3 +88,23 @@ variable "management_groups_level4" {
     error_message = "Both a display name and parent Management Group is required for all Level 4 Management Groups."
   }
 }
+
+# Policy Assignment -----------------#
+variable "policy_initiatives_builtin" {
+  description = "Set of display name for built-in policy initiatives to assign at root management group."
+  type        = set(string)
+  default     = []
+  nullable    = true
+}
+
+variable "policy_initiatives_builtin_enforce" {
+  description = "Enable to enforce the built-in policy initiative."
+  type        = bool
+  default     = false
+}
+
+variable "policy_initiatives_builtin_enable" {
+  description = "Enable assignment of the built-in policy initiative (turns it on/off)."
+  type        = bool
+  default     = true
+}
