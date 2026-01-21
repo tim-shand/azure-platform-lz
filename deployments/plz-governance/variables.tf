@@ -1,22 +1,7 @@
-# General  -----------------#
-
-variable "subscription_id" {
-  description = "Subscription ID for the target changes. Provided by workflow variable."
-  type        = string
-}
-
-variable "repo_config" {
-  description = "Map of repository settings (org/owner, repo, branch)."
-  type        = map(string)
-  nullable    = false
-  default     = {}
-}
-
+# General ----------------------------------------------------------|
 variable "global" {
-  description = "Map of global settings (naming, tags, location)."
+  description = "Map of global variable configuration values."
   type        = map(map(string))
-  nullable    = false
-  default     = {}
 }
 
 variable "naming" {
@@ -26,33 +11,85 @@ variable "naming" {
   default     = {}
 }
 
-variable "tags" {
-  description = "Map of deployment tags to apply to resources."
-  type        = map(string)
-  nullable    = false
-  default     = {}
-}
-
-# Governance: Management Groups -----------------#
-
-variable "management_group_root" {
-  description = "Name of the top-level Management Group (root)."
+variable "subscription_id" {
+  description = "Subscription ID for the target changes. Provided by workflow variable or terminal input."
   type        = string
-  default     = "Core"
-  validation {
-    condition     = can(regex("^[a-zA-Z0-9-]+$", var.management_group_root)) # Only allow alpha-numeric with dashes.
-    error_message = "Management Group IDs can only contain letters, numbers, and dashes (-). No spaces or other symbols are allowed."
+  validation {                                        # Functions to verify if the string can be parsed as a UUID, catch invalid or mising characters. 
+    condition     = length(var.subscription_id) == 36 #&& can(uuid(var.subscription_id)) # Checks for the typical length of a GUID.
+    error_message = "The subscription ID must be a valid 36-character GUID."
   }
 }
 
-variable "subscription_prefixes" {
-  description = "A map of Management Group to Subscritpion membership."
-  type        = map(list(string))
-  default     = {}
+# Management Groups ----------------------------------------------------------|
+variable "management_group_root" {
+  description = "Name ID to use for the top-level (root) Management Group."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-]+$", var.management_group_root)) # Only allow alpha-numeric with dashes.
+    error_message = "Must be a string of alpha-numeric characters (can contain dashes), between 3 and 36 in length."
+  }
 }
 
-# Governance: Policy Parameters -----------------#
+variable "management_groups_level1" {
+  description = "Map of first level Management Group objects, nested under the root Manangement Group."
+  type = map(object({
+    display_name           = string
+    subscription_id_filter = optional(list(string)) # Optional list of subscription prefixes (3 segments). 
+  }))
+  validation {
+    condition = alltrue([
+      for mg, details in var.management_groups_level1 : length(details.display_name) > 1
+    ])
+    error_message = "Both a display name and parent Management Group is required for all Level 1 Management Groups."
+  }
+}
 
+variable "management_groups_level2" {
+  description = "Map of second level Management Group objects, nested under defined parent Management Group."
+  type = map(object({
+    display_name           = string
+    subscription_id_filter = optional(list(string)) # Optional list of subscription prefixes (3 segments). 
+    parent_mg_name         = string
+  }))
+  validation {
+    condition = alltrue([
+      for mg, details in var.management_groups_level2 : length(details.display_name) > 1 && length(details.parent_mg_name) > 1
+    ])
+    error_message = "Both a display name and parent Management Group is required for all Level 2 Management Groups."
+  }
+}
+
+variable "management_groups_level3" {
+  description = "Map of third level Management Group objects, nested under defined parent Management Group."
+  type = map(object({
+    display_name           = string
+    subscription_id_filter = optional(list(string)) # Optional list of subscription prefixes (3 segments). 
+    parent_mg_name         = string
+  }))
+  validation {
+    condition = alltrue([
+      for mg, details in var.management_groups_level3 : length(details.display_name) > 1 && length(details.parent_mg_name) > 1
+    ])
+    error_message = "Both a display name and parent Management Group is required for all Level 3 Management Groups."
+  }
+}
+
+variable "management_groups_level4" {
+  description = "Map of fourth level Management Group objects, nested under defined parent Management Group."
+  type = map(object({
+    display_name           = string
+    subscription_id_filter = optional(list(string)) # Optional list of subscription prefixes (3 segments). 
+    parent_mg_name         = string
+  }))
+  validation {
+    condition = alltrue([
+      for mg, details in var.management_groups_level4 : length(details.display_name) > 1 && length(details.parent_mg_name) > 1
+    ])
+    error_message = "Both a display name and parent Management Group is required for all Level 4 Management Groups."
+  }
+}
+
+# Policy Assignment -----------------#
 variable "policy_initiatives_builtin" {
   description = "Set of display name for built-in policy initiatives to assign at root management group."
   type        = set(string)
@@ -70,42 +107,4 @@ variable "policy_initiatives_builtin_enable" {
   description = "Enable assignment of the built-in policy initiative (turns it on/off)."
   type        = bool
   default     = true
-}
-
-variable "policy_custom_allowed_locations" {
-  description = "Object of policy settings that determine values and effect for allowed locations."
-  type = object({
-    effect    = string       # Audit, Deny, Disabled
-    locations = list(string) # List of allowed locations allowed when deploying resources.
-  })
-  default = {
-    effect    = "audit"
-    locations = ["newzealandnorth"]
-  }
-  validation {
-    condition     = length(var.policy_custom_allowed_locations.locations) >= 1
-    error_message = "At least one allowed location must be provided."
-  }
-}
-
-variable "policy_custom_required_tags" {
-  description = "Object of policy settings that determine values and effect for required tags."
-  type = object({
-    effect = string       # Audit, Deny, Disabled
-    tags   = list(string) # List of required tags when deploying resources.
-  })
-  default = {
-    effect = "audit"
-    tags   = ["Owner", "Environment", "Project"]
-  }
-  validation {
-    condition     = length(var.policy_custom_required_tags.tags) >= 1
-    error_message = "At least three tag names MUST be provided."
-  }
-}
-
-variable "policy_custom_def_path" {
-  description = "Local directory path containing custom policy definitions in JSON format."
-  type        = string
-  default     = "./policy_definitions"
 }

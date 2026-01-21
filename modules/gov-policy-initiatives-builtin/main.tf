@@ -1,5 +1,5 @@
 #========================================================#
-# Platform LZ: Governance - Built-in Policy Initiatives
+# Module: Governance - Built-in Policy Initiatives
 #========================================================#
 
 # Use provided variable value to assign a built-in policy initiative. 

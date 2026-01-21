@@ -1,5 +1,5 @@
 #=====================================================#
-# Platform LZ: Governance - Policy Custom Definitions
+# Module: Governance - Policy Custom Definitions
 #=====================================================#
 
 locals {

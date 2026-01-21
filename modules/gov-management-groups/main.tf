@@ -1,5 +1,5 @@
 #=============================================================#
-# Platform LZ: Governance - Management Groups & Subscriptions
+# Module: Governance - Management Groups & Subscriptions
 #=============================================================#
 
 # Management Groups: Top-level management group for the organisation. 
