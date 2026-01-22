@@ -1,6 +1,6 @@
 <#======= Bootstrap: Azure & GitHub for Terraform =======#
 # REQUIRED:
-- Populate "env.psd1" file with required values. 
+- Populate "bootstrap.psd1" file with required values. 
 - Install: Azure CLI, GitHub CLI.
 - Existing Azure subscription dedicated to IaC purposes (or platform general).
 - Existing GitHub repository for project secrets and variables. 
@@ -24,14 +24,13 @@ Bootstrap script to prepare Azure tenant for management via Terraform and GitHub
   - Add created Azure resource details as repository environment variables.
 
 # USAGE:
-./deployments/bootstrap/bootstrap-azure-github.ps1 -EnvFile "env.psd1" -Action Create/Remove
+./deployments/bootstrap/bootstrap-azure-github.ps1
 #=======================================================#>
 
 # SCRIPT VARIABLES =============================================#
 # Command line input parameters.
 param(
-    #[switch]$Action = , # Add switch parameter for delete option.
-    [Parameter(Mandatory = $true)][ValidateSet("Create", "Remove")][string]$Action
+    [switch]$Remove # Add switch parameter for removal option.
 )
 
 # Required applications and validation commands.
@@ -40,25 +39,22 @@ $requiredApps = @(
         Name        = "Azure CLI"; 
         Command     = "az"; 
         AuthCheck   = "az account show --only-show-errors | ConvertFrom-JSON"; 
-        LoginCmd    = "az login --use-device-code";
-        AccessCheck = 'az account subscription show --subscription-id $config.subscription_iac_id -o json --only-show-errors | ConvertFrom-JSON'
+        AccessCheck = 'az account subscription show --subscription-id $config.subscription_id_iac -o json --only-show-errors | ConvertFrom-JSON'
     }
     [PSCustomObject]@{ 
         Name        = "GitHub CLI"; 
         Command     = "gh"; 
         AuthCheck   = "gh api user | ConvertFrom-JSON"; 
-        LoginCmd    = "gh auth login";
-        AccessCheck = '(gh api /repos/$($config.repo_config.Owner)/$($config.repo_config.Repo)/collaborators/$($config.repo_config.Owner)/permission | ConvertFrom-JSON).user.permissions'
+        AccessCheck = '(gh api /repos/$($config.global.repo_config.org)/$($config.global.repo_config.org)/collaborators/$($config.global.repo_config.org)/permission | ConvertFrom-JSON).user.permissions'
     }
 )
 
 # Directories, Files and Misc.
-$env_file = "$PSScriptRoot/env.psd1" # PowerShell variables file. 
-$tf_dir = "$PSScriptRoot/terraform" # Location of Terraform files. 
-$var_dir = "./variables" # Location of Terraform variable files (in relation to script). 
-$tfvar_dir = "../../../$var_dir" # Location of Terraform variable files (in relation to Terraform).
-$tf_state_key = "azure-iac-bootstrap.tfstate" # Terraform state file name.
-$ip_url = "https://api.ipify.org" # URL for API to get public IP. Used to secure Storage Account access. 
+$env_file = "$PSScriptRoot/bootstrap.psd1" # PowerShell variables file. 
+$dir_tf_files = "$PSScriptRoot/terraform" # Location of Terraform files. 
+$dir_templates = "$PSScriptRoot/templates" # Directory for TFVAR file templates. 
+$dir_script_tfvars = "./variables" # Location of Terraform variable files (in relation to Terraform files).
+$tf_backend_state_key = "azure-iac-bootstrap.tfstate" # Terraform state file name.
 
 # Terminal Colours.
 $INF = "Green"
@@ -67,8 +63,10 @@ $ERR = "Red"
 $HD1 = "Cyan"
 $HD2 = "Magenta"
 
-# Determine request action and populate hashtable for logging purposes.
-if ($Action -eq "Remove") {
+# Determine request action and populate hashtable for output purposes.
+if ($Remove) {
+    $tf_plan_action = "plan -destroy"
+    $tf_action = "destroy"    
     $sys_action = @{
         do      = "Remove"
         past    = "Removed"
@@ -78,12 +76,27 @@ if ($Action -eq "Remove") {
     }
 }
 else {
-    $sys_action = @{
-        do      = "Create"
-        past    = "Created"
-        current = "Creating"
-        colour  = "Green"
-        symbol  = "[+]"
+    $tf_plan_action = "plan"
+    $tf_action = "apply"    
+    if (Test-Path -Path "$dir_tf_files/backend.tf") {
+        # An existing backend file is detected, assume deployment executed previously. 
+        $backend_exists = $true
+        $sys_action = @{
+            do      = "Update"
+            past    = "Updated"
+            current = "Updating"
+            colour  = "Yellow"
+            symbol  = "[~]"
+        }     
+    }
+    else {
+        $sys_action = @{
+            do      = "Deploy"
+            past    = "Deployed"
+            current = "Deploying"
+            colour  = "Green"
+            symbol  = "[+]"
+        }
     }
 }
 
@@ -113,21 +126,8 @@ Write-Host -ForegroundColor $HD1 "==============================================
 Write-Host -ForegroundColor $HD2 "     Bootstrap Script: Azure | GitHub | Terraform     "
 Write-Host -ForegroundColor $HD1 "======================================================`r`n"
 
-# Get current public IP address to add to Storage Account allowed list. 
-Write-Host -ForegroundColor $HD1 -NoNewLine "[*] Obtaining public IP address for Storage Account allowed list... "
-Try {
-    $current_ip = (Invoke-RestMethod -Uri $ip_url)
-    Write-Host -ForegroundColor $INF "PASS"
-}
-Catch {
-    Write-Host -ForegroundColor $ERR "FAIL"
-    Write-Host "ERROR: Failed to get current public IP address. $_"
-    exit 1
-}
-
 # Validation: Provided variables file. Check path exists and values can be queried. 
-#$env_file = Join-Path -Path $PSScriptRoot -ChildPath $EnvFile
-Write-Host -ForegroundColor $HD1 -NoNewLine "[*] Validating provided variables file... "
+Write-Host -ForegroundColor $HD1 -NoNewLine "[-] Validating local variables file... "
 if (!(Test-Path -Path $env_file)) {
     Write-Host -ForegroundColor $ERR "FAIL"
     Write-Host -ForegroundColor $ERR "[x] ERROR: Required variables file not found! Please create it and try again."
@@ -137,7 +137,7 @@ else {
     Try {
         # Import variables from file into '$config' variable.
         $config = Import-PowerShellDataFile -Path $env_file
-        if ($config.global.naming.org_prefix) {
+        if ($config.global.repo_config) {
             Write-Host -ForegroundColor $INF "PASS"
         }
         else {
@@ -155,30 +155,23 @@ else {
 
 # Validation: Required Applications and Authentication.
 ForEach ($app in $requiredApps) {
-    Write-Host -ForegroundColor $HD1 -NoNewLine "[*] Checking application '$($app.name)'... "
+    Write-Host -ForegroundColor $HD1 -NoNewLine "[-] Checking application '$($app.name)'... "
     # Check if application is install by executing its primary command.
     if (!(Get-Command $app.Command -ErrorAction SilentlyContinue 2>&1)) {
         Write-Host -ForegroundColor $ERR "FAIL"
-        Write-Host -ForegroundColor $ERR "[x] ERROR: Required application '$($app.name)' is missing. Please install it and try again."
+        Write-Host -ForegroundColor $ERR "[x] ERROR: Required application '$($app.name)' is missing. Please install and try again."
         exit 1
     }
     else {
         # Check is application is authenticated. If not, prompt to authenticate.
         if (!(Invoke-Expression $app.AuthCheck -ErrorAction SilentlyContinue 2>&1)) {
             Write-Host -ForegroundColor $ERR "FAIL"
-            Write-Host -ForegroundColor $WRN "[!] WARNING: Required application '$($app.name)' is not authenticated!"
-            if (Get-UserConfirm -prompt "Do you wish to proceed with login [Y/N]?") {
-                Invoke-Expression $app.LoginCmd
-            }
-            else {
-                Write-Host -ForegroundColor $WRN "[!] WARNING: User declined to proceed with authentication. Exit."
-                exit 1
-            }
+            Write-Host -ForegroundColor $WRN "[!] WARN: Required application '$($app.name)' is not authenticated! Please authenticate and try again."
         }
         # Test access to resources.
         if (!(Invoke-Expression $app.AccessCheck -ErrorAction SilentlyContinue 2>&1)) {
             Write-Host -ForegroundColor $ERR "FAIL"
-            Write-Host -ForegroundColor $ERR "[x] ERROR: Failed access check for application '$($app.name)'. Please check environment permissions and try again."
+            Write-Host -ForegroundColor $ERR "[x] ERROR: Failed access check for application '$($app.name)'. Please check authentication/permissions and try again."
             exit 1
         }
         else {
@@ -196,119 +189,104 @@ ForEach ($app in $requiredApps) {
 
 Invoke-Expression "az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors" >$null 2>&1
 Write-Host ""
-Write-Host -ForegroundColor $HD1 "Azure: " -NoNewLine; Write-Host -ForegroundColor Yellow "(User: $($azSession.user.name))"
+Write-Host -ForegroundColor $HD1 "Azure --------------------------------------------"
 Write-Host "- Tenant ID: $($azSession.tenantId)"
 Write-Host "- Tenant Name: $($azSession.tenantDisplayName)"
 Write-Host "- Subscription ID: $($azAccess.subscriptionId)"
 Write-Host "- Subscription Name: $($azAccess.displayName)"
 Write-Host "- Default Location: $($config.global.locations.default)"
-Write-Host "- Current Public IP: $($current_ip)"
+Write-Host "- Current User: $($azSession.user.name)"
 Write-Host ""
-Write-Host -ForegroundColor $HD1 "Repository: " -NoNewLine; Write-Host -ForegroundColor Yellow "(User: $($ghSession.login))"
+Write-Host -ForegroundColor $HD1 "Repository ---------------------------------------"
 Write-Host "- Owner/Org: $(($ghSession.html_url).Replace('https://github.com/',''))"
-Write-Host "- Repository: $($config.repo_config.repo) [$($config.repo_config.Branch)]"
+Write-Host "- Repository: $($config.global.repo_config.repo) [$($config.global.repo_config.Branch)]"
+Write-Host "- Current User: $($ghSession.login)"
 Write-Host "- Access: $(($ghAccess.PSObject.Properties | Where-Object {$_.Value -eq $true} | ForEach-Object {$_.Name}) -join ", ")"
 Write-Host ""
-Write-Host -ForegroundColor $HD1 "Deployment Action: " -NoNewLine; 
+if ($backend_exists) {
+    Write-Host -ForegroundColor $sys_action.colour "*** Existing backend file found! Assuming update ***"
+}
+Write-Host -ForegroundColor $HD1 "Action: " -NoNewLine; 
 Write-Host -ForegroundColor $sys_action.colour "$($sys_action.do) $($sys_action.symbol)"
 Write-Host -ForegroundColor $HD1 "Please ensure the above details are correct before proceeding."
 Write-Host ""
 if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?")) {
-    Write-Host -ForegroundColor $WRN "[!] WARNING: User declined to proceed. Exit."
+    Write-Host -ForegroundColor $WRN "[!] WARN: User declined to proceed. Exit."
     exit 1
 }
 
 #================================================#
-# MAIN: Stage 3 - Prepare Terraform
+# MAIN: Stage 3 - Prepare Terraform Variables
 #================================================#
+Write-Host ""
+Write-Host -ForegroundColor $HD1 "[-] Performing Action: Generating Terraform variable files... " -NoNewLine
 
-# Generate required TFVARS files.
-$tfVARS_global = @"
-# SAFE TO COMMIT - Ensure no sensitive values are added.
-
-# Global Variables
-global = {
-  locations = {
-    default = "$($config.global.locations.default)"     # Default preferred location for IaC backend resources. 
-    second  = "$($config.global.locations.secondary)"   # Secondary preference. 
-  }
-  naming = {  # Naming Convention - Example: "abc-plz-gov-logs-law"
-    org_prefix  = "$($config.global.naming.org_prefix)"      # Short name of organization ("abc"). Used in resource naming.
-    project_long  = "$($config.global.naming.project_long)"  # Project name (long) for related resources (platform, webapp01). 
-    project_short = "$($config.global.naming.project_short)" # Project name (short) for related resources (plz, app).
-    environment = "$($config.global.naming.environment)" # PLZ = Platform Landing Zone
-  }
-  tags = {
-    Project     = "$($config.global.tags.Project)"       # Name of the project. 
-    Owner       = "$($config.global.tags.Owner)"         # Team responsible for the resources. 
-    Creator     = "$($config.global.tags.Creator)"       # Person or process that created the initial resources. 
-    Environment = "$($config.global.tags.Environment)"   # Environment: Shared Services, prd, dev, tst
-  }
+# Variables: Bootstrap
+Try {
+    $template_bootstrap = (Get-Content -Path "$dir_templates/bootstrap.tmpl" -Raw)
+    $template_bootstrap_replace = @(
+        [PSCustomObject]@{ Find = "{subscription_id_iac}"; Replace = "$($config.subscription_id_iac)"; }
+        [PSCustomObject]@{ Find = "{subscription_id_con}"; Replace = "$($config.subscription_id_con)"; }
+        [PSCustomObject]@{ Find = "{subscription_id_gov}"; Replace = "$($config.subscription_id_gov)"; }
+        [PSCustomObject]@{ Find = "{subscription_id_mgt}"; Replace = "$($config.subscription_id_mgt)"; }
+        [PSCustomObject]@{ Find = "{subscription_id_idn}"; Replace = "$($config.subscription_id_idn)"; }
+    )
+    ForEach ($entry in $template_bootstrap_replace) {
+        $template_bootstrap = $template_bootstrap.Replace($entry.Find, $entry.Replace)
+    }
+    $template_bootstrap | Out-File -Encoding utf8 -FilePath "$dir_script_tfvars/bootstrap.tfvars" -Force
+    Write-Host -ForegroundColor $INF "PASS"
+}
+Catch {
+    Write-Host -ForegroundColor $ERR "FAIL" 
+    Write-Host -ForegroundColor $ERR "[x] ERROR: Failed to generate Terraform variable file (bootstrap). $_"
+    exit 1
 }
 
-# Repository Configuration
-repo_config = {
-  owner  = "$($config.repo_config.owner)" # Org/owner, target repository, and branch name.
-  repo   = "$($config.repo_config.repo)"
-  branch = "$($config.repo_config.branch)"
+# Variables: Global
+Try {
+    $template_global = (Get-Content -Path "$dir_templates/global.tmpl" -Raw)
+    $template_global_replace = @(
+        [PSCustomObject]@{ Find = "{global_location_default}"; Replace = "$($config.global.locations.default)"; }
+        [PSCustomObject]@{ Find = "{global_location_secondary}"; Replace = "$($config.global.locations.secondary)"; }
+        [PSCustomObject]@{ Find = "{global_naming_org_code}"; Replace = "$($config.global.naming.org_code)"; }
+        [PSCustomObject]@{ Find = "{global_naming_project_name}"; Replace = "$($config.global.naming.project_name)"; }
+        [PSCustomObject]@{ Find = "{global_naming_environment}"; Replace = "$($config.global.naming.environment)"; }
+        [PSCustomObject]@{ Find = "{global_tags_organisation}"; Replace = "$($config.global.tags.organisation)"; }
+        [PSCustomObject]@{ Find = "{global_tags_owner}"; Replace = "$($config.global.tags.owner)"; }
+        [PSCustomObject]@{ Find = "{global_tags_environment}"; Replace = "$($config.global.tags.environment)"; }
+        [PSCustomObject]@{ Find = "{global_tags_project}"; Replace = "$($config.global.tags.project)"; }
+        [PSCustomObject]@{ Find = "{global_tags_createdby}"; Replace = "$($config.global.tags.createdby)"; }
+        [PSCustomObject]@{ Find = "{global_repo_config_org}"; Replace = "$($config.global.repo_config.org)"; }
+        [PSCustomObject]@{ Find = "{global_repo_config_repo}"; Replace = "$($config.global.repo_config.repo)"; }
+        [PSCustomObject]@{ Find = "{global_repo_config_branch}"; Replace = "$($config.global.repo_config.branch)"; }
+    )
+    ForEach ($entry in $template_global_replace) {
+        $template_global = $template_global.Replace($entry.Find, $entry.Replace)
+    }
+    $template_global | Out-File -Encoding utf8 -FilePath "$dir_script_tfvars/global.tfvars" -Force
 }
-"@
-
-$tfVARS_bootstrap = @"
-# !! DO NOT COMMIT !! - If using public repository or including sensitive values.
-
-# Bootstrap Variables
-naming = {
-  stack_name = "Bootstrap" # Full stack name. Used with tag assignment and naming. 
-  stack_code = "iac"       # Short code used for resource naming. 
-}
-tags = {
-  Deployment = "Bootstrap" # Deployment specific tags (merged with global tags). 
+Catch {
+    Write-Host -ForegroundColor $ERR "FAIL" 
+    Write-Host -ForegroundColor $ERR "[x] ERROR: Failed to generate Terraform variable file (global). $_"
+    exit 1
 }
 
-# Deployment Stacks
-deployment_stacks = {
-  bootstrap = {
-    category        = "bootstrap"
-    stack_name      = "iac-bootstrap"
-    subscription_id = "$($config.subscription_iac_id)"
-    create_repo_env = false
-  }
-  connectivity = {
-    category        = "platform"
-    stack_name      = "plz-connectivity"
-    subscription_id = "$($config.subscription_con_id)"
-    create_repo_env = true
-  }
-  governance = {
-    category        = "platform"
-    stack_name      = "plz-governance"
-    subscription_id = "$($config.subscription_gov_id)"
-    create_repo_env = true
-  }
-  management = {
-    category        = "platform"
-    stack_name      = "plz-management"
-    subscription_id = "$($config.subscription_mgt_id)"
-    create_repo_env = true
-  }
-  identity = {
-    category        = "platform"
-    stack_name      = "plz-identity"
-    subscription_id = "$($config.subscription_idn_id)"
-    create_repo_env = true
-  }
+# Confirm Terraform variable files have been created. 
+if (!((Test-Path -Path "$dir_script_tfvars/global.tfvars") -and (Test-Path -Path "$dir_script_tfvars/bootstrap.tfvars"))) {
+    Write-Host -ForegroundColor $ERR "FAIL" 
+    Write-Host -ForegroundColor $ERR "[x] ERROR: Terraform variable files not found! Abort."
+    exit 1
 }
-"@
 
-# Write out each TFVARS file (overwrites existing).
-$tfVARS_global | Out-File -Encoding utf8 -FilePath "$var_dir/global.tfvars" -Force
-$tfVARS_bootstrap | Out-File -Encoding utf8 -FilePath "$var_dir/bootstrap.tfvars" -Force
+#===================================================#
+# MAIN: Stage 4 - Execute Terraform (Deploy/Remove)
+#===================================================#
 
 # Terraform: Initialize
 Write-Host ""
-Write-Host -ForegroundColor $HD1 "[*] Performing Action: Initialize Terraform configuration... " -NoNewLine
-if (terraform -chdir="$($tf_dir)" init -upgrade) {
+Write-Host -ForegroundColor $HD1 "[-] Performing Action: Initialize Terraform configuration... " -NoNewLine
+if (terraform -chdir="$dir_tf_files" init -upgrade) {
     Write-Host -ForegroundColor $INF "PASS"
 }
 else {
@@ -317,100 +295,102 @@ else {
     exit 1
 }
 
-#===================================================#
-# MAIN: Stage 4 - Execute Terraform (Deploy/Remove)
-#===================================================#
-
-if ($Action -eq "Remove") {
-    # Migrate remote state back to local and remove backend file. 
-    Write-Host -ForegroundColor $HD1 "[*] Pulling remote Terraform state from Azure... " -NoNewline
-    if (Test-Path -Path "$tf_dir/backend.tf") {
-        terraform -chdir="$($tf_dir)" state pull > "$tf_dir/$($tf_state_key).bak" # Backup remote.
-        terraform -chdir="$($tf_dir)" state pull > "$tf_dir/terraform.tfstate" # Rename local copy. 
-        if (Test-Path -Path "$tf_dir/$($tf_state_key).bak") {
+# Destroy --------------------|
+# Pull remote state file back to local (backup), or use existing local state file. 
+if ($Remove) {
+    # Migrate remote state back to local and remove local backend file. 
+    if (Test-Path -Path "$dir_tf_files/backend.tf") {
+        Write-Host ""
+        Write-Host -ForegroundColor $HD1 "[-] Pulling remote Terraform state from Azure... " -NoNewline
+        terraform -chdir="$dir_tf_files" state pull > "$dir_tf_files/$($tf_backend_state_key).bak" # Backup remote.
+        terraform -chdir="$dir_tf_files" state pull > "$dir_tf_files/terraform.tfstate" # Rename local copy. 
+        if (Test-Path -Path "$dir_tf_files/$($tf_backend_state_key).bak") {
             Write-Host -ForegroundColor $INF "PASS"
-            Remove-Item -Path "$tf_dir/backend.tf" -Force -ErrorAction SilentlyContinue
+            Rename-Item -Path "$dir_tf_files/backend.tf" -NewName "$dir_tf_files/backend.bak" -Force -ErrorAction SilentlyContinue
             # Re-initialise Terraform post state migration. 
-            terraform -chdir="$($tf_dir)" -reconfigure
-        }
-        else {
-            Write-Host -ForegroundColor $WRN "WARN"
-            Write-Host -ForegroundColor $WRN "[x] Failed to pull Terraform state back to local. Please check configuration."
-        }
-    }
-    else {
-        Write-Host -ForegroundColor $WRN "WARN"
-        Write-Host -ForegroundColor $WRN "[x] Backend configuration is missing. Defaulting to local."
-    }
-
-    # Check for local file (download from remote storage and place in Terraform directory).
-    Write-Host -ForegroundColor $HD1 "[*] Checking for local state file... " -NoNewline
-    if (Test-Path -Path "$tf_dir/terraform.tfstate") {
-        Write-Host -ForegroundColor $INF "PASS"
-        terraform -chdir="$($tf_dir)" destroy -var-file="$tfvar_dir/bootstrap.tfvars" -var-file="$tfvar_dir/global.tfvars"
-    }
-    else {
-        Write-Host -ForegroundColor $ERR "FAIL"
-        Write-Host -ForegroundColor $ERR "[x] Local state file is missing. Please download from remote storage and try again." 
-        exit 1
-    }
-}
-else {
-    # Terraform: Plan
-    Write-Host ""
-    Write-Host -ForegroundColor $HD1 "[*] Performing Action: Running Terraform plan... " -NoNewLine
-    if (terraform -chdir="$($tf_dir)" plan --out=bootstrap.plan -var-file="$tfvar_dir/bootstrap.tfvars" -var-file="$tfvar_dir/global.tfvars") {
-        Write-Host -ForegroundColor $INF "PASS" 
-        terraform -chdir="$($tf_dir)" show bootstrap.plan
-    }
-    else {
-        Write-Host -ForegroundColor $ERR "FAIL" 
-        Write-Host -ForegroundColor $ERR "[x] ERROR: Terraform plan failed. Please check configuration and try again ($($tfvar_dir)))."
-        exit 1
-    }
-    
-    # Terraform: Apply
-    Write-Host ""
-    if (Test-Path -Path "$tf_dir/bootstrap.plan") {
-        Write-Host -ForegroundColor $WRN "[!] Terraform will now deploy changes. This may take several minutes to complete."
-        if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?") ) {
-            Write-Host -ForegroundColor $ERR "[x] ERROR: User aborted process. Please confirm intended configuration and try again."
-            exit 1
-        }
-        else {
-            Write-Host -ForegroundColor $HD1 "[*] Performing Action: Running Terraform apply... "
-            Try {
-                terraform -chdir="$($tf_dir)" apply bootstrap.plan
+            Write-Host -ForegroundColor $HD1 "[-] Reconfiguring Terraform... " -NoNewline
+            if (terraform -chdir="$dir_tf_files" init -migrate-state) {
+                Write-Host -ForegroundColor $INF "PASS" 
             }
-            Catch {
-                Write-Host "FAIL" -ForegroundColor $ERR
-                Write-Host -ForegroundColor $ERR "[x] Terraform plan failed. Please check configuration and try again. $_"
+            else {
+                Write-Host -ForegroundColor $ERR "ERROR"
+                Write-Host -ForegroundColor $ERR "[x] ERROR: Failed to re-initialise Terraform!"
                 exit 1
             }
         }
+        else {
+            Write-Host -ForegroundColor $ERR "ERROR"
+            Write-Host -ForegroundColor $ERR "[x] ERROR: Failed to pull Terraform state back to local. Please check configuration or download manually."
+            exit 1
+        }
     }
     else {
-        Write-Host -ForegroundColor $ERR "[x] Terraform plan file missing! Please check configuration and try again."
-        exit 1  
+        # Check for local file (download from remote storage and place in Terraform directory).
+        if (Test-Path -Path "$dir_tf_files/terraform.tfstate") {
+            Write-Host -ForegroundColor $WRN "[!] WARN: Backend configuration (backend.tf) is missing. Defaulting to using local state file."
+        }
+        else {
+            Write-Host -ForegroundColor $ERR "[x] ERROR: Local state file is missing. Please download from remote backend and try again." 
+            exit 1
+        }
     }
+}
+
+# Terraform: Plan --------------------|
+Write-Host ""
+Write-Host -ForegroundColor $HD1 "[-] Performing Action: Running Terraform plan... " -NoNewLine
+if (terraform -chdir="$dir_tf_files" $($tf_plan_action) --out=bootstrap.plan -var-file="../../../$dir_script_tfvars/bootstrap.tfvars" -var-file="../../../$dir_script_tfvars/global.tfvars") {
+    Write-Host -ForegroundColor $INF "PASS" 
+    terraform -chdir="$dir_tf_files" show bootstrap.plan
+}
+else {
+    Write-Host -ForegroundColor $ERR "FAIL" 
+    Write-Host -ForegroundColor $ERR "[x] ERROR: Terraform plan failed. Please check configuration and try again."
+    exit 1
+}
+
+# Terraform: Apply / Destroy --------------------|
+Write-Host ""
+if (Test-Path -Path "$dir_tf_files/bootstrap.plan") {
+    Write-Host -ForegroundColor $WRN "[!] Terraform will now deploy changes. This may take several minutes to complete."
+    if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?") ) {
+        Write-Host -ForegroundColor $ERR "[x] ERROR: User aborted process. Please confirm intended configuration and try again."
+        exit 1
+    }
+    else {
+        Write-Host -ForegroundColor $HD1 "[-] Performing Action: Running Terraform $($tf_action)... "
+        Try {
+            terraform -chdir="$($dir_tf_files)" apply bootstrap.plan
+        }
+        Catch {
+            Write-Host "FAIL" -ForegroundColor $ERR
+            Write-Host -ForegroundColor $ERR "[x] ERROR: Terraform $($tf_action) failed. Please check configuration and try again. $_"
+            exit 1
+        }
+    }
+}
+else {
+    Write-Host -ForegroundColor $ERR "[x] Terraform plan file missing! Please check configuration and try again."
+    exit 1  
 }
 
 #================================================#
 # MAIN: Stage 5 - Migrate State to Azure
 #================================================#
 
-if (!($Action -eq "Remove")) {
+if (!($Remove)) {
     # Get Github variables from Terraform output.
-    Write-Host -ForegroundColor $HD1 "[*] Retrieving Terraform backend details from output... " -NoNewLine
+    Write-Host -ForegroundColor $HD1 "[-] Retrieving Terraform backend details from output... " -NoNewLine
     Try {
-        $tf_rg = terraform -chdir="$($tf_dir)" output -raw bootstrap_iac_rg
-        $tf_sa = terraform -chdir="$($tf_dir)" output -raw bootstrap_iac_sa
-        $tf_cn = terraform -chdir="$($tf_dir)" output -raw bootstrap_iac_cn
+        $tf_backend_resource_group = terraform -chdir="$($dir_tf_files)" output -raw bootstrap_iac_rg
+        $tf_backend_storage_account = terraform -chdir="$($dir_tf_files)" output -raw bootstrap_iac_sa
+        $tf_backend_container = terraform -chdir="$($dir_tf_files)" output -raw bootstrap_iac_cn
         Write-Host -ForegroundColor $INF "PASS"
         Write-Host ""
-        Write-Host "- Resource Group: $tf_rg"
-        Write-Host "- Storage Account: $tf_sa"
-        Write-Host "- Blob Continer: $tf_cn"
+        Write-Host "- Resource Group: $tf_backend_resource_group"
+        Write-Host "- Storage Account: $tf_backend_storage_account"
+        Write-Host "- Blob Continer: $tf_backend_container"
+        Write-Host "- State File: $tf_backend_state_key"
     }
     Catch {
         Write-Host -ForegroundColor $ERR "FAIL"
@@ -418,49 +398,58 @@ if (!($Action -eq "Remove")) {
         exit 1
     }
 
-    # Generate backend config for state migration.
-    $tfBackend = `
-        @"
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "$($tf_rg)"
-    storage_account_name = "$($tf_sa)"
-    container_name       = "$($tf_cn)"
-    key                  = "$($tf_state_key)"
-    use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
-  }
-}
-"@
-    $tfBackend | Out-File -Encoding utf8 -FilePath "$tf_dir/backend.tf" -Force
+    # Backend: Create post deployment. 
+    Try {
+        $template_backend = (Get-Content -Path "$dir_templates/backend.tmpl" -Raw)
+        $template_backend_replace = @(
+            [PSCustomObject]@{ Find = "{tf_backend_resource_group}"; Replace = "$tf_backend_resource_group"; }
+            [PSCustomObject]@{ Find = "{tf_backend_storage_account}"; Replace = "$tf_backend_storage_account"; }
+            [PSCustomObject]@{ Find = "{tf_backend_container}"; Replace = "$tf_backend_container"; }
+            [PSCustomObject]@{ Find = "{tf_backend_state_key}"; Replace = "$tf_backend_state_key"; }
+        )
+        ForEach ($entry in $template_backend_replace) {
+            $template_backend = $template_backend.Replace($entry.Find, $entry.Replace)
+        }
+        $template_backend | Out-File -Encoding utf8 -FilePath "$dir_tf_files/backend.tf" -Force
+    }
+    Catch {
+        Write-Host -ForegroundColor $ERR "FAIL" 
+        Write-Host -ForegroundColor $ERR "[x] ERROR: Failed to generate Terraform backend file. $_"
+        exit 1
+    }
 
     # Terraform: Migrate State
-    Write-Host -ForegroundColor $WRN "[!] Terraform will now migrate state to Azure... "
-    if (Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?") {
-        Write-Host ""
-        Write-Host -ForegroundColor $HD1 "[*] Migrating Terraform state to Azure... " -NoNewline
-        if (terraform -chdir="$($tf_dir)" init -migrate-state -force-copy -input=false) {
-            Write-Host -ForegroundColor $INF "PASS"
-            Remove-Item -Path "$tf_dir/terraform.tfstate" -Force -ErrorAction SilentlyContinue
+
+    Write-Host ""
+    if (!($backend_exists)) {
+        Write-Host -ForegroundColor $WRN "[!] Terraform will now migrate state to Azure... "
+        if (Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?") {
+            Write-Host ""
+            Write-Host -ForegroundColor $HD1 "[-] Migrating Terraform state to Azure... " -NoNewline
+            if (terraform -chdir="$($dir_tf_files)" init -migrate-state -force-copy -input=false) {
+                Write-Host -ForegroundColor $INF "PASS"
+                Remove-Item -Path "$dir_tf_files/terraform.tfstate" -Force -ErrorAction SilentlyContinue
+            }
+            else {
+                Write-Host -ForegroundColor $ERR "FAIL"
+                Write-Host -ForegroundColor $ERR "[x] Failed to migrate Terraform state to Azure. Please check configuration and try again."
+            }
         }
         else {
-            Write-Host -ForegroundColor $ERR "FAIL"
-            Write-Host -ForegroundColor $ERR "[x] Failed to migrate Terraform state to Azure. Please check configuration and try again."
+            Write-Host -ForegroundColor $WRN "[!] Terraform state migration aborted by user."
+            #Remove-Item -Path "$dir_tf_files/backend.tf" -Force -ErrorAction SilentlyContinue
         }
-    }
-    else {
-        Write-Host -ForegroundColor $WRN "[!] Terraform state migration aborted by user."
-        Remove-Item -Path "$tf_dir/backend.tf" -Force -ErrorAction SilentlyContinue
     }
 }
 
 #================================================#
 # MAIN: Stage 6 - Clean Up
 #================================================#
-Remove-Item -Path "$tf_dir/bootstrap.plan" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$tf_dir/terraform*" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$tf_dir/terraform.*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$dir_tf_files/bootstrap.plan" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$dir_tf_files/.terraform*" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$dir_tf_files/.terraform.*" -Force -ErrorAction SilentlyContinue
 Write-Host ""
-if ($Action -ne "Remove") {
+if (!($Remove)) {
     Write-Host -ForegroundColor $WRN "NOTE: Manual approval may be required for pending API permissions assigned to the Service Principal."
 }
 Write-Host ""

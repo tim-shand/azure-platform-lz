@@ -49,6 +49,4 @@ override.tf.json
 # Allow example or default TFVARS file.
 !example.tfvars
 !terraform.tfvars
-!env-dev.tfvars
-!env-prd.tfvars
-!env-example.psd1
+!*-example.psd1

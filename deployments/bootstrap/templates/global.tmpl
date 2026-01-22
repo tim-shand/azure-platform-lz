@@ -1,0 +1,24 @@
+# Variables: Global
+global = {
+  locations = {
+    default   = "{global_location_default}"   # Primary region to use for resource creation. 
+    secondary = "{global_location_secondary}" # Secondary region to use for resource creation. 
+  }
+  naming = {
+    org_code     = "{global_naming_org_code}"      # Short code of the organisation, can be used with resource naming. 
+    project_name = "{global_naming_project_name}"  # Name of the project or workload: platform, mywebapp. 
+    environment  = "{global_naming_environment}"   # Workload environment: dev, tst, prd, alz. 
+  }
+  tags = {
+    Organisation = "{global_tags_organisation}" # Name or abbreviation used to identify the organisation. 
+    Owner        = "{global_tags_owner}"        # Name of the team that owns the project. 
+    Environment  = "{global_tags_environment}"  # Workload environment: dev, tst, prd, alz, plz. 
+    Project      = "{global_tags_project}"      # Project name, used to group and identify related resources. 
+    CreatedBy    = "{global_tags_createdby}"    # Name of the user or service that created the resources. 
+  }
+  repo_config = {
+    org    = "{global_repo_config_org}"    # Name of the repository organisation owner. 
+    repo   = "{global_repo_config_repo}"   # Repository where this project is stored. 
+    branch = "{global_repo_config_branch}" # Name of the default repository branch. 
+  }
+}

@@ -4,13 +4,16 @@ _Run-once Powershell/Terraform deployment to bootstrap Azure and GitHub for IaC 
 
 This bootstrap deployment will create resources in both Azure and GitHub, required for future deployments using Github Actions workflows, allowing for centralized storage of platform state files. All state files can be managed from a single IaC subscription.
 
-- Designed for use with multiple deployment stacks to deploy an Azure platform landing zone. 
+## 🌟 Features
+
+- Creates deployment stack resources to deploy an Azure platform landing zone. 
+- Generates `global.tfvars` and `bootstrap.tfvars` files using template files (`*.tmpl`). 
 - Automates initial bootstrapping process using combination of Powershell and Terraform executed locally. 
 - Automates the bootstrap state migration post-setup, from local to newly created Azure resources. 
 
 ---
 
-## :green_book: Requirements
+## 📗 Requirements
 
 ### Accounts
 
@@ -27,7 +30,7 @@ This bootstrap deployment will create resources in both Azure and GitHub, requir
 
 ---
 
-## :hammer_and_wrench: Created Resources
+## 🛠️ Created Resources
 
 - **Azure: Entra ID - Service Principal (App Registration)**
   - Dedicated, privileged identity for executing changes in the Azure tenant. 
@@ -58,24 +61,24 @@ Resources are grouped by categories and their child stacks.
   - Platform -> Identity (plz-identity)
 
 ```text
-org-iac-bootstrap-rg
-└── orgiacbootstrapsa12345
+rg-org-iac-bootstrap
+└── saorgiacbootstrap12345
     └── tfstate-iac-bootstrap
 
-org-iac-platform-rg
-└── orgiacplatformsa12345
+rg-org-iac-platform
+└── saorgiacplatform12345
     ├── tfstate-plz-governance
     ├── tfstate-plz-connectivity
     ├── tfstate-plz-management
     └── tfstate-plz-identity
 ```
 
-| Object                  | Created per  | Example                  | Purpose |
-| ----------------------- | ------------ | ------------------------ | ------- |
-| Resource Group          | **Category** | org-plz-bootstrap-rg     | Resource group containing components for bootstrapping.   |
-| Resource Group          | **Category** | org-plz-platform-rg      | Resource group containing components for platform LZ.     |
-| Storage Account         | **Category** | orgplzbootstrapsa12345   | Holds blob container for bootstrapping deployment.        |
-| Storage Account         | **Category** | orgplzplatformsa12345    | Holds blob containers per platform deployment stack.      |
+| Object                  | Created per  | Example                  | Purpose                                                   |
+| ----------------------- | ------------ | ------------------------ | --------------------------------------------------------- |
+| Resource Group          | **Category** | rg-org-plz-bootstrap     | Resource group containing components for bootstrapping.   |
+| Resource Group          | **Category** | rg-org-plz-platform      | Resource group containing components for platform LZ.     |
+| Storage Account         | **Category** | saorgplzbootstrap12345   | Holds blob container for bootstrapping deployment.        |
+| Storage Account         | **Category** | saorgplzplatform12345    | Holds blob containers per platform deployment stack.      |
 | Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow. |
 | Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow. |
 | Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow. |
@@ -87,29 +90,34 @@ org-iac-platform-rg
 
 ---
 
-## :arrow_forward: Usage
+## ▶️ Usage
 
 ### ➕ Create
 
-1. Copy/rename Powershell data file `env-example.psd1`.
-2. Populate with required variable values.
-3. Execute the Powershell script using the `-Action Create` parameter. 
+1. Copy/rename Powershell data file `boostrap-example.psd1`. 
+2. Replace example content with desired variable values. 
+3. Execute the Powershell script and approve actions when prompted. 
 
 ```powershell
 # Execute bootstrapping process. 
-powershell -file deployments/bootstrap/bootstrap-azure-github.ps1 -Action Create
+powershell -file deployments/bootstrap/bootstrap-azure-github.ps1 
 ```
 
-4. Verify all resources have been deployed in Azure and GitHub.
-5. \[Optional\]: Migrate local state file to Azure when prompted.
+4. Verify all resources have been deployed in Azure and GitHub. 
+5. \[Optional\]: Migrate local state file to Azure when prompted. 
 
-### ➖ Remove
+### ➖ Removal
 
-1. Download the remote state file from Azure and place in `deployments/bootstrap/terraform` directory. 
-2. Execute the Powershell script using the `-Action Remove` parameter. 
-3. Approve removal of all created resources when prompted. 
+**Note:** The PowerShell script will detect if an existing `backend.tf` file exists, and attempt to migrate state back to local. 
+
+1. Execute the Powershell script using the `-Remove` parameter.  
 
 ```powershell
-# Remove bootstrap resources. 
-powershell -file deployments/bootstrap/bootstrap-azure-github.ps1 -Action Remove
+# Remove all bootstrap resources. 
+powershell -file deployments/bootstrap/bootstrap-azure-github.ps1 -Remove
 ```
+
+2. Remote backend is pulled from Azure locally and backed up. 
+3. Approve removal of all created resources when prompted. 
+
+---

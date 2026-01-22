@@ -1,0 +1,9 @@
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "{tf_backend_resource_group}"
+    storage_account_name = "{tf_backend_storage_account}"
+    container_name       = "{tf_backend_container}"
+    key                  = "{tf_backend_state_key}"
+    use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
+  }
+}
