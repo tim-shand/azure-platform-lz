@@ -63,10 +63,3 @@ Deployed and managed using infrastructure as Code (IaC), providing shared resour
   - Reasoning: Combination of repository and automation in a single platform. 
 
 ---
-
-## 📝 To Do / Future Improvements
-
-- [ ] PLZ: Governance - Policy Assignments (revisit)
-- [ ] Workload Backend Vending (revisit)
-- [ ] Subscription Vending
-- [ ] Optional on-prem connectivity (VPN Gateway)

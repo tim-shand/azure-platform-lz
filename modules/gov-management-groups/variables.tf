@@ -26,13 +26,17 @@ variable "subscriptions" {
   }))
 }
 
-# Management Groups ----------------------------------------------------------|
 variable "management_group_root" {
-  description = "Name ID to use for the top-level (root) Management Group."
-  type        = string
+  description = "Map of root Management Group object (top-level)."
+  type = map(object({
+    display_name           = string
+    subscription_id_filter = optional(list(string)) # Optional list of subscription prefixes (3 segments). 
+  }))
   validation {
-    condition     = can(regex("^[a-zA-Z0-9-]+$", var.management_group_root)) # Only allow alpha-numeric with dashes.
-    error_message = "Must be a string of alpha-numeric characters (can contain dashes), between 3 and 36 in length."
+    condition = alltrue([
+      for mg, details in var.management_group_root : length(details.display_name) >= 3
+    ])
+    error_message = "Both a display name and parent Management Group is required for all Level 1 Management Groups."
   }
 }
 
@@ -44,7 +48,7 @@ variable "management_groups_level1" {
   }))
   validation {
     condition = alltrue([
-      for mg, details in var.management_groups_level1 : length(details.display_name) > 1
+      for mg, details in var.management_groups_level1 : length(details.display_name) >= 3
     ])
     error_message = "Both a display name and parent Management Group is required for all Level 1 Management Groups."
   }
@@ -59,7 +63,7 @@ variable "management_groups_level2" {
   }))
   validation {
     condition = alltrue([
-      for mg, details in var.management_groups_level2 : length(details.display_name) > 1 && length(details.parent_mg_name) > 1
+      for mg, details in var.management_groups_level2 : length(details.display_name) >= 3 && length(details.parent_mg_name) >= 3
     ])
     error_message = "Both a display name and parent Management Group is required for all Level 2 Management Groups."
   }
@@ -74,7 +78,7 @@ variable "management_groups_level3" {
   }))
   validation {
     condition = alltrue([
-      for mg, details in var.management_groups_level3 : length(details.display_name) > 1 && length(details.parent_mg_name) > 1
+      for mg, details in var.management_groups_level3 : length(details.display_name) >= 3 && length(details.parent_mg_name) >= 3
     ])
     error_message = "Both a display name and parent Management Group is required for all Level 3 Management Groups."
   }
@@ -89,8 +93,23 @@ variable "management_groups_level4" {
   }))
   validation {
     condition = alltrue([
-      for mg, details in var.management_groups_level4 : length(details.display_name) > 1 && length(details.parent_mg_name) > 1
+      for mg, details in var.management_groups_level4 : length(details.display_name) >= 3 && length(details.parent_mg_name) >= 3
     ])
     error_message = "Both a display name and parent Management Group is required for all Level 4 Management Groups."
+  }
+}
+
+variable "management_groups_level5" {
+  description = "Map of fifth level Management Group objects, nested under defined parent Management Group."
+  type = map(object({
+    display_name           = string
+    subscription_id_filter = optional(list(string)) # Optional list of subscription prefixes (3 segments). 
+    parent_mg_name         = string
+  }))
+  validation {
+    condition = alltrue([
+      for mg, details in var.management_groups_level5 : length(details.display_name) >= 3 && length(details.parent_mg_name) >= 3
+    ])
+    error_message = "Both a display name and parent Management Group is required for all Level 5 Management Groups."
   }
 }

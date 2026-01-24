@@ -21,4 +21,5 @@ module "management_groups" {
   management_groups_level2 = var.management_groups_level2                 # Level 2: Nested under level 1 MGs. 
   management_groups_level3 = var.management_groups_level3                 # Level 3: Nested under level 2 MGs. Leave blank "{}" if not required. 
   management_groups_level4 = var.management_groups_level4                 # Level 4: Nested under level 3 MGs. Leave blank "{}" if not required. 
+  management_groups_level5 = var.management_groups_level5                 # Level 4: Nested under level 3 MGs. Leave blank "{}" if not required. 
 }

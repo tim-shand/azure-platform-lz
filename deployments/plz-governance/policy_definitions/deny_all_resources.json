@@ -1,11 +1,11 @@
 {
     "properties": {
-        "displayName": "Deny All Resources for Decommissioned Subscriptions",
+        "displayName": "Deny All Resources",
         "description": "This policy denies the creation or modification of all resource types in the assigned scope.",
         "policyType": "Custom",
         "mode": "Indexed",
         "metadata": {
-            "category": "Governance"
+            "category": "Resources"
         },
         "policyRule": {
             "if": {

@@ -1,14 +1,14 @@
 #=====================================================#
-# Module: Governance - Policy Custom Definitions
+# Platform LZ: Governance - Policy Definitions
 #=====================================================#
 
 locals {
-  # Decode all JSON policy files and add metadata. 
-  policy_files = fileset("${var.policy_custom_def_path}", "*.json") # Discover all policy JSON files.
+  policy_files_path = "${path.module}/policy_definitions"             # Decode all JSON policy files and add metadata. 
+  policy_files      = fileset("${local.policy_files_path}", "*.json") # Discover all policy JSON files.
   policies = {
     for file_name in local.policy_files :         # Loop each file in the list of files. 
     trimsuffix(file_name, ".json") => jsondecode( # Create map using trimmed file name as key, parsed JSON as value. 
-    file("${var.policy_custom_def_path}/${file_name}")).properties
+    file("${local.policy_files_path}/${file_name}")).properties
   }
 }
 
@@ -23,4 +23,12 @@ resource "azurerm_policy_definition" "custom" {
   metadata     = jsonencode(try(each.value.metadata, {}))   # Try if it exists, use it - otherwise empty. 
   parameters   = jsonencode(try(each.value.parameters, {})) # Try if it exists, use it - otherwise empty. 
   policy_rule  = jsonencode(each.value.policyRule)
+}
+
+# Generate map of Policy Definition name (key), ID, name (value). Used with Initiatives. 
+locals {
+  policy_definition_map = {
+    for k, p in azurerm_policy_definition.custom :
+    k => { id = p.id, name = p.name }
+  }
 }

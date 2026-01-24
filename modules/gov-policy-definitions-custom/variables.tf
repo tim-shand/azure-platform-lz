@@ -1,10 +1,4 @@
 # General  -----------------#
-
-variable "stack_code" {
-  description = "Short code used for stack resource naming."
-  type        = string
-}
-
 variable "naming" {
   description = "A map of naming values to use with resources."
   type        = map(string)

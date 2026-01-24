@@ -26,7 +26,7 @@ module "management-groups" {
   source                = "../../modules/gov-management-groups"
   global                = var.global                                   # Global configuration and other shared variables.
   subscriptions         = data.azurerm_subscriptions.all.subscriptions # Pass in all subscriptions from data call. 
-  management_group_root = "Core"                                       # Root: Top-level MG representign the organisation. 
+  management_group_root_id = "Core"                                    # Root: Top-level MG representign the organisation. 
   management_groups_level1 = {                                         # Level 1: Nested under root MG.
     platform = {
       display_name           = "Platform"
@@ -87,7 +87,7 @@ No requirements.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_global"></a> [global](#input\_global) | Map of global variable configuration values. | `map(map(string))` | n/a | yes |
-| <a name="input_management_group_root"></a> [management\_group\_root](#input\_management\_group\_root) | Name ID to use for the top-level (root) Management Group. | `string` | n/a | yes |
+| <a name="input_management_group_root"></a> [management\_group\_root\_id](#input\_management\_group\_root) | Name ID to use for the top-level (root) Management Group. | `string` | n/a | yes |
 | <a name="input_management_groups_level1"></a> [management\_groups\_level1](#input\_management\_groups\_level1) | Map of first level Management Group objects, nested under the root Manangement Group. | <pre>map(object({<br/>    display_name           = string<br/>    subscription_id_filter = optional(list(string)) # Optional list of subscription prefixes (3 segments). <br/>  }))</pre> | n/a | yes |
 | <a name="input_management_groups_level2"></a> [management\_groups\_level2](#input\_management\_groups\_level2) | Map of second level Management Group objects, nested under defined parent Management Group. | <pre>map(object({<br/>    display_name           = string<br/>    subscription_id_filter = optional(list(string)) # Optional list of subscription prefixes (3 segments). <br/>    parent_mg_name         = string<br/>  }))</pre> | n/a | yes |
 | <a name="input_management_groups_level3"></a> [management\_groups\_level3](#input\_management\_groups\_level3) | Map of third level Management Group objects, nested under defined parent Management Group. | <pre>map(object({<br/>    display_name           = string<br/>    subscription_id_filter = optional(list(string)) # Optional list of subscription prefixes (3 segments). <br/>    parent_mg_name         = string<br/>  }))</pre> | n/a | yes |
@@ -99,7 +99,6 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_management_group_root_id"></a> [management\_group\_root\_id](#output\_management\_group\_root\_id) | ID of the top-level (root) Management Group. |
 | <a name="output_management_group_subscriptions"></a> [management\_group\_subscriptions](#output\_management\_group\_subscriptions) | n/a |
 | <a name="output_management_groups_subs_level1"></a> [management\_groups\_subs\_level1](#output\_management\_groups\_subs\_level1) | n/a |
 | <a name="output_management_groups_subs_level2"></a> [management\_groups\_subs\_level2](#output\_management\_groups\_subs\_level2) | n/a |
