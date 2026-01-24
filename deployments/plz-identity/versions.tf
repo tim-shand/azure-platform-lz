@@ -14,7 +14,7 @@ terraform {
       version = "~> 3.7.2"
     }
   }
-  backend "azurerm" {} # Backend configuration passed in via automation workflow. 
+  #backend "azurerm" {} # Backend configuration passed in via automation workflow. 
 }
 
 data "azuread_client_config" "current" {} # Get current user session data. 

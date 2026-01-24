@@ -35,3 +35,15 @@ output "service_principal_oidc" {
   description = "List of OIDC federated credential display names."
   value       = [for cred in values(azuread_application_federated_identity_credential.repo_env) : cred.display_name]
 }
+
+# Globals: Resource Group and Key Vault -----------------------------------|
+
+output "globals_rg_name" {
+  description = "Resource Group for global output Key Vault."
+  value       = azurerm_resource_group.globals.name
+}
+
+output "globals_kv_name" {
+  description = "Key Vault name for storing global outputs."
+  value       = azurerm_key_vault.globals.name
+}

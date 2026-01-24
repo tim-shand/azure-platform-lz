@@ -10,6 +10,8 @@ This bootstrap deployment will create resources in both Azure and GitHub, requir
 - Generates `global.tfvars` and `bootstrap.tfvars` files using template files (`*.tmpl`). 
 - Automates initial bootstrapping process using combination of Powershell and Terraform executed locally. 
 - Automates the bootstrap state migration post-setup, from local to newly created Azure resources. 
+- Configures Azure Key Vault for global output values required across stacks.
+  - A single source of truth for critical outputs like Hub VNet ID, Log Analytics Workspace ID, and User Assigned Managed Identity.
 
 ---
 

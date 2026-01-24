@@ -1,7 +1,3 @@
-output "management_group_root" {
-  value = azurerm_management_group.root
-}
-
 output "root_id" {
   description = "ID of the root Management Group."
   value       = azurerm_management_group.root["core"].id

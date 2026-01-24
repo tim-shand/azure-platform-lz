@@ -39,6 +39,20 @@ resource "github_actions_variable" "repo_var_sa" {
   value         = module.iac_sa["platform"].storage_account_name
 }
 
+# GitHub: Repo [VARIABLE] - Globals: Resource Group
+resource "github_actions_variable" "repo_var_global_rg" {
+  repository    = data.github_repository.repo.name
+  variable_name = "AZURE_GLOBAL_OUTPUTS_RG"
+  value         = azurerm_resource_group.globals.name
+}
+
+# GitHub: Repo [VARIABLE] - Globals: Key Vault
+resource "github_actions_variable" "repo_var_global_kv" {
+  repository    = data.github_repository.repo.name
+  variable_name = "AZURE_GLOBAL_OUTPUTS_KV"
+  value         = azurerm_key_vault.globals.name
+}
+
 # GitHub: Environments + IaC Backend Configuration --------------------------------|
 
 # Create GitHub environments per deployment stack. 

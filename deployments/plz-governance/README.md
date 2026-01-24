@@ -1,10 +1,8 @@
 # Azure: Platform Landing Zone (STACK: Governance)
 
-## Overview
-
 This stack deploys the Governance layer for a custom, light-weight, CAF-aligned platform landing zone in Azure. 
 
-## Features
+## 🌟 Features
 
 - Provides basic security and management controls allowing assignment of built-in Azure Policy initiatives. 
 - Creates custom Policy Definitions as defined in JSON files. 

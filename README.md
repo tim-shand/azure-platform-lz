@@ -23,6 +23,8 @@ Deployed and managed using infrastructure as Code (IaC), providing shared resour
     - Maintaining isolation and independence per stack.  
     - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads).
     - One state file per stack (governance, connectivity, management, identity).
+  - Configures Azure Key Vault for global output values required across stacks.
+    - A single source of truth for critical outputs like Hub VNet ID, Log Analytics Workspace ID, and User Assigned Managed Identity.
 - **[Governance](./deployments/plz-governance)**
   - Management groups for policy assignment hierarchy and subscription management. 
   - Automated mapping of subscriptions to target management groups using an identifier value. 
@@ -46,7 +48,7 @@ Deployed and managed using infrastructure as Code (IaC), providing shared resour
 2. **Governance:** Deploy Management Group structure and assign policies at management group levels. 
 3. **Management:** Create monitoring/observability resources, referenced by policies in Governance stack. 
 4. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized control. 
-5. **Identity:** Deploy core Entra ID groups, RBAC assignments, and managed identities. 
+5. **Identity:** Deploy core Entra ID groups, RBAC assignments, and managed identities for policy enforcement. 
 
 ---
 

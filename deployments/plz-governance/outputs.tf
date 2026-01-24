@@ -1,3 +1,8 @@
+output "management_group_root_id" {
+  description = "ID of the top-level Management Group."
+  value       = module.management_groups.root_id
+}
+
 output "management_groups_all" {
   description = "Map of total Management Group structure."
   value       = module.management_groups.management_groups_all

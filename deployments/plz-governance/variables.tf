@@ -20,16 +20,14 @@ variable "subscription_id" {
   }
 }
 
-# Management Groups ----------------------------------------------------------|
-# variable "management_group_root" {
-#   description = "Name ID to use for the top-level (root) Management Group."
-#   type        = string
-#   validation {
-#     condition     = can(regex("^[a-zA-Z0-9-]+$", var.management_group_root)) # Only allow alpha-numeric with dashes.
-#     error_message = "Must be a string of alpha-numeric characters (can contain dashes), between 3 and 36 in length."
-#   }
-# }
+variable "global_outputs_kv" {
+  description = "Map of details for global outputs Key Vault. Passed in via command line or workflow."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
 
+# Management Groups ----------------------------------------------------------|
 variable "management_group_root" {
   description = "Map of root level Management Group details."
   type = map(object({
