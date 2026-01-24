@@ -12,9 +12,6 @@ locals {
     var.management_groups_level4,
     var.management_groups_level5
   )
-}
-
-locals {
   mg_initiative_assignments = { # Create a local variable named "mg_initiative_assignments". 
     #for mg_name, mg_details in var.management_groups_level1 : # Loop over each key-value pair in the input variable "management_groups_level1". 
     for mg_name, mg_details in local.management_groups_all_levels :

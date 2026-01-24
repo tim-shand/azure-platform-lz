@@ -10,6 +10,11 @@ locals {
     trimsuffix(file_name, ".json") => jsondecode( # Create map using trimmed file name as key, parsed JSON as value. 
     file("${local.policy_files_path}/${file_name}")).properties
   }
+  # Generate map of Policy Definition name (key), ID, name (value). Used with Initiatives. 
+  policy_definition_map = {
+    for k, p in azurerm_policy_definition.custom :
+    k => { id = p.id, name = p.name }
+  }
 }
 
 # Loop each JSON file in directory and create Policy Definition. 
@@ -23,12 +28,4 @@ resource "azurerm_policy_definition" "custom" {
   metadata     = jsonencode(try(each.value.metadata, {}))   # Try if it exists, use it - otherwise empty. 
   parameters   = jsonencode(try(each.value.parameters, {})) # Try if it exists, use it - otherwise empty. 
   policy_rule  = jsonencode(each.value.policyRule)
-}
-
-# Generate map of Policy Definition name (key), ID, name (value). Used with Initiatives. 
-locals {
-  policy_definition_map = {
-    for k, p in azurerm_policy_definition.custom :
-    k => { id = p.id, name = p.name }
-  }
 }
