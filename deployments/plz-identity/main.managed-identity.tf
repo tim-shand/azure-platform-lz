@@ -29,3 +29,10 @@ resource "azurerm_role_assignment" "policy_deployer_contributor" {
   role_definition_name = "Contributor"
   principal_id         = azurerm_user_assigned_identity.policy_deployer.principal_id
 }
+
+# Global Outputs: Stored in Key Vault
+resource "azurerm_key_vault_secret" "gov_uai_policy_deployer_pid" {
+  name         = "gov_uai_policy_deployer_pid"
+  value        = azurerm_user_assigned_identity.policy_deployer.principal_id
+  key_vault_id = data.azurerm_key_vault.globals_kv
+}

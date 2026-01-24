@@ -23,3 +23,10 @@ module "management_groups" {
   management_groups_level4 = var.management_groups_level4                 # Level 4: Nested under level 3 MGs. Leave blank "{}" if not required. 
   management_groups_level5 = var.management_groups_level5                 # Level 4: Nested under level 3 MGs. Leave blank "{}" if not required. 
 }
+
+# Global Outputs: Stored in Key Vault
+resource "azurerm_key_vault_secret" "iac_mg_root" {
+  name         = "ServicePrincipal-IaC-Deploy"
+  value        = module.management_groups.root_id
+  key_vault_id = data.azurerm_key_vault.globals_kv
+}

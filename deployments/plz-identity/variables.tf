@@ -28,10 +28,11 @@ variable "subscription_id" {
 }
 
 variable "global_outputs_kv" {
-  description = "Map of details for global outputs Key Vault. Passed in via command line or workflow."
-  type        = map(string)
-  nullable    = false
-  default     = {}
+  description = "Object of details for global outputs Key Vault. Passed in via command line or workflow."
+  type = object({
+    name           = string
+    resource_group = string
+  })
 }
 
 # Entra ID ----------------------------------------------------------|
