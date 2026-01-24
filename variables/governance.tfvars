@@ -8,9 +8,9 @@ naming = {
 # Management Groups 
 management_group_root = {
   "core" = {
-    display_name           = "TShand"     # Contains all platform subscriptions (management, connectivity, security and identity). 
-    subscription_id_filter = []           # List of subscription prefixes (first 3 segments). Maps MG to sub associationsm keeping full sub out of code.
-    policy_initiatives     = ["baseline"] # Assign Policy Initiatives directly to MGs. 
+    display_name           = "TShand"          # Contains all platform subscriptions (management, connectivity, security and identity). 
+    subscription_id_filter = []                # List of subscription prefixes (first 3 segments). Maps MG to sub associationsm keeping full sub out of code.
+    policy_initiatives     = ["core_baseline"] # Assign Policy Initiatives directly to MGs. 
   }
 }
 management_groups_level1 = { # Management Groups: First level nested under the root manangement group. 
@@ -76,7 +76,7 @@ policy_allowed_vm_skus = [
   "Standard_D4_v3"
 ]
 policy_initiatives = { # Define Initiative -> Definition mapping. 
-  baseline = [
+  core_baseline = [
     "allowed_locations",
     "required_tag_list",
     "storage_accounts_https"
