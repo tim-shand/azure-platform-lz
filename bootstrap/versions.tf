@@ -20,17 +20,12 @@ terraform {
   }
 }
 provider "random" {}
+provider "github" {}
 provider "azurerm" {
   features {}
-  tenant_id           = data.azuread_client_config.current.tenant_id
-  subscription_id     = var.deployment_stacks.bootstrap.subscription_id # Use dedicated IaC subscription.
-  storage_use_azuread = true                                            # Use Entra ID only for interacting with Storage services. 
-}
-provider "github" {}
-
-# Get tenant ID From current session, used to obtain tenant root MG.
-data "azurerm_management_group" "mg_tenant_root" {
-  name = data.azuread_client_config.current.tenant_id
+  tenant_id           = data.azuread_client_config.current.tenant_id # Get tenant ID from current session. 
+  subscription_id     = var.subscription_id                          # Use dedicated IaC subscription (pass in from workflow).
+  storage_use_azuread = true                                         # Use Entra ID only for interacting with Storage services. 
 }
 data "azuread_client_config" "current" {} # Get current user session data.
 data "azurerm_subscription" "current" {}  # Get current Azure subscription.

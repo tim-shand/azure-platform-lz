@@ -8,6 +8,7 @@
 *.dev/
 *.plan
 *packer_cache/
+*.bak
 
 # Environments
 .env
