@@ -28,7 +28,7 @@ platform_stacks = {
     stack_name              = "iac-bootstrap" # Name of stack directory and GitHub environment. 
     stack_category          = "global"        # Backend Category: platform, workload, global/bootstrap. 
     subscription_identifier = "iac-sub"       # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
-    create_env              = false           # Enable to create related environment in GitHub for stack (NOT required for bootstrap/global).  
+    create_env              = false           # Enable to create related environment in GitHub for stack (NOT required for bootstrap/global). 
   },
   "connectivity" = {
     stack_name              = "plz-connectivity" # Name of stack directory and GitHub environment. 
