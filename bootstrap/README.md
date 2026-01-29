@@ -128,6 +128,7 @@ platform_stacks = {
 - **Blob Containers:** Created per deployment stack (plz-governance, plz-management, etc) under each parent category Storage Account to hold the remote Terraform state files. 
 
 ### Azure Key Vault
+
 - Stores resource IDs, names and other details for shared services (Hub VNet, Log Analytics Workspace etc). 
 - This allows the Service Principal to resolve these resources by ID/name during data calls in other stacks. 
 
