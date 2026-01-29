@@ -32,27 +32,21 @@ variable "management_group_core_display_name" {
   default     = "Core"
 }
 
-variable "backend_categories" {
-  description = "List of categories used to group backend resources by workload type."
-  type        = list(string)
-  nullable    = false
-  default     = ["bootstrap", "platform", "workloads"]
-}
-
 variable "platform_stacks" {
   description = "Map of deployment objects listing the platform stack details."
   type = map(object({
     stack_name              = string
-    stack_category          = string # Group deployments by category (bootstrap, platform, workloads). 
+    stack_category          = string # Group deployments by category (platform, workloads). 
     subscription_identifier = string # Name part that is used in "contains" filter to resolve ID.
+    create_env              = bool   # Enable to create related environment in GitHub for stack. 
   }))
 }
 
 variable "workload_stacks" {
   description = "Map of deployment objects listing the workload stack details."
   type = map(object({
-    stack_name        = string
-    stack_category    = string
-    subscription_name = string
+    stack_name              = string
+    stack_category          = string # Group deployments by category (platform, workloads). 
+    subscription_identifier = string # Name part that is used in "contains" filter to resolve ID.
   }))
 }

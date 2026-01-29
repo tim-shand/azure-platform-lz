@@ -10,13 +10,13 @@ module "naming_sp" {
   source        = "../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
   workload      = var.stack.naming.workload_name
-  stack_or_env  = var.stack.naming.workload_code
+  stack_or_env  = "deploy"
   ensure_unique = true
 }
 
 # Service Principal: Create App Registration and Service Principal for IaC.
 resource "azuread_application" "iac_sp" {
-  display_name = "${module.naming_sp.full_name}-deploy-sp"      # Service Principal name. 
+  display_name = "${module.naming_sp.full_name}-sp"             # Service Principal name. 
   logo_image   = filebase64("./logo.png")                       # Image file for logo.
   owners       = [data.azuread_client_config.current.object_id] # Set current user as owner.
   notes        = "Service Principal for IaC deployments."       # Descriptive notes on purpose of the SP.
@@ -65,7 +65,7 @@ resource "azuread_application_federated_identity_credential" "repo_pr" {
 
 # OIDC for each deployment stack/environment. Required for each repo environment. 
 resource "azuread_application_federated_identity_credential" "repo_env" {
-  for_each       = var.platform_stacks # Using map of stacks that require repo environment.
+  for_each       = local.platform_stacks_with_env # Using local map of stacks that require repository environment only. 
   application_id = azuread_application.iac_sp.id
   display_name   = "oidc_ENV_${each.value.stack_name}_${replace(data.github_repository.repo.full_name, "/", "_")}"
   description    = "[REPO_ENV]: OIDC federated credentials (${each.value.stack_name}). Allows pipeline to execute from repository environment."
