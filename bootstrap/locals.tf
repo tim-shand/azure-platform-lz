@@ -2,7 +2,7 @@ locals {
   tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
   backend_category_map = {
     global    = "global"    # Map backend category name to purpose (opinionated - DO NOT change). 
-    platform  = "platform"  # Map backend category name to purpose (opinionated - DO NOT change).
+    platform  = "platform"  # Map backend category name to purpose (opinionated - DO NOT change). 
     workloads = "workloads" # Map backend category name to purpose (opinionated - DO NOT change).
   }
 
