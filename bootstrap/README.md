@@ -155,7 +155,7 @@ Resources are grouped by categories and their child stacks.
 ```text
 org-global-iac-rg
 └── orgglobaliacsa12345
-    └── tfstate-bootstrap-iac
+    └── tfstate-iac-bootstrap
 
 org-platform-iac-rg
 └── orgplatformiacsa12345
