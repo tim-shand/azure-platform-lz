@@ -36,7 +36,7 @@ Using this method help to reduce blast radius in the event unwanted subscription
 - This means the subscription provided will be used to contain the backend resources for all the platform landing zone deployment stacks. 
 - Separate subscriptions can be used for each of the deployment stacks if required; however, re-using the same subscription is also acceptable. 
 
-#### Naming Method
+#### Naming Method 
 
 - Subscriptions should be named in a way that makes them uniquely identifiable. 
 - Using this method enables the subscription IDs to be resolved by a Terraform data call, using a __keyword-based__ lookup method. 
@@ -53,13 +53,13 @@ Subscription 2: abc-platform   # General platform subscription. Used for all pla
 
 # Multi-Subscription Platform Landing Zone
 Subscription 1: abc-iac-sub            # Used as dedicated IaC subscription. Pass into workflow by repository variable. 
-Subscription 2: abc-platform-gen-sub   # General platform subscription. Used for governance and identity stacks in this example.
+Subscription 2: abc-platform-sub       # General platform subscription. Used for governance and identity stacks in this example.
 Subscription 3: abc-platform-con-sub   # Connectivity subscription. Dedicated subscription for connectivity resources. 
 Subscription 4: abc-platform-mgt-sub   # Management subscription. Dedicated subscription for management resources. 
 ```
 
 Notice that both the `governance` and `identity` stack configurations below are using the **same value** for the `subscription_identifier` field.  
-Using the same value of `platform-gen` will result in the same subscription ID being resolved and used for both stacks.  
+Using the same value of `platform-sub` will result in the same subscription ID being resolved and used for both stacks.  
 The subscription ID is resolved when a data call is made using the value provided by the `display_name_contains` parameter.  
 Using the name part value for the subscription helps to keep subscription IDs out of the code base. 
 
@@ -70,25 +70,35 @@ data "azurerm_subscriptions" "platform" {
 }
 
 platform_stacks = {
+  "bootstrap" = {
+    stack_name              = "iac-bootstrap"    # Name of stack directory and GitHub environment. 
+    stack_category          = "global"           # Backend Category: platform, workload, global/bootstrap. 
+    subscription_identifier = "iac-sub"          # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    create_env              = false              # Enable to create related environment in GitHub for stack (NOT required for bootstrap/global).  
+  },
   "connectivity" = {
     stack_name              = "plz-connectivity" # STATIC: Name of stack directory and GitHub environment. 
-    stack_category          = "platform"         # Backend Category: platform, workload, bootstrap. 
-    subscription_identifier = "platform-con"     # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.  
+    stack_category          = "platform"         # Backend Category: platform, workload, global.  
+    subscription_identifier = "con-sub"          # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.  
+    create_env              = true               # Enable to create related environment in GitHub for stack.  
   },
   "governance" = {
-    stack_name              = "plz-governance" # STATIC: Name of stack directory and GitHub environment. 
-    stack_category          = "platform"       # Backend Category: platform, workload, bootstrap.
-    subscription_identifier = "platform-gen"       # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.
+    stack_name              = "plz-governance"   # STATIC: Name of stack directory and GitHub environment. 
+    stack_category          = "platform"         # Backend Category: platform, workload, global. 
+    subscription_identifier = "platform-sub"     # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.
+    create_env              = true               # Enable to create related environment in GitHub for stack.  
   },
   "management" = {
-    stack_name              = "plz-management" # STATIC: Name of stack directory and GitHub environment. 
-    stack_category          = "platform"       # Backend Category: platform, workload, bootstrap. 
-    subscription_identifier = "platform-mgt" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    stack_name              = "plz-management"   # STATIC: Name of stack directory and GitHub environment. 
+    stack_category          = "platform"         # Backend Category: platform, workload, global.  
+    subscription_identifier = "mgt-sub"          # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    create_env              = true               # Enable to create related environment in GitHub for stack.  
   },
   "identity" = {
-    stack_name              = "plz-identity" # STATIC: Name of stack directory and GitHub environment.  
-    stack_category          = "platform"     # Backend Category: platform, workload, bootstrap.
-    subscription_identifier = "platform-gen"     # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    stack_name              = "plz-identity"     # STATIC: Name of stack directory and GitHub environment.  
+    stack_category          = "platform"         # Backend Category: platform, workload, global. 
+    subscription_identifier = "platform-sub"     # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    create_env              = true               # Enable to create related environment in GitHub for stack.  
   }
 }
 ```
@@ -113,9 +123,14 @@ platform_stacks = {
 
 ### Azure: Remote Backend Resources
 
-- **Resource Groups:** Created per deployment category (bootstrap, platform, workloads) to group related child resources for easy management and separation of purpose.  
+- **Resource Groups:** Created per deployment category (global, platform, workloads) to group related child resources for easy management and separation of purpose.  
 - **Storage Accounts:** Similar to Resource Groups, created per deployment category to hold the Blob Containers used by each deployment stack. 
 - **Blob Containers:** Created per deployment stack (plz-governance, plz-management, etc) under each parent category Storage Account to hold the remote Terraform state files. 
+
+### Azure Key Vault
+
+- Stores resource IDs, names and other details for shared services (Hub VNet, Log Analytics Workspace etc). 
+- This allows the Service Principal to resolve these resources by ID/name during data calls in other stacks. 
 
 ### GitHub: Repository Environments, Secrets and Variables
 
@@ -132,7 +147,7 @@ platform_stacks = {
 Resources are grouped by categories and their child stacks. 
 
 - **Categories:** 
-  - Bootstrap
+  - Global
   - Platform
   - Workloads
 - **Stacks:** 
@@ -142,12 +157,12 @@ Resources are grouped by categories and their child stacks.
   - Platform -> Identity (plz-identity)
 
 ```text
-org-iac-bootstrap-rg
-└── orgiacbootstrapsa12345
+org-global-iac-rg
+└── orgglobaliacsa12345
     └── tfstate-iac-bootstrap
 
-org-iac-platform-rg
-└── orgiacplatformsa12345
+org-platform-iac-rg
+└── orgplatformiacsa12345
     ├── tfstate-plz-governance
     ├── tfstate-plz-management
     ├── tfstate-plz-connectivity
@@ -156,10 +171,10 @@ org-iac-platform-rg
 
 | Object                  | Created Per  | Example Name             | Purpose                                                   |
 | ----------------------- | ------------ | ------------------------ | --------------------------------------------------------- |
-| Resource Group          | **Category** | org-plz-bootstrap-rg     | Resource group containing components for bootstrapping.   |
-| Resource Group          | **Category** | org-plz-platform-rg      | Resource group containing components for platform LZ.     |
-| Storage Account         | **Category** | orgplzbootstrapsa12345   | Holds blob container for bootstrapping deployment.        |
-| Storage Account         | **Category** | orgplzplatformsa12345    | Holds blob containers per platform deployment stack.      |
+| Resource Group          | **Category** | org-global-iac-rg        | Resource group containing bootstrap and global resources. |
+| Resource Group          | **Category** | org-platform-iac-rg      | Resource group containing components for platform LZ.     |
+| Storage Account         | **Category** | orgglobaliacsa12345      | Holds blob container for bootstrap and global resources.  |
+| Storage Account         | **Category** | orgplatformiacsa12345    | Holds blob containers per platform deployment stack.      |
 | Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow. |
 | Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow. |
 | Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow. |

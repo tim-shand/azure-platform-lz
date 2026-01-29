@@ -10,5 +10,5 @@ output "management_group_core_display_name" {
 
 output "stack_subscriptions" {
   description = "Map of platform subscriptions and associated deployment stacks."
-  value       = local.stack_subscriptions
+  value       = local.platform_stack_subscriptions
 }

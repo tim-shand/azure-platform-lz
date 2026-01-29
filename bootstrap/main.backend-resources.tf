@@ -7,7 +7,7 @@
 
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_backend" {
-  for_each      = local.backend_categories
+  for_each      = local.backend_category_map
   source        = "../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
   workload      = each.key
@@ -17,7 +17,7 @@ module "naming_backend" {
 
 # Resource Groups: Backend Categories
 resource "azurerm_resource_group" "backend" {
-  for_each = local.backend_categories
+  for_each = local.backend_category_map
   name     = "${module.naming_backend[each.key].full_name}-rg"
   location = var.global.location.primary
   tags     = local.tags_merged
@@ -25,7 +25,7 @@ resource "azurerm_resource_group" "backend" {
 
 # Storage Accounts: Backend Categories
 resource "azurerm_storage_account" "backend" {
-  for_each                        = local.backend_categories
+  for_each                        = local.backend_category_map
   name                            = module.naming_backend[each.key].storage_account_name
   resource_group_name             = azurerm_resource_group.backend[each.key].name
   location                        = azurerm_resource_group.backend[each.key].location
@@ -43,4 +43,20 @@ resource "azurerm_storage_container" "backend" {
   name                  = "tfstate-${each.value.stack_name}"
   storage_account_id    = azurerm_storage_account.backend[each.value.stack_category].id
   container_access_type = "private"
+  lifecycle {
+    prevent_destroy = each.value.prevent_destroy
+  }
+}
+
+# Key Vault: Used to store shared resource IDs and names for cross-stack access. 
+resource "azurerm_key_vault" "iac" {
+  name                       = module.naming_backend["platform"].key_vault_name
+  resource_group_name        = azurerm_resource_group.backend["platform"].name
+  location                   = azurerm_resource_group.backend["platform"].location
+  tags                       = azurerm_resource_group.backend["platform"].tags
+  tenant_id                  = data.azuread_client_config.current.tenant_id
+  sku_name                   = "standard"
+  rbac_authorization_enabled = true  # Enforce RBAC over access policy. 
+  purge_protection_enabled   = false # Not required. 
+  soft_delete_retention_days = 7     # Set low intentionally to allow quick delete. 
 }

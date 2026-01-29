@@ -18,40 +18,54 @@ management_group_core_id           = "core"     # Management Group ID used for r
 management_group_core_display_name = "TimShand" # Management Group display name.  
 
 # Deployment Stacks: Map of objects representing the platform workloads to provision. 
-backend_categories = ["bootstrap", "platform", "workloads"] # Used to group backend resources by deployment category. 
 platform_stacks = {
   # "example-connectivity" = {
-  #   stack_name              = "dev-connectivity" # STATIC: Name of stack directory and GitHub environment. 
-  #   stack_category          = "platform"         # Deployment Category: platform, workload, bootstrap. 
+  #   stack_name              = "dev-connectivity" # Name of stack directory and GitHub environment. 
+  #   stack_category          = "platform"         # Deployment Category: platform, workload, global/bootstrap. 
   #   subscription_identifier = "con-sub"          # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.  
   # },
+  "bootstrap" = {
+    stack_name              = "iac-bootstrap" # Name of stack directory and GitHub environment. 
+    stack_category          = "global"        # Backend Category: platform, workload, global/bootstrap. 
+    subscription_identifier = "iac-sub"       # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    create_env              = false           # Enable to create related environment in GitHub for stack (NOT required for bootstrap/global). 
+    prevent_delete          = true            # Enable to prevent this stacks resource from being deleted. 
+  },
   "connectivity" = {
-    stack_name              = "plz-connectivity" # STATIC: Name of stack directory and GitHub environment. 
-    stack_category          = "platform"         # Backend Category: platform, workload, bootstrap. 
-    subscription_identifier = "platform"         # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.  
+    stack_name              = "plz-connectivity" # Name of stack directory and GitHub environment. 
+    stack_category          = "platform"         # Backend Category: platform, workload, global/bootstrapl. 
+    subscription_identifier = "plz-sub"          # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    create_env              = true               # Enable to create related environment in GitHub for stack.  
+    prevent_delete          = false              # Enable to prevent this stacks resource from being deleted. 
   },
   "governance" = {
-    stack_name              = "plz-governance" # STATIC: Name of stack directory and GitHub environment. 
-    stack_category          = "platform"       # Backend Category: platform, workload, bootstrap.
-    subscription_identifier = "platform"       # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.
+    stack_name              = "plz-governance" # Name of stack directory and GitHub environment. 
+    stack_category          = "platform"       # Backend Category: platform, workload, global/bootstrap.
+    subscription_identifier = "plz-sub"        # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.
+    create_env              = true             # Enable to create related environment in GitHub for stack. 
+    prevent_delete          = false            # Enable to prevent this stacks resource from being deleted. 
   },
   "management" = {
-    stack_name              = "plz-management" # STATIC: Name of stack directory and GitHub environment. 
-    stack_category          = "platform"       # Backend Category: platform, workload, bootstrap. 
-    subscription_identifier = "platform"       # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    stack_name              = "plz-management" # Name of stack directory and GitHub environment. 
+    stack_category          = "platform"       # Backend Category: platform, workload, global/bootstrap. 
+    subscription_identifier = "plz-sub"        # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    create_env              = true             # Enable to create related environment in GitHub for stack. 
+    prevent_delete          = false            # Enable to prevent this stacks resource from being deleted. 
   },
   "identity" = {
-    stack_name              = "plz-identity" # STATIC: Name of stack directory and GitHub environment.  
-    stack_category          = "platform"     # Backend Category: platform, workload, bootstrap.
-    subscription_identifier = "platform"     # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    stack_name              = "plz-identity" # Name of stack directory and GitHub environment.  
+    stack_category          = "platform"     # Backend Category: platform, workload, global/bootstrap.
+    subscription_identifier = "plz-sub"      # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+    create_env              = true           # Enable to create related environment in GitHub for stack. 
+    prevent_destroy         = false          # Enable to prevent this stacks resource from being deleted. 
   }
 }
 
+# Workload Stacks: Used to deploy workload backend resources. 
 workload_stacks = {
-  # Placeholder for future deployments. Use the same structure and format as "platform_stacks". 
-  # Example:
-  # "mywebapp" = {
-  #   stack_name        = "mywebapp-prd" 
-  #   subscription_name = "workloads-prd-sub" 
-  # }
+  "example" = {
+    stack_name              = "app-example"          # Name of stack directory and GitHub environment.  
+    stack_category          = "workloads"            # Backend Category: platform, workload, global/bootstrap.
+    subscription_identifier = "visualstudio-dev-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
+  }
 }

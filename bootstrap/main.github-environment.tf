@@ -30,30 +30,48 @@ resource "github_actions_secret" "client_id" {
 resource "github_actions_variable" "iac_rg" {
   repository    = data.github_repository.repo.name
   variable_name = "TF_BACKEND_RG"
-  value         = azurerm_resource_group.backend[var.backend_categories[1]].name # Selectively choose the second item in category list (should be platform). 
+  value         = azurerm_resource_group.backend[local.backend_category_map["platform"]].name
 }
 
 # GitHub: Repo [VARIABLE] - Backend: Storage Account
 resource "github_actions_variable" "iac_sa" {
   repository    = data.github_repository.repo.name
   variable_name = "TF_BACKEND_SA"
-  value         = azurerm_resource_group.backend[var.backend_categories[1]].name
+  value         = azurerm_storage_account.backend[local.backend_category_map["platform"]].name
 }
 
 #----------------------------------------------------------------#
 
-# GitHub: Environments - Create environments per deployment stack. 
+# GitHub: Environment - Create environments per deployment stack. 
 resource "github_repository_environment" "env" {
-  for_each    = var.platform_stacks # Create seaprate environment per stack. 
+  for_each    = local.platform_stacks_with_env # Create separate environment per stack, only for those with 'create_env=true'. 
   repository  = data.github_repository.repo.name
   environment = each.value.stack_name # Use variable property 'stack_name' for GitHub environment naming. 
 }
 
-# GitHub: Environments [VARIABLE] - Subscription ID
-resource "github_actions_environment_variable" "env_rg" {
-  for_each      = local.stack_subscriptions
+# GitHub: Environment [VARIABLE] - Subscription ID
+resource "github_actions_environment_variable" "env_sub" {
+  for_each      = local.platform_stacks_with_env
   repository    = data.github_repository.repo.name
   environment   = github_repository_environment.env[each.key].environment
   variable_name = "ARM_SUBSCRIPTION_ID"
   value         = each.value.subscription_id
+}
+
+# GitHub: Environment [VARIABLE] - Backend: Container
+resource "github_actions_environment_variable" "env_cn" {
+  for_each      = local.platform_stacks_with_env
+  repository    = data.github_repository.repo.name
+  environment   = github_repository_environment.env[each.key].environment
+  variable_name = "TF_BACKEND_CONTAINER"
+  value         = azurerm_storage_container.backend[each.key].name
+}
+
+# GitHub: Environment [VARIABLE] - Backend: State File Name
+resource "github_actions_environment_variable" "env_key" {
+  for_each      = local.platform_stacks_with_env
+  repository    = data.github_repository.repo.name
+  environment   = github_repository_environment.env[each.key].environment
+  variable_name = "TF_BACKEND_KEY"
+  value         = "azure-${each.value.stack_name}.tfstate"
 }
