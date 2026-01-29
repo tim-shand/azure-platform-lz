@@ -43,6 +43,9 @@ resource "azurerm_storage_container" "backend" {
   name                  = "tfstate-${each.value.stack_name}"
   storage_account_id    = azurerm_storage_account.backend[each.value.stack_category].id
   container_access_type = "private"
+  lifecycle {
+    prevent_destroy = each.value.prevent_destroy
+  }
 }
 
 # Key Vault: Used to store shared resource IDs and names for cross-stack access. 

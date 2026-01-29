@@ -39,6 +39,7 @@ variable "platform_stacks" {
     stack_category          = string # Group deployments by category (platform, workloads). 
     subscription_identifier = string # Name part that is used in "contains" filter to resolve ID.
     create_env              = bool   # Enable to create related environment in GitHub for stack. 
+    prevent_destroy         = bool   # Enable to prevent this stacks resource from being deleted. 
   }))
 }
 

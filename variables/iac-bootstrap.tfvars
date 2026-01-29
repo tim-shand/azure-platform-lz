@@ -29,30 +29,35 @@ platform_stacks = {
     stack_category          = "global"        # Backend Category: platform, workload, global/bootstrap. 
     subscription_identifier = "iac-sub"       # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
     create_env              = false           # Enable to create related environment in GitHub for stack (NOT required for bootstrap/global). 
+    prevent_delete          = true            # Enable to prevent this stacks resource from being deleted. 
   },
   "connectivity" = {
     stack_name              = "plz-connectivity" # Name of stack directory and GitHub environment. 
     stack_category          = "platform"         # Backend Category: platform, workload, global/bootstrapl. 
     subscription_identifier = "plz-sub"          # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
     create_env              = true               # Enable to create related environment in GitHub for stack.  
+    prevent_delete          = false              # Enable to prevent this stacks resource from being deleted. 
   },
   "governance" = {
     stack_name              = "plz-governance" # Name of stack directory and GitHub environment. 
     stack_category          = "platform"       # Backend Category: platform, workload, global/bootstrap.
     subscription_identifier = "plz-sub"        # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.
     create_env              = true             # Enable to create related environment in GitHub for stack. 
+    prevent_delete          = false            # Enable to prevent this stacks resource from being deleted. 
   },
   "management" = {
     stack_name              = "plz-management" # Name of stack directory and GitHub environment. 
     stack_category          = "platform"       # Backend Category: platform, workload, global/bootstrap. 
     subscription_identifier = "plz-sub"        # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
     create_env              = true             # Enable to create related environment in GitHub for stack. 
+    prevent_delete          = false            # Enable to prevent this stacks resource from being deleted. 
   },
   "identity" = {
     stack_name              = "plz-identity" # Name of stack directory and GitHub environment.  
     stack_category          = "platform"     # Backend Category: platform, workload, global/bootstrap.
     subscription_identifier = "plz-sub"      # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
     create_env              = true           # Enable to create related environment in GitHub for stack. 
+    prevent_destroy         = false          # Enable to prevent this stacks resource from being deleted. 
   }
 }
 

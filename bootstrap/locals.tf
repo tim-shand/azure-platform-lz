@@ -14,6 +14,7 @@ locals {
       stack_category  = stack.stack_category
       subscription_id = one(data.azurerm_subscriptions.platform[key].subscriptions).subscription_id # Select the subscription ID related to the current stack. 
       create_env      = stack.create_env
+      prevent_destroy = stack.prevent_delete
     }
   }
 
