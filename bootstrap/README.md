@@ -126,7 +126,10 @@ platform_stacks = {
 - **Resource Groups:** Created per deployment category (global, platform, workloads) to group related child resources for easy management and separation of purpose.  
 - **Storage Accounts:** Similar to Resource Groups, created per deployment category to hold the Blob Containers used by each deployment stack. 
 - **Blob Containers:** Created per deployment stack (plz-governance, plz-management, etc) under each parent category Storage Account to hold the remote Terraform state files. 
-- **Key Vault:** Stores IDs, names and other details for shared services (Hub VNet, Log Analytics Workspace etc) to be accessed by other stacks. 
+
+### Azure Key Vault
+- Stores resource IDs, names and other details for shared services (Hub VNet, Log Analytics Workspace etc). 
+- This allows the Service Principal to resolve these resources by ID/name during data calls in other stacks. 
 
 ### GitHub: Repository Environments, Secrets and Variables
 
