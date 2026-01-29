@@ -36,7 +36,7 @@ Using this method help to reduce blast radius in the event unwanted subscription
 - This means the subscription provided will be used to contain the backend resources for all the platform landing zone deployment stacks. 
 - Separate subscriptions can be used for each of the deployment stacks if required; however, re-using the same subscription is also acceptable. 
 
-#### Naming Method
+#### Naming Method 
 
 - Subscriptions should be named in a way that makes them uniquely identifiable. 
 - Using this method enables the subscription IDs to be resolved by a Terraform data call, using a __keyword-based__ lookup method. 
