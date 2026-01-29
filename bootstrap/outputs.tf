@@ -8,7 +8,7 @@ output "management_group_core_display_name" {
   value       = azurerm_management_group.core.display_name
 }
 
-output "stack_subscriptions" {
-  description = "Map of platform subscriptions and associated deployment stacks."
-  value       = local.platform_stack_subscriptions
+output "deployments" {
+  description = "Map of environment configuration to deploy."
+  value       = local.deployment_configs
 }
