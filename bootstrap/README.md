@@ -2,12 +2,11 @@
 
 This project automates the **initial bootstrapping** process of both Azure and GitHub, in preparation for executing platform landing zone deployment workflows. 
 
-- Run-once, locally executed, creates bootstrap and deployment stack resources required to deploy this Azure platform landing zone. 
+- Locally executed PowerShell script that creates bootstrap and deployment stack resources. 
 - Generates repository environments, secrets and variables used by deployment stack workflows. 
 - Automates the migration process of the local bootstrap state file to Azure (remote state). 
 
 ---
-
 
 ## 📦 Requirements
 
@@ -90,7 +89,6 @@ platform_stacks = {
 
 ---
 
-
 ## 🌱 Resources
 
 ### ☁️ Azure
@@ -139,7 +137,6 @@ platform_stacks = {
 
 ---
 
-
 ## 📁 Example Structure
 
 Resources are grouped by categories and their child stacks. 
@@ -184,13 +181,17 @@ org-platform-iac-rg
 
 ---
 
-
 ## ▶️ Usage
 
 ### Create/Deploy
 
+```powershell
+# Deploy/Update Bootstrap resources. 
+powershell -file ./bootstrap/bootstrap-azure-github.ps1
+```
+
 ```bash
-# Manual execution of Terraform
+# Manual execution using Terraform. 
 terraform -chdir="./bootstrap" init
 terraform -chdir="./bootstrap" validate
 terraform -chdir="./bootstrap" plan -var-file="../variables/global.tfvars" -var-file="../variables/iac-bootstrap.tfvars"
@@ -199,13 +200,17 @@ terraform -chdir="./bootstrap" apply -var-file="../variables/global.tfvars" -var
 
 ### Remove/Destroy
 
+```powershell
+# Remove Bootstrap resources.
+powershell -file ./bootstrap/bootstrap-azure-github.ps1 -Remove
+```
+
 ```bash
-# Manual execution of Terraform
+# Manual execution using Terraform. 
 terraform -chdir="./bootstrap" destroy -var-file="../variables/global.tfvars" -var-file="../variables/iac-bootstrap.tfvars"
 ```
 
 ---
-
 
 ## 📚 Reference Materials
 

@@ -35,6 +35,7 @@ locals {
       backend_category        = stack.backend_category
       backend_resource_group  = azurerm_storage_account.backend[stack.backend_category].resource_group_name
       backend_storage_account = azurerm_storage_account.backend[stack.backend_category].name
+      backend_blob_container  = azurerm_storage_container.backend[key].name
       backend_key_vault       = try(azurerm_key_vault.backend[stack.backend_category].name, "N/A")
       github_environment      = try(github_repository_environment.env[key].environment, "N/A")
     }
