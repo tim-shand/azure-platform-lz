@@ -1,6 +1,4 @@
-# 👢 Bootstrap: Azure & GitHub for Terraform IaC
-
-## 🌟 Overview
+# Bootstrap: Azure & GitHub for Terraform IaC
 
 This project automates the **initial bootstrapping** process of both Azure and GitHub, in preparation for executing platform landing zone deployment workflows. 
 
@@ -9,6 +7,7 @@ This project automates the **initial bootstrapping** process of both Azure and G
 - Automates the migration process of the local bootstrap state file to Azure (remote state). 
 
 ---
+
 
 ## 📦 Requirements
 
@@ -26,47 +25,28 @@ This project automates the **initial bootstrapping** process of both Azure and G
 - **[Terraform](https://developer.hashicorp.com/terraform/install):** IaC tool used to deploy resources into the target Azure and GitHub tenancies. 
 - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):** CLI tool required by Terraform provider (`AzureRM`) to connect to Azure. 
 - **[GitHub CLI](https://cli.github.com/):** CLI tool used to interact with GitHub, connected and authenticated to the target GitHub organisation.
-- **[PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/install-powershell)]:** Used to execute the bootstrap automation script locally. 
+- **[PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/install-powershell):** Used to execute the bootstrap automation script locally. 
 
 ### 🔑 Subscriptions
 
-This design is intended to be provided with a **dedicated IaC subscription**, containing and isolating all backend resources from workload subscriptions. 
-Using this method help to reduce blast radius in the event unwanted subscription changes are made that could negatively affect backend resources. 
+This design is intended to be used with a **dedicated IaC subscription**, containing and isolating all backend resources from workload subscriptions to reduce the blast radius caused by unwanted subscription changes. 
 
-#### Purpose & Usage
-
-- This bootstrap deployment requires at least **one** existing subscription to be used as the **IaC**, or Infrastructure-as-Code subscription. 
-- This means the subscription provided will be used to contain the backend resources for all the platform landing zone deployment stacks. 
-- Separate subscriptions can be used for each of the deployment stacks if required; however, re-using the same subscription is also acceptable. 
+- Requires at least **one existing** subscription to be used as the **IaC** (Infrastructure-as-Code) subscription. 
+- The subscription provided will be used to contain **all** backend resources for all the platform landing zone. 
+- Separate subscriptions can be used per deployment stack if required; however, using the same subscription is also accepted. 
 
 #### Naming Method 
 
 - Subscriptions should be named in a way that makes them uniquely identifiable. 
-- Using this method enables the subscription IDs to be resolved by a Terraform data call, using a __keyword-based__ lookup method. 
-- This ensures subscription IDs are **not stored in variable files**. 
+- This enables the subscription IDs to be resolved by a Terraform data call, using a **keyword-based** lookup method. 
+- Although not technically sensitive, this ensures subscription IDs are kept out of variable files, being a public repo. 
 
-**Example:**  
-
-```text
-# Single-Subscription Platform Landing Zone
-Subscription 1: abc-iac-sub    # Used as dedicated IaC subscription. Pass into workflow by repository variable. 
-Subscription 2: abc-platform   # General platform subscription. Used for all platform stacks in this example.
-
-# OR
-
-# Multi-Subscription Platform Landing Zone
-Subscription 1: abc-iac-sub            # Used as dedicated IaC subscription. Pass into workflow by repository variable. 
-Subscription 2: abc-platform-sub       # General platform subscription. Used for governance and identity stacks in this example.
-Subscription 3: abc-platform-con-sub   # Connectivity subscription. Dedicated subscription for connectivity resources. 
-Subscription 4: abc-platform-mgt-sub   # Management subscription. Dedicated subscription for management resources. 
-```
+#### Example
 
 Notice that both the `governance` and `identity` stack configurations below are using the **same value** for the `subscription_identifier` field. 
 
-Using the same value of `platform-plz-sub` will result in the same subscription ID being resolved and used for both stacks.  
+Using the same value of `platform-plz-sub` will result in the **same subscription ID** being resolved and used for both stacks.  
 The subscription ID is resolved when a data call is made using the value provided by the `display_name_contains` parameter. 
-
-Using the name part value for the subscription helps to keep subscription IDs out of the code base. 
 
 ```hcl
 data "azurerm_subscriptions" "platform" {
@@ -110,6 +90,7 @@ platform_stacks = {
 
 ---
 
+
 ## 🌱 Resources
 
 ### ☁️ Azure
@@ -125,14 +106,18 @@ platform_stacks = {
 - A top-level "core" Management Group is created under the default tenant root group. 
 - This "core" Management Group represents the organisation in the current hierarchy, while accommodating for future changes or migration in the future. 
 - All existing subscriptions accessible by the user running the bootstrap, will be **moved** under this new Management Group. 
+  - **NOTE:** The governance stack is resonsible for deploying additional Management Groups and subscription assignments. 
 - **RBAC** roles assigned at the "core" Management Group level are then inherited by child subscriptions. 
 - This allows the Service Principal to provision resources, make further changes to Management Group structure, and perform subscription assignments. 
 
 #### Remote Backend Resources
 
-- **Resource Groups:** Created per deployment category (global, platform, workloads) to group related child resources for easy management and separation of purpose.  
-- **Storage Accounts:** Similar to Resource Groups, created per deployment category to hold the Blob Containers used by each deployment stack. 
-- **Blob Containers:** Created per deployment stack (plz-governance, plz-management, etc) under each parent category Storage Account to hold the remote Terraform state files. 
+- **Resource Groups:**
+  - Created per deployment category (global, platform, workloads) to group related child resources for easy management and separation of purpose.  
+- **Storage Accounts:** 
+  - Similar to Resource Groups, created per deployment category to hold the Blob Containers used by each deployment stack. 
+- **Blob Containers:** 
+  - Created per deployment stack (plz-governance, plz-management, etc) under each parent category Storage Account to hold the remote Terraform state files. 
 
 #### Azure Key Vault
 
@@ -153,6 +138,7 @@ platform_stacks = {
 - These allow workflows to utilise the `environment` parameter to pass environment specific variables, or override globals (repo level) using the same name. 
 
 ---
+
 
 ## 📁 Example Structure
 
@@ -198,6 +184,7 @@ org-platform-iac-rg
 
 ---
 
+
 ## ▶️ Usage
 
 ### Create/Deploy
@@ -218,6 +205,7 @@ terraform -chdir="./bootstrap" destroy -var-file="../variables/global.tfvars" -v
 ```
 
 ---
+
 
 ## 📚 Reference Materials
 
