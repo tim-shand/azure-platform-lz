@@ -183,77 +183,80 @@ if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?")) {
 # MAIN: Stage 3 - Execute Terraform
 #================================================#
 
-# Terraform: Initialize
-Write-Host ""
-Write-Host -ForegroundColor $HD1 "[*] Initializing Terraform configuration..."
-Try {
-    terraform -chdir="$dir_tf" init -upgrade > $null 2>&1
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host -ForegroundColor $PASS "[+] PASS: Terraform is initialized."
-    }
-    else {
-        Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform initialization failed. Please check configuration and try again."
-        exit 1
-    }
-}
-Catch {
-    Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform initialization failed. Please check configuration and try again. $_"
-    exit 1
-}
-
-# Terraform: Plan
-Write-Host ""
-Write-Host -ForegroundColor $HD1 "[*] Generating Terraform plan..."
-Try {
-    terraform -chdir="$dir_tf" plan --out=bootstrap.plan `
-        -var-file="$dir_ps_vars/$($var_files[0])" -var-file="$dir_ps_vars/$($var_files[1])" `
-        -var="subscription_id=$($azSession.id)" > $null 2>&1
-    if ($LASTEXITCODE -eq 0) {
-        if (Test-Path -Path "$dir_tf/bootstrap.plan") {
-            Write-Host -ForegroundColor $PASS "[+] PASS: Terraform plan created."
-            terraform -chdir="$dir_tf" show bootstrap.plan            
-        }
-        else {
-            Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan is not present! Please check configuration and try again."
-            exit 1
-        }
-    }
-    else {
-        Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan failed. Please check configuration and try again."
-        exit 1
-    }
-}
-Catch {
-    Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan failed. Please check configuration and try again. $_"
-    exit 1
-}
-
-# Terraform: Apply
-Write-Host ""
-Write-Host -ForegroundColor $WRN "[!] Terraform will now apply changes. This may take several minutes to complete."
-if ((Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?") ) {
-    Write-Host -ForegroundColor $HD1 "[*] Running Terraform deployment..."
+if (!($Remove)) {
+    # Terraform: Initialize
+    Write-Host ""
+    Write-Host -ForegroundColor $HD1 "[*] Initializing Terraform configuration..."
     Try {
-        terraform -chdir="$dir_tf" apply bootstrap.plan
+        terraform -chdir="$dir_tf" init -upgrade > $null 2>&1
         if ($LASTEXITCODE -eq 0) {
-            Write-Host -ForegroundColor $PASS "[+] PASS: Terraform plan has been applied successfully."
-            Remove-Item -Path "$dir_tf/bootstrap.plan" -Force -ErrorAction SilentlyContinue
+            Write-Host -ForegroundColor $PASS "[+] PASS: Terraform is initialized."
         }
         else {
-            Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan failed to apply. Please check configuration and try again."
+            Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform initialization failed. Please check configuration and try again."
             exit 1
         }
     }
     Catch {
-        Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan failed to apply. Please check configuration and try again. $_"
+        Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform initialization failed. Please check configuration and try again. $_"
+        exit 1
+    }
+
+    # Skip plan and apply is removal is triggeed. 
+
+    # Terraform: Plan
+    Write-Host ""
+    Write-Host -ForegroundColor $HD1 "[*] Generating Terraform plan..."
+    Try {
+        terraform -chdir="$dir_tf" plan --out=bootstrap.plan `
+            -var-file="$dir_ps_vars/$($var_files[0])" -var-file="$dir_ps_vars/$($var_files[1])" `
+            -var="subscription_id=$($azSession.id)" > $null 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            if (Test-Path -Path "$dir_tf/bootstrap.plan") {
+                Write-Host -ForegroundColor $PASS "[+] PASS: Terraform plan created."
+                terraform -chdir="$dir_tf" show bootstrap.plan            
+            }
+            else {
+                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan is not present! Please check configuration and try again."
+                exit 1
+            }
+        }
+        else {
+            Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan failed. Please check configuration and try again."
+            exit 1
+        }
+    }
+    Catch {
+        Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan failed. Please check configuration and try again. $_"
+        exit 1
+    }
+
+    # Terraform: Apply
+    Write-Host ""
+    Write-Host -ForegroundColor $WRN "[!] Terraform will now apply changes. This may take several minutes to complete."
+    if ((Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?") ) {
+        Write-Host -ForegroundColor $HD1 "[*] Running Terraform deployment..."
+        Try {
+            terraform -chdir="$dir_tf" apply bootstrap.plan
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host -ForegroundColor $PASS "[+] PASS: Terraform plan has been applied successfully."
+                Remove-Item -Path "$dir_tf/bootstrap.plan" -Force -ErrorAction SilentlyContinue
+            }
+            else {
+                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan failed to apply. Please check configuration and try again."
+                exit 1
+            }
+        }
+        Catch {
+            Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform plan failed to apply. Please check configuration and try again. $_"
+            exit 1
+        }
+    }
+    else {
+        Write-Host -ForegroundColor $WRN "[x] WARN: User aborted process. Please confirm intended configuration and try again."
         exit 1
     }
 }
-else {
-    Write-Host -ForegroundColor $WRN "[x] WARN: User aborted process. Please confirm intended configuration and try again."
-    exit 1
-}
-
 
 #================================================#
 # MAIN: Stage 5 - State Migration
@@ -262,15 +265,10 @@ else {
 if (Test-Path -Path "$dir_tf/backend.tf") {
     # Already migrated (remote). Backend configuration already exists. 
     if ($Remove) {
-        # Pull from remote --> local
         Try {
-            # Rename existing backend config file. Remove existing backup if present. 
-            if (Test-Path -Path "$dir_tf/backend.tf.bak") {
-                Remove-Item -Path "$dir_tf/backend.tf.bak" -Force
-            }
-            Rename-Item -Path "$dir_tf/backend.tf" -NewName "$dir_tf/backend.tf.bak"
-            # Execute state pull from remote to local. 
-            terraform -chdir="$dir_tf" init -input=false > $null 2>&1
+
+            # Pull from remote --> local
+            terraform -chdir="$dir_tf" state pull > "$dir_tf/terraform.tfstate"
             if ($LASTEXITCODE -eq 0) {
                 Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state successfully copied locally."
                 if (Test-Path "$dir_tf/terraform.tfstate") {
@@ -278,32 +276,46 @@ if (Test-Path -Path "$dir_tf/backend.tf") {
                 }
                 else {
                     Write-Host -ForegroundColor $ERR "[x] FAIL: Local Terraform state is not present! Remote to local migration may have failed."
-                    Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" # Rename file back to avoid issues when re-running. 
+                    Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
                     exit 1
                 }
             }
             else {
-                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed during remote to local migration."
-                Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" # Rename file back to avoid issues when re-running. 
+                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed during remote to local migration. [284]"
+                Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
+                exit 1
+            }
+
+            # Rename existing backend config file. Remove existing backup if present. 
+            if (Test-Path -Path "$dir_tf/backend.tf.bak") {
+                Remove-Item -Path "$dir_tf/backend.tf.bak" -Force
+            }
+            Rename-Item -Path "$dir_tf/backend.tf" -NewName "$dir_tf/backend.tf.bak"
+
+            # Reconfigure Terraform to use local state file.
+            #terraform -chdir="$dir_tf" init -input=false -reconfigure #> $null 2>&1
+            terraform -chdir="$dir_tf" init -migrate-state -input=false > $null 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state successfully copied locally."
+                if (Test-Path "$dir_tf/terraform.tfstate") {
+                    Write-Host -ForegroundColor $PASS "[+] PASS: Local Terraform state file present."
+                }
+                else {
+                    Write-Host -ForegroundColor $ERR "[x] FAIL: Local Terraform state is not present! Remote to local migration may have failed."
+                    Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
+                    exit 1
+                }
+            }
+            else {
+                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed during remote to local migration. [309]"
+                Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
                 exit 1
             }
         }
         Catch {
-            Write-Host -ForegroundColor $ERR "[x] FAIL: An error occurred during Terraform remote to local migration. $_"
+            Write-Host -ForegroundColor $ERR "[x] FAIL: An error occurred during Terraform remote to local migration. [315] $_"
             Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" # Rename file back to avoid issues when re-running. 
             exit 1
-        }
-        Finally {
-            # Restore backend.tf if something went wrong. 
-            if (!(Test-Path "$dir_tf/backend.tf") -and (Test-Path "$dir_tf/backend.tf.bak")) {
-                Write-Host -ForegroundColor $WRN "[!] WARN: Restoring backend.tf from backup..."
-                Try {
-                    Rename-Item "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -Force
-                }
-                Catch {
-                    Write-Host -ForegroundColor $ERR "[x] FAIL: Unable to restore backend configuration file! $_"
-                }
-            }
         }
     } 
     else {
@@ -349,6 +361,7 @@ terraform {
                     terraform -chdir="$($dir_tf)" init -migrate-state -force-copy -input=false
                     if ($LASTEXITCODE -eq 0) {
                         Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state has been migrated successfully."
+                        Remove-Item -Path "$dir_tf/terraform.tfstate" -Force
                     }
                     else {
                         Write-Host -ForegroundColor $ERR "[x] FAIL: An error occurred when attempting state migration. Investigation required. Abort."
@@ -385,6 +398,7 @@ if ($Remove) {
     # Confirm destroy with prompt. 
     if (!(Get-UserConfirm -prompt "Are you sure you want to destroy all resources [Y/N]?")) {
         Write-Host -ForegroundColor $WRN "[!] WARN: User aborted destroy. Exit."
+        Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
         exit 1
     }
     else {
