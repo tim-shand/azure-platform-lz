@@ -7,7 +7,7 @@
 
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_sp" {
-  source        = "../modules/global-resource-naming"
+  source        = "../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
   workload      = var.stack.naming.workload_name
   stack_or_env  = "deploy"
