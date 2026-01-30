@@ -378,10 +378,39 @@ else {
 }
 
 #================================================#
-# MAIN: Stage 6 - Clean Up
+# MAIN: Stage 6 - Remove/Destroy
 #================================================#
-#Remove-Item -Path "$dir_tf/.terraform*" -Recurse -Force -ErrorAction SilentlyContinue
-#Remove-Item -Path "$dir_tf/.terraform.*" -Force -ErrorAction SilentlyContinue
+
+if ($Remove) {
+    # Confirm destroy with prompt. 
+    if (!(Get-UserConfirm -prompt "Are you sure you want to destroy all resources [Y/N]?")) {
+        Write-Host -ForegroundColor $WRN "[!] WARN: User aborted destroy. Exit."
+        exit 1
+    }
+    else {
+        terraform -chdir="$dir_tf" destroy `
+            -var-file="$dir_ps_vars/$($var_files[0])" `
+            -var-file="$dir_ps_vars/$($var_files[1])" `
+            -var="subscription_id=$($azSession.id)" `
+            -auto-approve
+        if ($LASTEXITCODE -eq 0) {
+            # Clean up backend.tf and local state. 
+            Remove-Item -Path "$dir_tf/backend.tf" -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "$dir_tf/terraform.tfstate" -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "$dir_tf/.terraform" -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "$dir_tf/.terraform.*" -Force -ErrorAction SilentlyContinue
+            Write-Host -ForegroundColor $PASS "[+] PASS: Terraform destroy completed successfully."
+        }
+        else {
+            Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed to remove resources. Investigation required."
+            exit 1
+        }
+    }
+}
+
+#================================================#
+# MAIN: Stage 7 - Clean Up
+#================================================#
 Write-Host ""
 if (!($Remove)) {
     Write-Host -ForegroundColor $WRN "NOTE: Manual approval may be required for pending API permissions assigned to the Service Principal."
