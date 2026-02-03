@@ -8,6 +8,12 @@ This project automates the **initial bootstrapping** process of both Azure and G
 
 ---
 
+## Design & Architecure
+
+![Bootstrap resource architecture diagram.](../docs/images/diagram-bootstrap.png)
+
+---
+
 ## 📦 Requirements
 
 ### ☁️ Accounts/Platforms
@@ -90,8 +96,6 @@ platform_stacks = {
 ---
 
 ## 🌱 Resources
-
-![Bootstrap resource architecture diagram.](../docs/images/diagram-bootstrap.png)
 
 ### ☁️ Azure
 
