@@ -91,8 +91,6 @@ platform_stacks = {
 
 ## 🌱 Resources
 
-### Design
-
 ![Bootstrap resource architecture diagram.](../docs/images/diagram-bootstrap.png)
 
 ### ☁️ Azure
