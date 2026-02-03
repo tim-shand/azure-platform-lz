@@ -202,7 +202,7 @@ az account set --subscription mysubscription
 powershell -file ./bootstrap/bootstrap-azure-github.ps1
 ```
 
-5. /[OPTIONAL/]: Remove all Bootstrap resources (if required). 
+5. \[OPTIONAL\]: Remove all Bootstrap resources (if required). 
 
 ```shell
 # Remove Bootstrap resources.
