@@ -10,6 +10,8 @@ This project automates the **initial bootstrapping** process of both Azure and G
 
 ## Design & Architecure
 
+_See the [Resources](#-resources) section for additional details._
+
 ![Bootstrap resource architecture diagram.](../docs/images/diagram-bootstrap.png)
 
 ---
