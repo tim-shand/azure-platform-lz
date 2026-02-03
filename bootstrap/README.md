@@ -183,31 +183,30 @@ org-platform-iac-rg
 
 ## ▶️ Usage
 
-### Create/Deploy
+1. Review and populate the Terraform variable files (TFVARS) in the `./variables` directory. 
+2. Check the required CLI applications are installed **and** authenticated. 
+3. Confirm that Azure CLI is authenticated and set to use the target IaC subscription. 
 
-```powershell
-# Deploy/Update Bootstrap resources. 
+```shell
+# Use Azure CLI to check the ID and Name fields for the current subscription. 
+az account show
+
+# [OPTIONAL] Set the correct sunscription (if required). 
+az account set --subscription mysubscription
+```
+
+4. Execute the PowerShell Bootstrap script to deploy Bootstrap resources and perform remote state migration. 
+
+```shell
+# Deploy Bootstrap resources (will perform update on subsequent runs).
 powershell -file ./bootstrap/bootstrap-azure-github.ps1
 ```
 
-```bash
-# Manual execution using Terraform. 
-terraform -chdir="./bootstrap" init
-terraform -chdir="./bootstrap" validate
-terraform -chdir="./bootstrap" plan -var-file="../variables/global.tfvars" -var-file="../variables/iac-bootstrap.tfvars"
-terraform -chdir="./bootstrap" apply -var-file="../variables/global.tfvars" -var-file="../variables/iac-bootstrap.tfvars"
-```
+5. /[OPTIONAL/]: Remove all Bootstrap resources (if required). 
 
-### Remove/Destroy
-
-```powershell
+```shell
 # Remove Bootstrap resources.
 powershell -file ./bootstrap/bootstrap-azure-github.ps1 -Remove
-```
-
-```bash
-# Manual execution using Terraform. 
-terraform -chdir="./bootstrap" destroy -var-file="../variables/global.tfvars" -var-file="../variables/iac-bootstrap.tfvars"
 ```
 
 ---
@@ -219,4 +218,3 @@ A list of references, material and content that contributed to, or influnenced t
 - [Azure Landing Zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
 - [Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/overview)
 - [Terraform Azure Verified Modules](https://azure.github.io/Azure-Landing-Zones/terraform/)
-
