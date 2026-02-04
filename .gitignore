@@ -39,6 +39,7 @@ crash.*.log
 backend.conf
 backend.tf
 bootstrap.tfvars
+terraform.tfvars
 
 # Ignore override files as they are usually used to override resources locally.
 override.tf
@@ -49,5 +50,4 @@ override.tf.json
 # OVERRIDE: Allowed
 # Allow example or default TFVARS file.
 !example.tfvars
-!terraform.tfvars
 !*-example.psd1
