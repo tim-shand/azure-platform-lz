@@ -23,3 +23,13 @@ variable "stack" {
   nullable    = false
   default     = {}
 }
+
+variable "shared_services_kv_name" {
+  description = "Name of shared service Key Vault created during bootstrap."
+  type        = string
+}
+
+variable "shared_services_kv_rg" {
+  description = "Map of shared service Resource Group for Key Vault created during bootstrap."
+  type        = string
+}
