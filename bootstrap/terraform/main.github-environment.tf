@@ -40,6 +40,22 @@ resource "github_actions_variable" "iac_sa" {
   value         = azurerm_storage_account.backend[var.backend_categories["platform"].name].name
 }
 
+# GitHub: Repo [VARIABLE] - Shared: Key Vault (Name)
+resource "github_actions_variable" "iac_kv" {
+  for_each      = local.backend_categories_keyvault # Create GitHub repo variable for each Key Vault. 
+  repository    = data.github_repository.repo.name
+  variable_name = "KV_NAME_${upper(each.key)}"
+  value         = azurerm_key_vault.backend[each.key].name
+}
+
+# GitHub: Repo [VARIABLE] - Shared: Key Vault (Resource Group)
+resource "github_actions_variable" "iac_kv_rg" {
+  for_each      = local.backend_categories_keyvault # Create GitHub repo variable for each Key Vault. 
+  repository    = data.github_repository.repo.name
+  variable_name = "KV_RESOURCE_GROUP_${upper(each.key)}"
+  value         = azurerm_key_vault.backend[each.key].resource_group_name
+}
+
 #----------------------------------------------------------------#
 
 # GitHub: Environment - Create environments per deployment stack. 

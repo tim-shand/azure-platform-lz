@@ -11,18 +11,23 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.7.2"
+      version = "~> 3.7.0"
     }
   }
-  backend "azurerm" {} # Backend configuration passed in via automation workflow. 
 }
-
-data "azuread_client_config" "current" {} # Get current user session data. 
-data "azurerm_subscription" "current" {}  # Get current Azure subscription. 
-
+provider "random" {}
 provider "azurerm" {
   features {}
   tenant_id           = data.azuread_client_config.current.tenant_id # Get tenant ID from current session. 
-  subscription_id     = var.subscription_id                          # Provided by workflow variable, or terminal input. 
-  storage_use_azuread = true                                         # Use Entra ID for interacting with Storage services (when shared keys disabled). 
+  subscription_id     = var.subscription_id                          # Target subscription ID for stqack resources. 
+  storage_use_azuread = true                                         # Use Entra ID only for interacting with Storage services. 
 }
+provider "azurerm" {
+  alias = "iac" # Setup secondary alias "iac" for accessing shared services Key Vault. 
+  features {}
+  tenant_id           = data.azuread_client_config.current.tenant_id # Get tenant ID from current session. 
+  subscription_id     = var.subscription_id_iac                      # Use dedicated IaC subscription (pass in from workflow).
+  storage_use_azuread = true                                         # Use Entra ID only for interacting with Storage services. 
+}
+data "azuread_client_config" "current" {} # Get current user session data.
+data "azurerm_subscription" "current" {}  # Get current Azure subscription.
