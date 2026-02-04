@@ -13,10 +13,6 @@ stack = {
   }
 }
 
-# Management Groups: Core (Top Level)
-management_group_core_id           = "core"     # Management Group ID used for resource naming.  
-management_group_core_display_name = "TimShand" # Management Group display name.  
-
 # Backend Categories: Define the top-level IaC backend structure. NOTE: Opinionated (DO NOT change key structure). 
 backend_categories = {
   bootstrap = {

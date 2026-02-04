@@ -17,3 +17,7 @@ global = {
     branch = "main"              # Name of the default repository branch. 
   }
 }
+
+# Management Groups: Core (Top Level)
+management_group_core_id           = "core"     # Management Group ID used for resource naming.  
+management_group_core_display_name = "TimShand" # Management Group display name.  
