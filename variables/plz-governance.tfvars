@@ -55,41 +55,49 @@ management_groups_level2 = {
 # Management Groups: Third level nested under level 2 manangement groups.
 management_groups_level3 = {} # Leave blank if not required. Repeat same structure as "management_groups_level2". 
 
-# # Policy: Built-In 
-# policy_initiatives_builtin         = ["New Zealand ISM"] # List of built-in Policy Initiatives to assign at top level. 
+# Policy: Built-In 
+# policy_initiatives_builtin         = ["New Zealand ISM"] # List of built-in Policy Initiatives to assign at top-level Management Group. 
 # policy_initiatives_builtin_enable  = true                # Enable policy assignment (turns it on/off). 
 # policy_initiatives_builtin_enforce = false               # Enforce policy controls (audit vs enforce). 
+policy_initiatives_builtin = {
+  "New Zealand ISM" = {
+    definition_id    = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
+    assignment_mg_id = "core"                                 # Management Group ID to assign the initiative to. 
+    enabled          = true                                   # [true/false]: Toggle assignment.  
+    enforce          = false                                  # [true/false]: Toggle enforcement of policy initiative. 
+  }
+}
 
-# # Policy: Custom
-# policy_allowed_locations = ["newzealandnorth", "australiaeast", "westus", "westus2"]
-# policy_required_tags     = ["Owner", "Environment", "Project"]
-# policy_allowed_vm_skus = [
-#   "Standard_A1_v2",
-#   "Standard_A2_v2",
-#   "Standard_A4_v2",
-#   "Standard_B1ls",
-#   "Standard_B1s",
-#   "Standard_B1ms",
-#   "Standard_B2s",
-#   "Standard_B2ms",
-#   "Standard_B4s",
-#   "Standard_B4ms",
-#   "Standard_B4s_v2",
-#   "Standard_D2_v4",
-#   "Standard_D2s_v4",
-#   "Standard_D4_v4",
-#   "Standard_D4s_v4"
-# ]
-# policy_initiatives = { # Define Initiative -> Definition mapping. 
-#   core_baseline = [
-#     "allowed_locations",
-#     "required_tag_list",
-#     "storage_accounts_https"
-#   ]
-#   cost_controls = [
-#     "restrict_vm_skus"
-#   ]
-#   decommissioned = [
-#     "deny_all_resources"
-#   ]
-# }
+# Policy: Custom
+policy_var_allowed_locations = ["newzealandnorth", "australiaeast", "westus", "westus2"]
+policy_var_required_tags     = ["Owner", "Environment", "Project"]
+policy_var_allowed_vm_skus = [
+  "Standard_A1_v2",
+  "Standard_A2_v2",
+  "Standard_A4_v2",
+  "Standard_B1ls",
+  "Standard_B1s",
+  "Standard_B1ms",
+  "Standard_B2s",
+  "Standard_B2ms",
+  "Standard_B4s",
+  "Standard_B4ms",
+  "Standard_B4s_v2",
+  "Standard_D2_v4",
+  "Standard_D2s_v4",
+  "Standard_D4_v4",
+  "Standard_D4s_v4"
+]
+policy_initiatives = { # Define Initiative -> Definition mapping. 
+  core_baseline = [
+    "allowed_locations",
+    "required_tag_list",
+    "storage_accounts_https"
+  ]
+  cost_controls = [
+    "restrict_vm_skus"
+  ]
+  decommissioned = [
+    "deny_all_resources"
+  ]
+}

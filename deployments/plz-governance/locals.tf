@@ -54,6 +54,16 @@ locals {
   }
 }
 
+# GOVERNANCE: Policy Initiatives (Built-In)
+# ------------------------------------------------------------- #
+locals {
+  policy_initiatives_builtin_enabled = {
+    for i, cfg in var.policy_initiatives_builtin :
+    i => cfg
+    if cfg.enabled == true # Only add to map if enabled. 
+  }
+}
+
 # GOVERNANCE: Policy Definitions
 # ------------------------------------------------------------- #
 locals {

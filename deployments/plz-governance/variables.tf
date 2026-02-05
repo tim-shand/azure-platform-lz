@@ -87,3 +87,52 @@ variable "management_groups_level3" {
     error_message = "Both a display name and parent Management Group is required for all Level 3 Management Groups."
   }
 }
+
+variable "policy_initiatives_builtin" {
+  description = "Map of objects containing built-in policy initiatives and their configuration settings."
+  type = map(object({
+    definition_id    = string # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
+    assignment_mg_id = string # Management Group ID to assign the initiative to. 
+    enabled          = bool   # [true/false]: Toggle assignment.  
+    enforce          = bool   # [true/false]: Toggle enforcement of policy initiative. 
+  }))
+}
+
+# variable "policy_initiatives_builtin" {
+#   description = "Set of display name for built-in policy initiatives to assign at root management group."
+#   type        = set(string)
+#   default     = []
+#   nullable    = true
+# }
+
+# variable "policy_initiatives_builtin_enforce" {
+#   description = "Enable to enforce the built-in policy initiative."
+#   type        = bool
+#   default     = false
+# }
+
+# variable "policy_initiatives_builtin_enable" {
+#   description = "Enable assignment of the built-in policy initiative (turns it on/off)."
+#   type        = bool
+#   default     = true
+# }
+
+variable "policy_initiatives" {
+  description = "Policy Initiatives and member Definition names."
+  type        = map(list(string))
+}
+
+variable "policy_var_allowed_locations" {
+  description = "List of allowed locations for resources in string format."
+  type        = list(string)
+}
+
+variable "policy_var_required_tags" {
+  description = "List of required tags to be assigned to resources in string format."
+  type        = list(string)
+}
+
+variable "policy_var_allowed_vm_skus" {
+  description = "List of allowed SKUs when deploying VMs."
+  type        = list(string)
+}
