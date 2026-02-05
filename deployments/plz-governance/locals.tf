@@ -1,6 +1,13 @@
+# GOVERNANCE: General
+# ------------------------------------------------------------- #
+
 locals {
   tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
+}
 
+# GOVERNANCE: Management Groups
+# ------------------------------------------------------------- #
+locals {
   # Build a subscription lookup map (sub display name to ID).
   subscriptions_by_name = {
     for sub in data.azurerm_subscriptions.all.subscriptions : # Loop each sub in data call. 
@@ -44,5 +51,22 @@ locals {
         sub_id if strcontains(name, lower(id))
       ]
     ]))
+  }
+}
+
+# GOVERNANCE: Policy Definitions
+# ------------------------------------------------------------- #
+locals {
+  policy_files_path = "${path.module}/policy_definitions"             # Decode all JSON policy files and add metadata. 
+  policy_files      = fileset("${local.policy_files_path}", "*.json") # Discover all policy JSON files.
+  policies = {
+    for file_name in local.policy_files :         # Loop each file in the list of files. 
+    trimsuffix(file_name, ".json") => jsondecode( # Create map using trimmed file name as key, parsed JSON as value. 
+    file("${local.policy_files_path}/${file_name}")).properties
+  }
+  # Generate map of Policy Definition name (key), ID, name (value). Used with Initiatives. 
+  policy_definition_map = {
+    for k, p in azurerm_policy_definition.custom :
+    k => { id = p.id, name = p.name }
   }
 }
