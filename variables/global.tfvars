@@ -22,7 +22,9 @@ global = {
 management_group_core_id           = "core"     # Management Group ID used for resource naming.  
 management_group_core_display_name = "TimShand" # Management Group display name.  
 
-# Shared Services: Map of services and the secret name containing the value. 
+# Shared Services: Map of services and the key name containing the value in the App Configuraton.  
 shared_services = {
-  management_group_core = "gov-management-group-core"
+  plz_gov_mg_core = "gov-management-group-core"     # Shared Services: Top-level Management Group. 
+  plz_hub_vnet_id = "con-hub-vnet-id"               # Shared Services: Hub VNet ID. 
+  plz_mgt_law_id  = "mgt-loganalytics-workspace-id" # Shared Services: Log Analytics Workspace
 }

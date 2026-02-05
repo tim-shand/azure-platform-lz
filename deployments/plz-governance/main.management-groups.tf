@@ -5,18 +5,6 @@
 # - Assign subscriptions to Management Groups.  
 #====================================================================================#
 
-# Shared Services: Add Core Management Group to IaC Key Vault. 
-resource "azurerm_key_vault_secret" "mg_root" {
-  name         = var.shared_services.management_group_core
-  value        = data.azurerm_management_group.core.name
-  key_vault_id = data.azurerm_key_vault.iac_kv.id # Key Vault created during bootstrap for shared services. 
-  tags         = local.tags_merged
-  content_type = "ResourceName" # Helpful hint to what the value is. 
-  lifecycle {
-    ignore_changes = [value] # Prevent Terraform from trying to recreate a secret version if concurrent applies happen. 
-  }
-}
-
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_mg_level1" {
   for_each     = var.management_groups_level1

@@ -24,34 +24,22 @@ variable "stack" {
   default     = {}
 }
 
-variable "shared_services_kv_name" {
-  description = "Name of shared service Key Vault created during bootstrap."
+variable "shared_services_name" {
+  description = "Name of shared service App Configuration created during bootstrap."
   type        = string
 }
 
-variable "shared_services_kv_rg" {
-  description = "Map of shared service Resource Group for Key Vault created during bootstrap."
+variable "shared_services_rg" {
+  description = "Map of shared service Resource Group for App Configuration created during bootstrap."
   type        = string
-}
-
-# ------------------------------------------------------------------------------- # 
-
-variable "management_group_core_id" {
-  description = "ID used for the naming of the top-level management group to be created."
-  type        = string
-  nullable    = false
-}
-
-variable "management_group_core_display_name" {
-  description = "Display name of the top-level management group to be created."
-  type        = string
-  nullable    = false
 }
 
 variable "shared_services" {
-  description = "Map of Shared Service Key Vault secret names, used to get IDs and names in data calls."
+  description = "Map of Shared Service key names, used to get IDs and names in data calls."
   type        = map(string)
 }
+
+# ------------------------------------------------------------------------------- # 
 
 variable "management_groups_level1" {
   description = "Map of first level Management Group objects, nested under the core Manangement Group."
