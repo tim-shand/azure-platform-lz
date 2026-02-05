@@ -35,8 +35,8 @@ variable "management_group_core_display_name" {
 variable "backend_categories" {
   description = "Backend category objects, used to define the top-level IaC backend structure."
   type = map(object({
-    name            = string # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-    enable_keyvault = bool   # Enable to create a Key Vault in this backend category Resource Group. 
+    name                   = string # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
+    enable_shared_services = bool   # Enable to create an App Configuration to stored shared resource key/values. 
   }))
 }
 

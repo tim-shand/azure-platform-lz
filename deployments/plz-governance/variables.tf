@@ -48,6 +48,11 @@ variable "management_group_core_display_name" {
   nullable    = false
 }
 
+variable "shared_services" {
+  description = "Map of Shared Service Key Vault secret names, used to get IDs and names in data calls."
+  type        = map(string)
+}
+
 variable "management_groups_level1" {
   description = "Map of first level Management Group objects, nested under the core Manangement Group."
   type = map(object({

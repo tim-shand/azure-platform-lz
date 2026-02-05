@@ -16,16 +16,16 @@ stack = {
 # Backend Categories: Define the top-level IaC backend structure. NOTE: Opinionated (DO NOT change key structure). 
 backend_categories = {
   bootstrap = {
-    name            = "bootstrap" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-    enable_keyvault = false       # [true/false]: Enable to create a Key Vault in this backend category Resource Group. 
+    name                   = "bootstrap" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
+    enable_shared_services = false       # [true/false]: Enable to create an App Configuration to store global key/value data. 
   }
   platform = {
-    name            = "platform" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-    enable_keyvault = true       # [true/false]: Enable to create a Key Vault in this backend category Resource Group.  
+    name                   = "platform" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
+    enable_shared_services = true       # [true/false]: Enable to create an App Configuration to store global key/value data.  
   }
   workload = {
-    name            = "workload" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-    enable_keyvault = false      # [true/false]: Enable to create a Key Vault in this backend category Resource Group. 
+    name                   = "workload" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
+    enable_shared_services = false      # [true/false]: Enable to create an App Configuration to store global key/value data. 
   }
 }
 

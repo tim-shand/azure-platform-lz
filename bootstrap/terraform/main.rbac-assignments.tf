@@ -31,7 +31,17 @@ resource "azurerm_role_assignment" "rbac_sp_kvu" {
   role_definition_name = "Key Vault Secrets User"         # Required to read Key Vault Secrets. 
   principal_id         = azuread_service_principal.iac_sp.object_id
 }
-
+resource "azurerm_role_assignment" "rbac_sp_cfg" {
+  scope                = azurerm_management_group.core.id # Assign at created top-level management group. 
+  role_definition_name = "App Configuration Data Owner"   # Required to read/write App Config key values. 
+  principal_id         = azuread_service_principal.iac_sp.object_id
+}
+resource "azurerm_role_assignment" "rbac_sp_backend_rg" {
+  for_each             = var.backend_categories                      # Assign to each IaC backend Resource Group. 
+  scope                = azurerm_resource_group.backend[each.key].id # Must be assigned on the resource plane, cannot be inherited from MG. 
+  role_definition_name = "Storage Blob Data Contributor"             # Required to access and update blob storage properties. 
+  principal_id         = azuread_service_principal.iac_sp.object_id
+}
 
 # RBAC: [Current User] - Assign RBAC roles for current user. Required when 'shared_access_key_enabled=false'. 
 resource "azurerm_role_assignment" "rbac_cu_backend_rg" {
@@ -40,9 +50,8 @@ resource "azurerm_role_assignment" "rbac_cu_backend_rg" {
   role_definition_name = "Storage Blob Data Contributor"              # Required to access and update blob storage properties. 
   principal_id         = data.azuread_client_config.current.object_id # Current user object ID. 
 }
-resource "azurerm_role_assignment" "rbac_sp_backend_rg" {
-  for_each             = var.backend_categories                      # Assign to each IaC backend Resource Group. 
-  scope                = azurerm_resource_group.backend[each.key].id # Must be assigned on the resource plane, cannot be inherited from MG. 
-  role_definition_name = "Storage Blob Data Contributor"             # Required to access and update blob storage properties. 
-  principal_id         = azuread_service_principal.iac_sp.object_id
+resource "azurerm_role_assignment" "rbac_cu_cfg" {
+  scope                = azurerm_management_group.core.id # Assign at created top-level management group. 
+  role_definition_name = "App Configuration Data Owner"   # Required to read/write App Config key values. 
+  principal_id         = data.azuread_client_config.current.object_id
 }

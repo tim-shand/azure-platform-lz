@@ -40,20 +40,20 @@ resource "github_actions_variable" "iac_sa" {
   value         = azurerm_storage_account.backend[var.backend_categories["platform"].name].name
 }
 
-# GitHub: Repo [VARIABLE] - Shared: Key Vault (Name)
-resource "github_actions_variable" "iac_kv" {
-  for_each      = local.backend_categories_keyvault # Create GitHub repo variable for each Key Vault. 
+# GitHub: Repo [VARIABLE] - Shared: App Config (Name)
+resource "github_actions_variable" "iac_cfg" {
+  for_each      = local.backend_categories_shared_services # Create GitHub repo variable for each App Config. 
   repository    = data.github_repository.repo.name
-  variable_name = "KV_NAME_${upper(each.key)}"
-  value         = azurerm_key_vault.backend[each.key].name
+  variable_name = "CFG_NAME_${upper(each.key)}"
+  value         = azurerm_app_configuration.iac[each.key].name
 }
 
-# GitHub: Repo [VARIABLE] - Shared: Key Vault (Resource Group)
-resource "github_actions_variable" "iac_kv_rg" {
-  for_each      = local.backend_categories_keyvault # Create GitHub repo variable for each Key Vault. 
+# GitHub: Repo [VARIABLE] - Shared: App Config (Resource Group)
+resource "github_actions_variable" "iac_cfg_rg" {
+  for_each      = local.backend_categories_shared_services # Create GitHub repo variable for each App Config. 
   repository    = data.github_repository.repo.name
-  variable_name = "KV_RESOURCE_GROUP_${upper(each.key)}"
-  value         = azurerm_key_vault.backend[each.key].resource_group_name
+  variable_name = "CFG_RESOURCE_GROUP_${upper(each.key)}"
+  value         = azurerm_app_configuration.iac[each.key].resource_group_name
 }
 
 #----------------------------------------------------------------#

@@ -21,3 +21,8 @@ global = {
 # Management Groups: Core (Top Level)
 management_group_core_id           = "core"     # Management Group ID used for resource naming.  
 management_group_core_display_name = "TimShand" # Management Group display name.  
+
+# Shared Services: Map of services and the secret name containing the value. 
+shared_services = {
+  management_group_core = "gov-management-group-core"
+}

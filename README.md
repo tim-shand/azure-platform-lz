@@ -29,6 +29,7 @@ TBC
   - Maintaining isolation and independence per stack. 
   - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads). 
   - One state file per stack (governance, connectivity, management, identity). 
+  - Azure App Configuration used to store shared service global outputs (IDs and names) to be used by other stacks. 
 
 ### 🏰 [Governance](./deployments/plz-governance)
 
@@ -142,7 +143,6 @@ Resource names are provided using a custom [naming module](./modules/global-reso
 
 ## ➕ To Do / Future Updates
 
-- [ ] Utility: PowerShell script for bootstrap process
 - [ ] Docs: Platform architecture diagram
 - [ ] Stack: Governance
 - [ ] Stack: Management

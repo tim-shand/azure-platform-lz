@@ -53,15 +53,38 @@ resource "azurerm_storage_container" "backend" {
 }
 
 # Key Vault: Used to store shared resource IDs and names for cross-stack access. 
-resource "azurerm_key_vault" "backend" {
-  for_each                   = local.backend_categories_keyvault # Only create for categories with Key Vault enabled. 
-  name                       = module.naming_backend[each.key].key_vault_name
-  resource_group_name        = azurerm_resource_group.backend[each.key].name
-  location                   = azurerm_resource_group.backend[each.key].location
-  tags                       = local.tags_merged
-  tenant_id                  = data.azuread_client_config.current.tenant_id
-  sku_name                   = "standard"
-  rbac_authorization_enabled = true  # Enforce RBAC over access policy. 
-  purge_protection_enabled   = false # Not required. 
-  soft_delete_retention_days = 7     # Set low intentionally to allow quick delete. 
+# resource "azurerm_key_vault" "backend" {
+#   for_each                   = local.backend_categories_shared_services # Only create for categories with shared_services enabled. 
+#   name                       = module.naming_backend[each.key].key_vault_name
+#   resource_group_name        = azurerm_resource_group.backend[each.key].name
+#   location                   = azurerm_resource_group.backend[each.key].location
+#   tags                       = local.tags_merged
+#   tenant_id                  = data.azuread_client_config.current.tenant_id
+#   sku_name                   = "standard"
+#   rbac_authorization_enabled = true  # Enforce RBAC over access policy. 
+#   purge_protection_enabled   = false # Not required. 
+#   soft_delete_retention_days = 7     # Set low intentionally to allow quick delete. 
+# }
+
+# App Configuration: Used to store key/value pairs for Shared Service resources (IDs/Names). 
+resource "azurerm_app_configuration" "iac" {
+  for_each                 = local.backend_categories_shared_services # Only create for categories with shared_services enabled. 
+  name                     = "${module.naming_backend[each.key].full_name}-cfg"
+  resource_group_name      = azurerm_resource_group.backend[each.key].name
+  location                 = azurerm_resource_group.backend[each.key].location
+  sku                      = "free"
+  public_network_access    = "Enabled"
+  purge_protection_enabled = false
+  tags                     = local.tags_merged
+}
+
+resource "azurerm_app_configuration_key" "mg_core" {
+  for_each               = local.backend_categories_shared_services
+  configuration_store_id = azurerm_app_configuration.iac[each.key].id
+  key                    = "gov-management-group-core"
+  label                  = "Governance"
+  value                  = azurerm_management_group.core.name
+  depends_on = [
+    azurerm_role_assignment.rbac_sp_cfg # Need the role in place before attempting to create. 
+  ]
 }
