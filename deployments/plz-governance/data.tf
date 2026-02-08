@@ -18,7 +18,7 @@ data "azurerm_app_configuration_key" "mg_core" {
   provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
   configuration_store_id = data.azurerm_app_configuration.iac.id
   key                    = var.shared_services.plz_gov_mg_core # Refer to variable in globals. 
-  label                  = var.stack.naming.workload_name      # REQUIRED: Fails lookup without this, if it is set at resource. 
+  #label                  = var.stack.naming.workload_name      # REQUIRED: Fails lookup without this, if it is set at resource. 
 }
 
 # GOVERNANCE: Management Groups
@@ -33,7 +33,7 @@ data "azurerm_management_group" "core" {
 data "azurerm_subscriptions" "all" {}
 
 
-# GOVERNANCE: Policy Initiatives (Built-In)
+# GOVERNANCE: Policy and Initiatives (Built-In)
 # ------------------------------------------------------------- #
 
 # Use provided variable value to assign a built-in policy initiative. 

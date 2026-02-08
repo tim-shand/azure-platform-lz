@@ -32,6 +32,11 @@ variable "management_group_core_display_name" {
   default     = "Core"
 }
 
+variable "shared_services" {
+  description = "Map of Shared Service key names, used to get IDs and names in data calls."
+  type        = map(string)
+}
+
 variable "backend_categories" {
   description = "Backend category objects, used to define the top-level IaC backend structure."
   type = map(object({

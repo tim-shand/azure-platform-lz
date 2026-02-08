@@ -66,7 +66,8 @@ policy_initiatives_builtin = {
 }
 
 # Policy: Custom
-policy_initiatives = { # Define Initiative --> Definition mapping. 
+policy_enforce_mode = "audit" # DeployIfNotExists, Disabled
+policy_initiatives = {        # Define Initiative --> Definition mapping. 
   core_baseline = [
     "allowed_locations",
     "required_tag_list",
@@ -80,7 +81,6 @@ policy_initiatives = { # Define Initiative --> Definition mapping.
     "deny_all_resources"
   ]
 }
-
 policy_var_allowed_locations = ["newzealandnorth", "australiaeast", "westus", "westus2"]
 policy_var_required_tags     = ["Owner", "Environment", "Project"]
 policy_var_allowed_vm_skus = [

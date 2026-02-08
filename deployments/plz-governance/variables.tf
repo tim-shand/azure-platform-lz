@@ -39,7 +39,8 @@ variable "shared_services" {
   type        = map(string)
 }
 
-# ------------------------------------------------------------------------------- # 
+# GOVERNANCE: Management Groups
+# ------------------------------------------------------------- #
 
 variable "management_groups_level1" {
   description = "Map of first level Management Group objects, nested under the core Manangement Group."
@@ -98,24 +99,8 @@ variable "policy_initiatives_builtin" {
   }))
 }
 
-# variable "policy_initiatives_builtin" {
-#   description = "Set of display name for built-in policy initiatives to assign at root management group."
-#   type        = set(string)
-#   default     = []
-#   nullable    = true
-# }
-
-# variable "policy_initiatives_builtin_enforce" {
-#   description = "Enable to enforce the built-in policy initiative."
-#   type        = bool
-#   default     = false
-# }
-
-# variable "policy_initiatives_builtin_enable" {
-#   description = "Enable assignment of the built-in policy initiative (turns it on/off)."
-#   type        = bool
-#   default     = true
-# }
+# GOVERNANCE: Policy and Initiatives (Built-In)
+# ------------------------------------------------------------- #
 
 variable "policy_initiatives" {
   description = "Policy Initiatives and member Definition names."

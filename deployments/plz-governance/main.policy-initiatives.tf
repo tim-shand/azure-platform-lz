@@ -13,13 +13,13 @@ resource "azurerm_management_group_policy_assignment" "builtin" {
   name                 = each.key
   display_name         = "[${upper(var.stack.naming.workload_code)}] BuiltIn - ${each.key}"
   policy_definition_id = data.azurerm_policy_set_definition.builtin[each.key].id # Get from resolved initiative data call. 
-  management_group_id = local.management_group_registry[
-    try(each.value.assignment_mg_id, "core") # Try get result from value, else use 'core' as default. 
+  management_group_id = local.management_group_registry[                         # Use registry to flatten all MGs and provide list of names to assign to. 
+    try(each.value.assignment_mg_id, "core")                                     # Try get result from value, else use 'core' as default. 
   ]
   enforce = each.value.enforce # True/False
 }
 
-# CUSTOM: Custom Initiatives
+# CUSTOM: Custom Initiatives. 
 resource "azurerm_policy_set_definition" "custom" {
   for_each     = var.policy_initiatives # Governance TFVARS
   name         = "gov_initiative_custom_${upper(each.key)}"
