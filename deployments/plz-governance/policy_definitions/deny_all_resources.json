@@ -1,16 +1,16 @@
 {
     "properties": {
         "displayName": "Deny All Resources",
-        "description": "This policy denies the creation or modification of all resource types in the assigned scope.",
+        "description": "Denies the creation or modification of all resources in the assigned scope.",
         "policyType": "Custom",
-        "mode": "Indexed",
+        "mode": "All",
         "metadata": {
             "category": "Resources"
         },
         "policyRule": {
             "if": {
                 "field": "type",
-                "like": "Microsoft.*/*"
+                "exists": "true"
             },
             "then": {
                 "effect": "Deny"

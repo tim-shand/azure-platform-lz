@@ -8,11 +8,11 @@
             "category": "Tags"
         },
         "parameters": {
-            "tagNames": {
+            "requiredTags": {
                 "type": "Array",
                 "metadata": {
                     "strongType": "tags",
-                    "displayName": "Tag Names",
+                    "displayName": "Required Tags",
                     "description": "Names of the tags, such as 'environment'"
                 }
             },

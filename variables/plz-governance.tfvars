@@ -58,12 +58,12 @@ management_groups_level3 = {} # Leave blank if not required. Repeat same structu
 
 # Policy: Built-In 
 policy_initiatives_builtin = {
-  "New Zealand ISM" = {
-    definition_id    = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
-    assignment_mg_id = "core"                                 # Short code for Management Group ID to assign the initiative to (see 'management_group_registry'). 
-    enabled          = true                                   # [true/false]: Toggle assignment.  
-    enforce          = false                                  # [true/false]: Toggle enforcement of policy initiative. 
-  }
+  # "New Zealand ISM" = {
+  #   definition_id    = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
+  #   assignment_mg_id = "core"                                 # Short code for Management Group ID to assign the initiative to (see 'management_group_registry'). 
+  #   enabled          = true                                   # [true/false]: Toggle assignment.  
+  #   enforce          = false                                  # [true/false]: Toggle enforcement of policy initiative. 
+  # }
 }
 
 # Policy: Custom
@@ -72,8 +72,7 @@ policy_initiatives = {        # Define Initiative --> Definition mapping.
   core_baseline = [
     "allowed_locations",
     "required_tag_list",
-    "storage_accounts_https",
-    "diagnostic_settings_all"
+    "storage_accounts_https"
   ]
   cost_controls = [
     "restrict_vm_skus"

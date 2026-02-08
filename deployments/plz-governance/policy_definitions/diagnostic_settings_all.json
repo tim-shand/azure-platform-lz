@@ -3,7 +3,7 @@
         "displayName": "Deploy Diagnostic Settings to Log Analytics Workspace",
         "policyType": "Custom",
         "mode": "All",
-        "description": "Deploys diagnostic settings to a Log Analytics workspace. Assignments happen in Management stack.",
+        "description": "Deploys diagnostic settings to a Log Analytics workspace. Workspace is provided at assignment time.",
         "metadata": {
             "category": "Monitoring"
         },
@@ -11,13 +11,21 @@
             "logAnalyticsWorkspaceId": {
                 "type": "String",
                 "metadata": {
-                    "description": "Resource ID of the Log Analytics workspace (assigned in Management stack)."
+                    "displayName": "Log Analytics Workspace ID",
+                    "description": "Resource ID of the Log Analytics workspace."
                 }
             },
             "effect": {
                 "type": "String",
+                "allowedValues": [
+                    "DeployIfNotExists",
+                    "AuditIfNotExists",
+                    "Disabled"
+                ],
+                "defaultValue": "DeployIfNotExists",
                 "metadata": {
-                    "description": "The effect to apply: deployIfNotExists, AuditIfNotExists, Disabled, etc."
+                    "displayName": "Effect",
+                    "description": "Enable or disable the execution of the policy."
                 }
             }
         },
@@ -35,6 +43,14 @@
                 "effect": "[parameters('effect')]",
                 "details": {
                     "type": "Microsoft.Insights/diagnosticSettings",
+                    "existenceCondition": {
+                        "allOf": [
+                            {
+                                "field": "Microsoft.Insights/diagnosticSettings/workspaceId",
+                                "equals": "[parameters('logAnalyticsWorkspaceId')]"
+                            }
+                        ]
+                    },
                     "roleDefinitionIds": [
                         "/providers/Microsoft.Authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7"
                     ],
@@ -44,18 +60,19 @@
                             "template": {
                                 "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                                 "contentVersion": "1.0.0.0",
+                                "parameters": {
+                                    "logAnalyticsWorkspaceId": {
+                                        "type": "string"
+                                    }
+                                },
                                 "resources": [
                                     {
                                         "type": "Microsoft.Insights/diagnosticSettings",
-                                        "apiVersion": "2017-05-01-preview",
-                                        "name": "[concat(parameters('resourceName'), '-diagnostics')]",
+                                        "apiVersion": "2021-05-01-preview",
+                                        "name": "send-to-law",
                                         "properties": {
                                             "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
                                             "logs": [
-                                                {
-                                                    "categoryGroup": "audit",
-                                                    "enabled": true
-                                                },
                                                 {
                                                     "categoryGroup": "allLogs",
                                                     "enabled": true
@@ -70,6 +87,11 @@
                                         }
                                     }
                                 ]
+                            },
+                            "parameters": {
+                                "logAnalyticsWorkspaceId": {
+                                    "value": "[parameters('logAnalyticsWorkspaceId')]"
+                                }
                             }
                         }
                     }
