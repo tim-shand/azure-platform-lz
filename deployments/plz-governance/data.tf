@@ -1,3 +1,6 @@
+# SHARED SERVICES
+# ------------------------------------------------------------- #
+
 # Shared Services: Get App Configuration data using alias provider. 
 data "azurerm_app_configuration" "iac" {
   provider            = azurerm.iac              # Use aliased provider to access IaC subscription. 
@@ -13,7 +16,8 @@ data "azurerm_app_configuration_key" "mg_core" {
   label                  = var.stack.naming.workload_name      # REQUIRED: Fails lookup without this, if it is set at resource. 
 }
 
-# ------------------------------------------------------------------------------- # 
+# GOVERNANCE: Management Groups
+# ------------------------------------------------------------- #
 
 # IaC: Get IaC subscription for aliased provider. 
 data "azurerm_subscription" "iac_sub" {
@@ -27,3 +31,16 @@ data "azurerm_management_group" "core" {
 
 # Subscriptions: Collect all available subscriptions, to be nested under management groups.  
 data "azurerm_subscriptions" "all" {}
+
+
+# GOVERNANCE: Policy Initiatives (Built-In)
+# ------------------------------------------------------------- #
+
+# Use provided variable value to assign a built-in policy initiative. 
+data "azurerm_policy_set_definition" "builtin" {
+  for_each = {
+    for k, v in var.policy_initiatives_builtin :
+    k => v if v.enabled # Only select initiatives that are set to be enabled. 
+  }
+  name = each.value.definition_id # Name equals GUID for built-in initiatives. 
+}

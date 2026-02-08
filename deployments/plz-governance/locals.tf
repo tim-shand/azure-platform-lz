@@ -7,6 +7,7 @@ locals {
 
 # GOVERNANCE: Management Groups
 # ------------------------------------------------------------- #
+
 locals {
   # Build a subscription lookup map (sub display name to ID).
   subscriptions_by_name = {
@@ -14,7 +15,11 @@ locals {
     lower(sub.display_name) => sub.subscription_id            # Key:"plz-connectivity-prod", Value:"00000000-0000-0000-0000-000000000000". 
   }
 
-  # Lookup maps of management group IDs for parent/child assignments. 
+  # Lookup maps of management group IDs for parent/child assignments, and policy assignment. 
+  management_group_ids_level1 = {
+    for k, v in azurerm_management_group.level1 :
+    k => v.id
+  }
   management_group_ids_level2 = {
     for k, v in azurerm_management_group.level1 : # Use level 1 MGs as base. 
     k => v.id
@@ -56,16 +61,29 @@ locals {
 
 # GOVERNANCE: Policy Initiatives (Built-In)
 # ------------------------------------------------------------- #
+
 locals {
+  # Map of policy initiatives that are enabled. 
   policy_initiatives_builtin_enabled = {
     for i, cfg in var.policy_initiatives_builtin :
     i => cfg
     if cfg.enabled == true # Only add to map if enabled. 
   }
+
+  # Merge the individual lookup maps into a single map (flatten). (local.management_group_registry["platform"]). 
+  management_group_registry = merge(
+    local.management_group_ids_level1,
+    local.management_group_ids_level2,
+    local.management_group_ids_level3,
+    {
+      core = data.azurerm_management_group.core.id # Define "core" as top-level MG. 
+    }
+  )
 }
 
 # GOVERNANCE: Policy Definitions
 # ------------------------------------------------------------- #
+
 locals {
   policy_files_path = "${path.module}/policy_definitions"             # Decode all JSON policy files and add metadata. 
   policy_files      = fileset("${local.policy_files_path}", "*.json") # Discover all policy JSON files.

@@ -1,0 +1,80 @@
+{
+    "properties": {
+        "displayName": "Deploy Diagnostic Settings to Log Analytics Workspace",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Deploys diagnostic settings to a Log Analytics workspace. Assignments happen in Management stack.",
+        "metadata": {
+            "category": "Monitoring"
+        },
+        "parameters": {
+            "logAnalyticsWorkspaceId": {
+                "type": "String",
+                "metadata": {
+                    "description": "Resource ID of the Log Analytics workspace (assigned in Management stack)."
+                }
+            },
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "description": "The effect to apply: deployIfNotExists, AuditIfNotExists, Disabled, etc."
+                }
+            }
+        },
+        "policyRule": {
+            "if": {
+                "field": "type",
+                "in": [
+                    "Microsoft.Compute/virtualMachines",
+                    "Microsoft.Network/networkSecurityGroups",
+                    "Microsoft.KeyVault/vaults",
+                    "Microsoft.Storage/storageAccounts"
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effect')]",
+                "details": {
+                    "type": "Microsoft.Insights/diagnosticSettings",
+                    "roleDefinitionIds": [
+                        "/providers/Microsoft.Authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7"
+                    ],
+                    "deployment": {
+                        "properties": {
+                            "mode": "incremental",
+                            "template": {
+                                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                "contentVersion": "1.0.0.0",
+                                "resources": [
+                                    {
+                                        "type": "Microsoft.Insights/diagnosticSettings",
+                                        "apiVersion": "2017-05-01-preview",
+                                        "name": "[concat(parameters('resourceName'), '-diagnostics')]",
+                                        "properties": {
+                                            "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                                            "logs": [
+                                                {
+                                                    "categoryGroup": "audit",
+                                                    "enabled": true
+                                                },
+                                                {
+                                                    "categoryGroup": "allLogs",
+                                                    "enabled": true
+                                                }
+                                            ],
+                                            "metrics": [
+                                                {
+                                                    "category": "AllMetrics",
+                                                    "enabled": true
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

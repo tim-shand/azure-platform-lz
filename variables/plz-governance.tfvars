@@ -18,12 +18,12 @@ management_groups_level1 = {
   "platform" = {
     display_name             = "Platform"                               # Contains all platform subscriptions (management, connectivity, security and identity). 
     subscription_identifiers = ["platform-iac-sub", "platform-plz-sub"] # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
-    policy_initiatives       = []                                       # Assign Policy Initiatives directly to MGs. 
+    policy_initiatives       = ["core_baseline"]                        # Assign Policy Initiatives directly to MGs. 
   }
   "workload" = {
-    display_name             = "Workload" # Contains the landing zone child management groups for workloads. 
-    subscription_identifiers = []         # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
-    policy_initiatives       = []         # Assign Policy Initiatives directly to MGs. 
+    display_name             = "Workload"                         # Contains the landing zone child management groups for workloads. 
+    subscription_identifiers = []                                 # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
+    policy_initiatives       = ["core_baseline", "cost_controls"] # Assign Policy Initiatives directly to MGs. 
   }
   "sandbox" = {
     display_name             = "Sandbox"                # Contains subscriptions for testing. Isolated from corporate and online landing zones. Less restrictive set of policies assigned. 
@@ -31,9 +31,9 @@ management_groups_level1 = {
     policy_initiatives       = []                       # Assign Policy Initiatives directly to MGs
   }
   "decom" = {
-    display_name             = "Decommissioned" # Contains cancelled subscriptions. Deny resource creation via policy. 
-    subscription_identifiers = []               # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
-    policy_initiatives       = []               # Assign Policy Initiatives directly to MGs. 
+    display_name             = "Decommissioned"   # Contains cancelled subscriptions. Deny resource creation via policy. 
+    subscription_identifiers = []                 # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
+    policy_initiatives       = ["decommissioned"] # Assign Policy Initiatives directly to MGs. 
   }
 }
 
@@ -56,19 +56,31 @@ management_groups_level2 = {
 management_groups_level3 = {} # Leave blank if not required. Repeat same structure as "management_groups_level2". 
 
 # Policy: Built-In 
-# policy_initiatives_builtin         = ["New Zealand ISM"] # List of built-in Policy Initiatives to assign at top-level Management Group. 
-# policy_initiatives_builtin_enable  = true                # Enable policy assignment (turns it on/off). 
-# policy_initiatives_builtin_enforce = false               # Enforce policy controls (audit vs enforce). 
 policy_initiatives_builtin = {
   "New Zealand ISM" = {
     definition_id    = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
-    assignment_mg_id = "core"                                 # Management Group ID to assign the initiative to. 
+    assignment_mg_id = "core"                                 # Short code for Management Group ID to assign the initiative to (see 'management_group_registry'). 
     enabled          = true                                   # [true/false]: Toggle assignment.  
     enforce          = false                                  # [true/false]: Toggle enforcement of policy initiative. 
   }
 }
 
 # Policy: Custom
+policy_initiatives = { # Define Initiative --> Definition mapping. 
+  core_baseline = [
+    "allowed_locations",
+    "required_tag_list",
+    "storage_accounts_https",
+    "diagnostic_settings_all"
+  ]
+  cost_controls = [
+    "restrict_vm_skus"
+  ]
+  decommissioned = [
+    "deny_all_resources"
+  ]
+}
+
 policy_var_allowed_locations = ["newzealandnorth", "australiaeast", "westus", "westus2"]
 policy_var_required_tags     = ["Owner", "Environment", "Project"]
 policy_var_allowed_vm_skus = [
@@ -88,16 +100,3 @@ policy_var_allowed_vm_skus = [
   "Standard_D4_v4",
   "Standard_D4s_v4"
 ]
-policy_initiatives = { # Define Initiative -> Definition mapping. 
-  core_baseline = [
-    "allowed_locations",
-    "required_tag_list",
-    "storage_accounts_https"
-  ]
-  cost_controls = [
-    "restrict_vm_skus"
-  ]
-  decommissioned = [
-    "deny_all_resources"
-  ]
-}
