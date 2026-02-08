@@ -10,24 +10,24 @@ module "naming_mg_level1" {
   for_each     = var.management_groups_level1
   source       = "../../modules/global-resource-naming"
   prefix       = var.global.naming.org_prefix
-  workload     = each.key
-  stack_or_env = "mg"
+  workload     = each.key # Level 1 names. 
+  stack_or_env = "mg"     # Static suffix for Management Groups. 
 }
 
 module "naming_mg_level2" {
   for_each     = var.management_groups_level2
   source       = "../../modules/global-resource-naming"
   prefix       = var.global.naming.org_prefix
-  workload     = each.key
-  stack_or_env = "mg"
+  workload     = each.key # Level 2 names. 
+  stack_or_env = "mg"     # Static suffix for Management Groups. 
 }
 
 module "naming_mg_level3" {
   for_each     = var.management_groups_level3
   source       = "../../modules/global-resource-naming"
   prefix       = var.global.naming.org_prefix
-  workload     = each.key
-  stack_or_env = "mg"
+  workload     = each.key # Level 3 names. 
+  stack_or_env = "mg"     # Static suffix for Management Groups. 
 }
 
 # Management Groups: Level 1
