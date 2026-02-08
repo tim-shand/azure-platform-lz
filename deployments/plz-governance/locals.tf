@@ -110,25 +110,39 @@ locals {
     }
   }
 
-  # Map of policy initiative -> parameters. 
-  initiative_parameters = {
+  # # Map of policy initiative -> parameters. 
+  # initiative_parameters = {
+  #   core_baseline = {
+  #     allowedLocations = var.policy_var_allowed_locations
+  #     requiredTags     = var.policy_var_required_tags
+  #     allowedVmSkus    = null
+  #     effect           = var.policy_enforce_mode
+  #   }
+  #   cost_controls = {
+  #     allowedLocations = null
+  #     requiredTags     = null
+  #     allowedVmSkus    = var.policy_var_allowed_vm_skus
+  #     effect           = var.policy_enforce_mode
+  #   }
+  #   decommissioned = {
+  #     allowedLocations = null
+  #     requiredTags     = null
+  #     allowedVmSkus    = null
+  #     effect           = var.policy_enforce_mode
+  #   }
+  # }
+  initiative_parameters = { # Each initiative uses only the parameters it requires. 
     core_baseline = {
       allowedLocations = var.policy_var_allowed_locations
       requiredTags     = var.policy_var_required_tags
-      allowedVmSkus    = null
       effect           = var.policy_enforce_mode
     }
     cost_controls = {
-      allowedLocations = null
-      requiredTags     = null
-      allowedVmSkus    = var.policy_var_allowed_vm_skus
-      effect           = var.policy_enforce_mode
+      allowedVmSkus = var.policy_var_allowed_vm_skus
+      effect        = var.policy_enforce_mode
     }
     decommissioned = {
-      allowedLocations = null
-      requiredTags     = null
-      allowedVmSkus    = null
-      effect           = var.policy_enforce_mode
+      effect = var.policy_enforce_mode
     }
   }
 }

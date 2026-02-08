@@ -32,8 +32,11 @@ resource "azurerm_management_group_policy_assignment" "custom" {
   name                 = module.naming_policy_assignment[each.key].compact_name_unique
   management_group_id  = data.azurerm_management_group.lookup[each.value.mg_name].id
   policy_definition_id = azurerm_policy_set_definition.custom[each.value.init_name].id
-  enforce              = true
-  parameters = jsonencode(
-    local.initiative_parameters[each.value.init_name]
-  )
+  #   parameters = jsonencode(
+  #     local.initiative_parameters[each.value.init_name]
+  #   )
+  dynamic "definitions" {
+    for_each   = each.value
+    parameters = jsonencode(local.initiative_parameters[each.key])
+  }
 }
