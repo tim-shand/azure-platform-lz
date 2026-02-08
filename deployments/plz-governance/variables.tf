@@ -99,8 +99,18 @@ variable "policy_initiatives_builtin" {
   }))
 }
 
-# GOVERNANCE: Policy and Initiatives (Built-In)
+# GOVERNANCE: Policy and Initiatives
 # ------------------------------------------------------------- #
+
+variable "policy_enforce_mode" {
+  description = "String value to control the enforcement mode of policy assignments."
+  type        = string
+}
+
+variable "management_group_core_policies" {
+  description = "List of policy initiatives to at the core management group level."
+  type        = list(string)
+}
 
 variable "policy_initiatives" {
   description = "Policy Initiatives and member Definition names."

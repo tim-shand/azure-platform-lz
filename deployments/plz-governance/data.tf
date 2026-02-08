@@ -29,6 +29,11 @@ data "azurerm_management_group" "core" {
   name = data.azurerm_app_configuration_key.mg_core.value
 }
 
+data "azurerm_management_group" "lookup" {
+  for_each     = local.management_groups_all
+  display_name = each.value.display_name
+}
+
 # Subscriptions: Collect all available subscriptions, to be nested under management groups.  
 data "azurerm_subscriptions" "all" {}
 

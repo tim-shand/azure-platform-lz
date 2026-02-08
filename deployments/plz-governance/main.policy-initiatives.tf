@@ -1,25 +1,10 @@
 #====================================================================================#
-# Governance: Policy Initiatives (Built-In)
+# Governance: Policy Initiatives
 # Description: 
-# - Resolve and assign built-in policy initiatives.  
+# - Build policy initiatives from mapped definitions. 
 #====================================================================================#
 
-# BUILT-IN: Assign built-in policy initiatives at the provided level (in the variable map, short name resolved in locals). 
-resource "azurerm_management_group_policy_assignment" "builtin" {
-  for_each = {
-    for k, v in var.policy_initiatives_builtin :
-    k => v if v.enabled # Only select initiatives that are set to be enabled.
-  }
-  name                 = each.key
-  display_name         = "[${upper(var.stack.naming.workload_code)}] BuiltIn - ${each.key}"
-  policy_definition_id = data.azurerm_policy_set_definition.builtin[each.key].id # Get from resolved initiative data call. 
-  management_group_id = local.management_group_registry[                         # Use registry to flatten all MGs and provide list of names to assign to. 
-    try(each.value.assignment_mg_id, "core")                                     # Try get result from value, else use 'core' as default. 
-  ]
-  enforce = each.value.enforce # True/False
-}
-
-# CUSTOM: Custom Initiatives. 
+# Policy: Initiatives - Add mapped definitions to each initiative. 
 resource "azurerm_policy_set_definition" "custom" {
   for_each     = var.policy_initiatives # Governance TFVARS
   name         = "gov_initiative_custom_${upper(each.key)}"

@@ -14,16 +14,17 @@ stack = {
 }
 
 # Management Groups: First level nested under the core manangement group.
+management_group_core_policies = ["core_baseline"] # Direct assign policy initiatives to core management group. 
 management_groups_level1 = {
   "platform" = {
     display_name             = "Platform"                               # Contains all platform subscriptions (management, connectivity, security and identity). 
     subscription_identifiers = ["platform-iac-sub", "platform-plz-sub"] # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
-    policy_initiatives       = ["core_baseline"]                        # Assign Policy Initiatives directly to MGs. 
+    policy_initiatives       = []                                       # Assign Policy Initiatives directly to MGs. 
   }
   "workload" = {
-    display_name             = "Workload"                         # Contains the landing zone child management groups for workloads. 
-    subscription_identifiers = []                                 # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
-    policy_initiatives       = ["core_baseline", "cost_controls"] # Assign Policy Initiatives directly to MGs. 
+    display_name             = "Workload"        # Contains the landing zone child management groups for workloads. 
+    subscription_identifiers = []                # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
+    policy_initiatives       = ["cost_controls"] # Assign Policy Initiatives directly to MGs. 
   }
   "sandbox" = {
     display_name             = "Sandbox"                # Contains subscriptions for testing. Isolated from corporate and online landing zones. Less restrictive set of policies assigned. 

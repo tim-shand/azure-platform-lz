@@ -1,6 +1,10 @@
 # GOVERNANCE: Management Groups
 # ------------------------------------------------------------- #
 
+# output "management_groups_all" {
+#   value = local.management_groups_all
+# }
+
 output "management_groups_all" {
   value = merge(
     azurerm_management_group.level1,
@@ -51,3 +55,21 @@ output "policy_initiatives" {
   }
 }
 
+# GOVERNANCE: Policy Assignments
+# ------------------------------------------------------------- #
+
+# output "mg_initiatives" {
+#   value = local.mg_initiative_pairs
+# }
+
+# output "mg_initiatives" {
+#   value = local.mg_initiatives
+# }
+
+output "mg_initiatives" {
+  value = local.mg_initiative_pairs
+}
+
+output "policy_assignments" {
+  value = azurerm_management_group_policy_assignment.custom
+}

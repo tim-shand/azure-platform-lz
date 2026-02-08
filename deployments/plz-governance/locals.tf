@@ -1,6 +1,5 @@
 # GOVERNANCE: General
 # ------------------------------------------------------------- #
-
 locals {
   tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
 }
@@ -59,11 +58,11 @@ locals {
   }
 }
 
-# GOVERNANCE: Policy Initiatives (Built-In)
+# GOVERNANCE: Policy Initiatives
 # ------------------------------------------------------------- #
 
 locals {
-  # Map of policy initiatives that are enabled. 
+  # BUILT-IN: Map of policy initiatives that are enabled. 
   policy_initiatives_builtin_enabled = {
     for i, cfg in var.policy_initiatives_builtin :
     i => cfg
@@ -71,14 +70,67 @@ locals {
   }
 
   # Merge the individual lookup maps into a single map (flatten). (local.management_group_registry["platform"]). 
-  management_group_registry = merge(
-    local.management_group_ids_level1,
-    local.management_group_ids_level2,
-    local.management_group_ids_level3,
+  management_groups_all = merge(
+    var.management_groups_level1,
+    var.management_groups_level2,
+    var.management_groups_level3,
     {
-      core = data.azurerm_management_group.core.id # Define "core" as top-level MG. 
+      core = { # Inject the core MG as an object with policy_initiatives. 
+        display_name             = data.azurerm_management_group.core.display_name
+        subscription_identifiers = []
+        policy_initiatives       = var.management_group_core_policies
+      }
     }
   )
+
+  # Only MGs that have initiatives. 
+  mg_with_initiatives = {
+    for mg_name, mg in local.management_groups_all :
+    mg_name => mg.policy_initiatives
+    if length(mg.policy_initiatives) > 0
+  }
+
+  # Flatten MG to initiative pairs for resource for_each. 
+  mg_initiative_pairs_list = flatten([
+    for mg_name, initiatives in local.mg_with_initiatives : [
+      for init_name in initiatives : {
+        key       = "${mg_name}-${init_name}" # Temporary key. 
+        mg_name   = mg_name
+        init_name = init_name
+      }
+    ]
+  ])
+
+  # Convert list into map for for_each usage. 
+  mg_initiative_pairs = {
+    for pair in local.mg_initiative_pairs_list :
+    pair.key => {
+      mg_name   = pair.mg_name
+      init_name = pair.init_name
+    }
+  }
+
+  # Map of policy initiative -> parameters. 
+  initiative_parameters = {
+    core_baseline = {
+      allowedLocations = var.policy_var_allowed_locations
+      requiredTags     = var.policy_var_required_tags
+      allowedVmSkus    = null
+      effect           = var.policy_enforce_mode
+    }
+    cost_controls = {
+      allowedLocations = null
+      requiredTags     = null
+      allowedVmSkus    = var.policy_var_allowed_vm_skus
+      effect           = var.policy_enforce_mode
+    }
+    decommissioned = {
+      allowedLocations = null
+      requiredTags     = null
+      allowedVmSkus    = null
+      effect           = var.policy_enforce_mode
+    }
+  }
 }
 
 # GOVERNANCE: Policy Definitions
