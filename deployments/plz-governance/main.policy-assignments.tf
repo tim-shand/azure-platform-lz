@@ -5,11 +5,12 @@
 #====================================================================================#
 
 module "naming_policy_assignment" {
-  for_each     = local.mg_initiative_pairs # Create name for each policy assignment. 
-  source       = "../../modules/global-resource-naming"
-  prefix       = "gov"
-  workload     = each.value.init_name
-  stack_or_env = each.value.mg_name
+  for_each      = local.mg_initiative_pairs # Create name for each policy assignment. 
+  source        = "../../modules/global-resource-naming"
+  prefix        = "gov"
+  workload      = each.value.init_name
+  stack_or_env  = each.value.mg_name
+  ensure_unique = true
 }
 
 # BUILT-IN: Assign built-in policy initiatives at the provided level (in the variable map, short name resolved in locals). 
