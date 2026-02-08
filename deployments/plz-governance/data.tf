@@ -1,5 +1,10 @@
-# SHARED SERVICES
+# GLOBAL / SHARED SERVICES
 # ------------------------------------------------------------- #
+
+# IaC: Get IaC subscription for aliased provider. 
+data "azurerm_subscription" "iac_sub" {
+  subscription_id = var.subscription_id_iac # Pass in the IaC subscription variable. 
+}
 
 # Shared Services: Get App Configuration data using alias provider. 
 data "azurerm_app_configuration" "iac" {
@@ -18,11 +23,6 @@ data "azurerm_app_configuration_key" "mg_core" {
 
 # GOVERNANCE: Management Groups
 # ------------------------------------------------------------- #
-
-# IaC: Get IaC subscription for aliased provider. 
-data "azurerm_subscription" "iac_sub" {
-  subscription_id = var.subscription_id_iac # Pass in the IaC subscription variable. 
-}
 
 # Root Management Group: Pass in tenant ID to get root management group.
 data "azurerm_management_group" "core" {

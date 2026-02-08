@@ -1,22 +1,17 @@
-#=============================================================#
-# Module: Governance - Management Groups & Subscriptions
-#=============================================================#
-
-# Management Groups: Root
-resource "azurerm_management_group" "root" {
-  for_each         = local.management_groups_subs_root
-  name             = lower("${var.naming_prefix}-${each.key}") # Force lower-case for resource name. 
-  display_name     = title(each.value.display_name)            # Use map key for MG display name. 
-  subscription_ids = each.value.subscriptions                  # Assign mapped subscriptions. 
-}
+#==================================================================#
+# Module: gov-management-groups
+# Description: 
+# - Generated Management Group structure.  
+# - Assigns subscriptions based on string value identifier. 
+#==================================================================#
 
 # Management Groups: Level 1
 resource "azurerm_management_group" "level1" {
   for_each                   = local.management_groups_subs_level1
-  name                       = lower("${var.naming_prefix}-${each.key}")        # Force lower-case for resource name. 
-  display_name               = title(each.value.display_name)                   # Use map key for MG display name. 
-  parent_management_group_id = azurerm_management_group.root[local.root_key].id # Nested under root management group. 
-  subscription_ids           = each.value.subscriptions                         # Assign mapped subscriptions. 
+  name                       = lower("${var.naming_prefix}-${each.key}") # Force lower-case for resource name. 
+  display_name               = title(each.value.display_name)            # Use map key for MG display name. 
+  parent_management_group_id = var.management_group_core                 # Assign to core management group. 
+  subscription_ids           = each.value.subscriptions                  # Assign mapped subscriptions. 
 }
 
 # Management Groups: Level 2
