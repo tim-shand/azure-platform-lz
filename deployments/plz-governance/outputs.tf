@@ -51,6 +51,16 @@ output "policy_initiatives" {
 # GOVERNANCE: Policy Assignments
 # ------------------------------------------------------------- #
 
-output "mg_initiative_pairs" {
-  value = local.mg_initiative_pairs
+output "policy_initiative_assignments" {
+  description = "Map of policy initiative assignments to Management Groups."
+  value = {
+    for k, v in azurerm_management_group_policy_assignment.custom :
+    k => {
+      name                = v.name
+      display_name        = v.display_name
+      enforce             = v.enforce
+      identity            = v.identity
+      management_group_id = v.management_group_id
+    }
+  }
 }
