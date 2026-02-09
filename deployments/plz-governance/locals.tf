@@ -71,11 +71,18 @@ locals {
   )
 }
 
-# GOVERNANCE: Policy Initiatives (Custom)
+# GOVERNANCE: Policy Assignments
 # ------------------------------------------------------------- #
 
 locals {
-  # Ensure each initiative uses only the parameters it requires. 
+  # Filter only MGs that have initiatives defined. 
+  mg_with_initiatives = {
+    for mg_name, mg in local.management_groups_all :
+    mg_name => mg.policy_initiatives
+    if length(mg.policy_initiatives) > 0
+  }
+
+  # Initiative specific parameters for assignment. 
   initiative_assignment_parameters = {
     core_baseline = {
       allowedLocations = var.policy_param_allowed_locations
@@ -90,19 +97,20 @@ locals {
       effect = var.policy_effect_mode
     }
   }
-}
 
-# GOVERNANCE: Policy Assignments
-# ------------------------------------------------------------- #
-
-locals {
-  # Build flattened map of MG -> Initiative mappings. 
-  # initiative_assignments = flatten([
-  #   for mg, cfg in local.management_groups_all : [
-  #     for init in cfg.initiatives : {
-  #       mg         = mg
-  #       initiative = init
-  #     }
-  #   ]
-  # ])
+  # Build map of MG -> initiative pairs. 
+  mg_initiative_pairs = tomap({
+    for pair in flatten([
+      for mg_name, initiatives in local.mg_with_initiatives : [
+        for initiative in initiatives : {
+          key        = "${mg_name}-${initiative}"
+          mg_name    = mg_name
+          initiative = initiative
+        }
+      ]
+      ]) : pair.key => {
+      mg_name    = pair.mg_name
+      initiative = pair.initiative
+    }
+  })
 }
