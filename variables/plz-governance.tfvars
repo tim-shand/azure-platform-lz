@@ -16,7 +16,7 @@ stack = {
 # Management Groups: Top level nested under the tenant root. 
 management_group_core = {
   "core" = {
-    display_name             = "TJS-Core"        # Top-level Management Group representing the organisation.  
+    display_name             = "TimShand"        # Top-level Management Group representing the organisation.  
     subscription_identifiers = []                # PLACEHOLDER. SHOULD be empty, as this object needs to match other MG structure. 
     policy_initiatives       = ["core_baseline"] # Assign Policy Initiatives directly to MGs. 
   }
