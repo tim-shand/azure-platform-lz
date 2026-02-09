@@ -28,7 +28,6 @@ resource "azurerm_management_group_policy_set_definition" "custom" {
   dynamic "policy_definition_reference" {
     for_each = each.value.policyDefinitions # Generate dynamic object for each policy definition added in initiative.
     content {
-      #policy_definition_id = policy_definition_reference.value.policyDefinitionId
       policy_definition_id = replace(
         policy_definition_reference.value.policyDefinitionId, "PLACEHOLDER", "${local.management_groups_all_created.core.name}"
       )
@@ -38,6 +37,6 @@ resource "azurerm_management_group_policy_set_definition" "custom" {
     }
   }
   depends_on = [
-    azurerm_policy_definition.custom
+    azurerm_policy_definition.custom # Must be created first before initiative can be created. 
   ]
 }
