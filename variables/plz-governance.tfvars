@@ -14,7 +14,7 @@ stack = {
 }
 
 # Management Groups: First level nested under the core manangement group.
-management_group_core_policies = ["core_baseline"] # Direct assign policy initiatives to core management group. 
+management_group_core_policy_initiatives = ["core_baseline"] # Direct assign policy initiatives to core management group (MG created during bootstrap). 
 management_groups_level1 = {
   "platform" = {
     display_name             = "Platform"                               # Contains all platform subscriptions (management, connectivity, security and identity). 
@@ -58,32 +58,22 @@ management_groups_level3 = {} # Leave blank if not required. Repeat same structu
 
 # Policy: Built-In 
 policy_initiatives_builtin = {
-  # "New Zealand ISM" = {
-  #   definition_id    = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
-  #   assignment_mg_id = "core"                                 # Short code for Management Group ID to assign the initiative to (see 'management_group_registry'). 
-  #   enabled          = true                                   # [true/false]: Toggle assignment.  
-  #   enforce          = false                                  # [true/false]: Toggle enforcement of policy initiative. 
-  # }
+  "New Zealand ISM" = {
+    definition_id    = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
+    assignment_mg_id = "core"                                 # Short code for Management Group ID to assign the initiative to (see 'management_group_registry'). 
+    enabled          = false                                  # [true/false]: Toggle assignment.  
+    enforce          = false                                  # [true/false]: Toggle enforcement of policy initiative. 
+  }
 }
 
 # Policy: Custom
-policy_enforce_mode = "audit" # DeployIfNotExists, Disabled
-policy_initiatives = {        # Define Initiative --> Definition mapping. 
-  core_baseline = [
-    "allowed_locations",
-    "required_tag_list",
-    "storage_accounts_https"
-  ]
-  cost_controls = [
-    "restrict_vm_skus"
-  ]
-  decommissioned = [
-    "deny_all_resources"
-  ]
-}
-policy_var_allowed_locations = ["newzealandnorth", "australiaeast", "westus", "westus2"]
-policy_var_required_tags     = ["Owner", "Environment", "Project"]
-policy_var_allowed_vm_skus = [
+policy_effect_mode  = "audit" # DeployIfNotExists, Disabled
+policy_enforce_mode = false   # True / False
+
+# Policy: Parameters
+policy_param_allowed_locations = ["newzealandnorth", "australiaeast", "westus", "westus2"]
+policy_param_required_tags     = ["Owner", "Environment", "Project"]
+policy_param_allowed_vm_skus = [
   "Standard_A1_v2",
   "Standard_A2_v2",
   "Standard_A4_v2",

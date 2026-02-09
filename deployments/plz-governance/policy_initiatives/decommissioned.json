@@ -1,0 +1,42 @@
+{
+    "properties": {
+        "displayName": "Decommissioned",
+        "description": "Initiative to prevent resource provisioning for decommissioned subscriptions.",
+        "policyType": "Custom",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "Governance"
+        },
+        "version": "1.0.0",
+        "parameters": {
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "strongType": "effect",
+                    "displayName": "Effect",
+                    "description": "Determine the effect of the policy assignment."
+                },
+                "allowedValues": [
+                    "Audit",
+                    "Deny",
+                    "Disabled"
+                ],
+                "defaultValue": "Audit"
+            }
+        },
+        "policyDefinitions": [
+            {
+                "policyDefinitionReferenceId": "decommissioned",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/root/providers/Microsoft.Authorization/policyDefinitions/decommissioned",
+                "parameters": {
+                    "effect": {
+                        "value": "[parameters('effect')]"
+                    }
+                },
+                "groupNames": [
+                    "decommissioned"
+                ]
+            }
+        ]
+    }
+}

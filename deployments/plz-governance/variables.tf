@@ -102,32 +102,32 @@ variable "policy_initiatives_builtin" {
 # GOVERNANCE: Policy and Initiatives
 # ------------------------------------------------------------- #
 
-variable "policy_enforce_mode" {
-  description = "String value to control the enforcement mode of policy assignments."
+variable "policy_effect_mode" {
+  description = "String value to control the effect mode of policy assignments (audit, deployIfNotExists, disabled)."
   type        = string
 }
 
-variable "management_group_core_policies" {
+variable "policy_enforce_mode" {
+  description = "True/false value to control the enforcement mode of policy assignments."
+  type        = bool
+}
+
+variable "management_group_core_policy_initiatives" {
   description = "List of policy initiatives to at the core management group level."
   type        = list(string)
 }
 
-variable "policy_initiatives" {
-  description = "Policy Initiatives and member Definition names."
-  type        = map(list(string))
-}
-
-variable "policy_var_allowed_locations" {
+variable "policy_param_allowed_locations" {
   description = "List of allowed locations for resources in string format."
   type        = list(string)
 }
 
-variable "policy_var_required_tags" {
+variable "policy_param_required_tags" {
   description = "List of required tags to be assigned to resources in string format."
   type        = list(string)
 }
 
-variable "policy_var_allowed_vm_skus" {
+variable "policy_param_allowed_vm_skus" {
   description = "List of allowed SKUs when deploying VMs."
   type        = list(string)
 }

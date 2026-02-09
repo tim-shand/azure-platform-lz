@@ -4,7 +4,7 @@ locals {
   tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
 }
 
-# GOVERNANCE: Management Groups
+# GOVERNANCE: Management Groups and Subscription Assignments
 # ------------------------------------------------------------- #
 
 locals {
@@ -14,7 +14,7 @@ locals {
     lower(sub.display_name) => sub.subscription_id            # Key:"plz-connectivity-prod", Value:"00000000-0000-0000-0000-000000000000". 
   }
 
-  # Lookup maps of management group IDs for parent/child assignments, and policy assignment. 
+  # Lookup maps of management group IDs for created parent/child assignments, and policy assignment. 
   management_group_ids_level1 = {
     for k, v in azurerm_management_group.level1 :
     k => v.id
@@ -58,109 +58,69 @@ locals {
   }
 }
 
-# GOVERNANCE: Policy Initiatives
+# GOVERNANCE: Policy Initiatives (Built-In)
+# ------------------------------------------------------------- #
+
+# locals {
+#   # BUILT-IN: Map of policy initiatives that are enabled. 
+#   policy_initiatives_builtin = {
+#     for i, cfg in var.policy_initiatives_builtin :
+#     i => cfg
+#     if cfg.enabled == true # Only add to map if enabled. 
+#   }
+# }
+
+# GOVERNANCE: Policy Initiatives (Custom)
 # ------------------------------------------------------------- #
 
 locals {
-  # BUILT-IN: Map of policy initiatives that are enabled. 
-  policy_initiatives_builtin_enabled = {
-    for i, cfg in var.policy_initiatives_builtin :
-    i => cfg
-    if cfg.enabled == true # Only add to map if enabled. 
-  }
-
-  # Merge the individual lookup maps into a single map (flatten). (local.management_group_registry["platform"]). 
-  management_groups_all = merge(
-    var.management_groups_level1,
-    var.management_groups_level2,
-    var.management_groups_level3,
-    {
-      core = { # Inject the core MG as an object with policy_initiatives. 
-        display_name             = data.azurerm_management_group.core.display_name
-        subscription_identifiers = []
-        policy_initiatives       = var.management_group_core_policies
-      }
-    }
-  )
-
-  # Only MGs that have initiatives. 
-  mg_with_initiatives = {
-    for mg_name, mg in local.management_groups_all :
-    mg_name => mg.policy_initiatives
-    if length(mg.policy_initiatives) > 0
-  }
-
-  # Flatten MG to initiative pairs for resource for_each. 
-  mg_initiative_pairs_list = flatten([
-    for mg_name, initiatives in local.mg_with_initiatives : [
-      for init_name in initiatives : {
-        key       = "${mg_name}-${init_name}" # Temporary key. 
-        mg_name   = mg_name
-        init_name = init_name
-      }
-    ]
-  ])
-
-  # Convert list into map for for_each usage. 
-  mg_initiative_pairs = {
-    for pair in local.mg_initiative_pairs_list :
-    pair.key => {
-      mg_name   = pair.mg_name
-      init_name = pair.init_name
-    }
-  }
-
-  # # Map of policy initiative -> parameters. 
-  # initiative_parameters = {
-  #   core_baseline = {
-  #     allowedLocations = var.policy_var_allowed_locations
-  #     requiredTags     = var.policy_var_required_tags
-  #     allowedVmSkus    = null
-  #     effect           = var.policy_enforce_mode
-  #   }
-  #   cost_controls = {
-  #     allowedLocations = null
-  #     requiredTags     = null
-  #     allowedVmSkus    = var.policy_var_allowed_vm_skus
-  #     effect           = var.policy_enforce_mode
-  #   }
-  #   decommissioned = {
-  #     allowedLocations = null
-  #     requiredTags     = null
-  #     allowedVmSkus    = null
-  #     effect           = var.policy_enforce_mode
-  #   }
-  # }
-  initiative_parameters = { # Each initiative uses only the parameters it requires. 
+  # Ensure each initiative uses only the parameters it requires. 
+  initiative_assignment_parameters = {
     core_baseline = {
-      allowedLocations = var.policy_var_allowed_locations
-      requiredTags     = var.policy_var_required_tags
-      effect           = var.policy_enforce_mode
+      allowedLocations = var.policy_param_allowed_locations
+      requiredTags     = var.policy_param_required_tags
+      effect           = var.policy_effect_mode
     }
     cost_controls = {
-      allowedVmSkus = var.policy_var_allowed_vm_skus
-      effect        = var.policy_enforce_mode
+      allowedVmSkus = var.policy_param_allowed_vm_skus
+      effect        = var.policy_effect_mode
     }
     decommissioned = {
-      effect = var.policy_enforce_mode
+      effect = var.policy_effect_mode
+    }
+    management_controls = {
+      effect = var.policy_effect_mode
+    }
+    security_controls = {
+      effect = var.policy_effect_mode
     }
   }
 }
 
-# GOVERNANCE: Policy Definitions
+# GOVERNANCE: Policy Assignments
 # ------------------------------------------------------------- #
 
 locals {
-  policy_files_path = "${path.module}/policy_definitions"             # Decode all JSON policy files and add metadata. 
-  policy_files      = fileset("${local.policy_files_path}", "*.json") # Discover all policy JSON files.
-  policies = {
-    for file_name in local.policy_files :         # Loop each file in the list of files. 
-    trimsuffix(file_name, ".json") => jsondecode( # Create map using trimmed file name as key, parsed JSON as value. 
-    file("${local.policy_files_path}/${file_name}")).properties
-  }
-  # Generate map of Policy Definition name (key), ID, name (value). Used with Initiatives. 
-  policy_definition_map = {
-    for k, p in azurerm_policy_definition.custom :
-    k => { id = p.id, name = p.name }
-  }
+  management_groups_all = merge( # Merge the individual lookup maps into a single map (flatten). 
+    {
+      core = { # Inject the core MG as an object with policy_initiatives as it was created during bootstrap. 
+        display_name             = data.azurerm_management_group.core.display_name
+        subscription_identifiers = [] # Structure is 'object', so must match other MG variables. 
+        policy_initiatives       = var.management_group_core_policy_initiatives
+      }
+    },
+    var.management_groups_level1,
+    var.management_groups_level2,
+    var.management_groups_level3
+  )
+  # Build flattened map of MG -> Initiative mappings. 
+  initiative_assignments = flatten([
+    for mg, cfg in local.management_groups_all : [
+      for init in cfg.initiatives : {
+        mg         = mg
+        initiative = init
+      }
+    ]
+  ])
+
 }

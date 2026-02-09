@@ -2,16 +2,8 @@
 # Governance: Policy Assignments
 # Description: 
 # - Assign policy initiatives to Management Groups.  
+# - Definition -> Initiative -> Assignment -> Scope
 #====================================================================================#
-
-module "naming_policy_assignment" {
-  for_each      = local.mg_initiative_pairs # Create name for each policy assignment. 
-  source        = "../../modules/global-resource-naming"
-  prefix        = "gov"
-  workload      = each.value.init_name
-  stack_or_env  = each.value.mg_name
-  ensure_unique = true
-}
 
 # BUILT-IN: Assign built-in policy initiatives at the provided level (in the variable map, short name resolved in locals). 
 resource "azurerm_management_group_policy_assignment" "builtin" {
@@ -26,17 +18,13 @@ resource "azurerm_management_group_policy_assignment" "builtin" {
   enforce              = each.value.enforce                                      # True/False
 }
 
-# Assignment: Policy Initiatives
+# CUSTOM: Assign Policy Definitions to mapped Management Groups. 
+
 resource "azurerm_management_group_policy_assignment" "custom" {
-  for_each             = local.mg_initiative_pairs
-  name                 = module.naming_policy_assignment[each.key].compact_name_unique
-  management_group_id  = data.azurerm_management_group.lookup[each.value.mg_name].id
-  policy_definition_id = azurerm_policy_set_definition.custom[each.value.init_name].id
-  #   parameters = jsonencode(
-  #     local.initiative_parameters[each.value.init_name]
-  #   )
-  dynamic "definitions" {
-    for_each   = each.value
-    parameters = jsonencode(local.initiative_parameters[each.key])
+  for_each = {
+    for a in local.initiative_assignments : "${a.mg}-${a.initiative}" => a
   }
+  name                 = "assign-${each.value.initiative}"
+  policy_definition_id = azurerm_management_group_policy_set_definition.custom[each.value.initiative].id
+  management_group_id  = data.azurerm_management_group.lookup[each.value.mg].id
 }

@@ -41,19 +41,19 @@ output "policies_builtin" {
   }
 }
 
-output "policy_initiatives" {
-  description = "Map of custom policy initiatives."
-  value = {
-    for k, v in azurerm_policy_set_definition.custom :
-    k => {
-      display_name = v.display_name
-      name         = v.name
-      policies = [
-        for value in v.policy_definition_reference : value.reference_id
-      ]
-    }
-  }
-}
+# output "policy_initiatives" {
+#   description = "Map of custom policy initiatives."
+#   value = {
+#     for k, v in azurerm_policy_set_definition.custom :
+#     k => {
+#       display_name = v.display_name
+#       name         = v.name
+#       policies = [
+#         for value in v.policy_definition_reference : value.reference_id
+#       ]
+#     }
+#   }
+# }
 
 # GOVERNANCE: Policy Assignments
 # ------------------------------------------------------------- #
@@ -66,10 +66,14 @@ output "policy_initiatives" {
 #   value = local.mg_initiatives
 # }
 
-output "mg_initiatives" {
-  value = local.mg_initiative_pairs
-}
+# output "mg_initiatives" {
+#   value = local.mg_with_initiatives
+# }
 
-output "policy_assignments" {
-  value = azurerm_management_group_policy_assignment.custom
+# output "policy_assignments" {
+#   value = azurerm_management_group_policy_assignment.custom
+# }
+
+output "mg_policy_sets" {
+  value = azurerm_management_group_policy_set_definition.custom
 }

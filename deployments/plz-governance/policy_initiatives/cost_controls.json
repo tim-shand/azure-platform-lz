@@ -1,0 +1,53 @@
+{
+    "properties": {
+        "displayName": "Cost Controls",
+        "description": "Initiative to reduce budget leakage and unwanted cost.",
+        "policyType": "Custom",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "Budget"
+        },
+        "version": "1.0.0",
+        "parameters": {
+            "allowedVmSkus": {
+                "type": "Array",
+                "metadata": {
+                    "strongType": "skus",
+                    "displayName": "SKU Names",
+                    "description": "List of VM SKUs to allowed for deployment."
+                }
+            },
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "strongType": "effect",
+                    "displayName": "Effect",
+                    "description": "Determine the effect of the policy assignment."
+                },
+                "allowedValues": [
+                    "Audit",
+                    "Deny",
+                    "Disabled"
+                ],
+                "defaultValue": "Audit"
+            }
+        },
+        "policyDefinitions": [
+            {
+                "policyDefinitionReferenceId": "restrict_vm_skus",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/root/providers/Microsoft.Authorization/policyDefinitions/restrict_vm_skus",
+                "parameters": {
+                    "allowedVmSkus": {
+                        "value": "[parameters('allowedVmSkus')]"
+                    },
+                    "effect": {
+                        "value": "[parameters('effect')]"
+                    }
+                },
+                "groupNames": [
+                    "baseline"
+                ]
+            }
+        ]
+    }
+}

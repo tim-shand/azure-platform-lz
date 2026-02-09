@@ -3,7 +3,7 @@
         "displayName": "Required Tags on Resources",
         "description": "Enforces existence of defined tags. Does not apply to resource groups.",
         "policyType": "Custom",
-        "mode": "Indexed",
+        "mode": "All",
         "metadata": {
             "category": "Tags"
         },
@@ -13,7 +13,7 @@
                 "metadata": {
                     "strongType": "tags",
                     "displayName": "Required Tags",
-                    "description": "Names of the tags, such as 'environment'"
+                    "description": "List of tags required on resources."
                 }
             },
             "effect": {

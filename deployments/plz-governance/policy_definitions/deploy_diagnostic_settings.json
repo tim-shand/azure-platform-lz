@@ -11,6 +11,7 @@
             "logAnalyticsWorkspaceId": {
                 "type": "String",
                 "metadata": {
+                    "strongType": "lawId",
                     "displayName": "Log Analytics Workspace ID",
                     "description": "Resource ID of the Log Analytics workspace."
                 }
@@ -22,7 +23,7 @@
                     "AuditIfNotExists",
                     "Disabled"
                 ],
-                "defaultValue": "DeployIfNotExists",
+                "defaultValue": "AuditIfNotExists",
                 "metadata": {
                     "displayName": "Effect",
                     "description": "Enable or disable the execution of the policy."

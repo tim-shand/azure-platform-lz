@@ -7,13 +7,29 @@
         "metadata": {
             "category": "Resources"
         },
+        "parameters": {
+            "effect": {
+                "type": "String",
+                "defaultValue": "Audit",
+                "allowedValues": [
+                    "Audit",
+                    "Deny",
+                    "Disabled"
+                ],
+                "metadata": {
+                    "description": "Effect defines what happens if policy conditions are met.",
+                    "strongType": "effect",
+                    "displayName": "Effect"
+                }
+            }
+        },
         "policyRule": {
             "if": {
                 "field": "type",
                 "exists": "true"
             },
             "then": {
-                "effect": "Deny"
+                "effect": "[parameters('effect')]"
             }
         }
     }

@@ -1,0 +1,42 @@
+{
+    "properties": {
+        "displayName": "Security Controls",
+        "description": "Initiative to enforce security controls and best practices.",
+        "policyType": "Custom",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "Security"
+        },
+        "version": "1.0.0",
+        "parameters": {
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "strongType": "effect",
+                    "displayName": "Effect",
+                    "description": "Determine the effect of the policy assignment."
+                },
+                "allowedValues": [
+                    "Audit",
+                    "Deny",
+                    "Disabled"
+                ],
+                "defaultValue": "Audit"
+            }
+        },
+        "policyDefinitions": [
+            {
+                "policyDefinitionReferenceId": "storage_accounts_https",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/root/providers/Microsoft.Authorization/policyDefinitions/storage_accounts_https",
+                "parameters": {
+                    "effect": {
+                        "value": "[parameters('effect')]"
+                    }
+                },
+                "groupNames": [
+                    "security"
+                ]
+            }
+        ]
+    }
+}
