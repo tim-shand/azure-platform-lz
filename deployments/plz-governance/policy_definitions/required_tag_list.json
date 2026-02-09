@@ -43,7 +43,7 @@
                         "equals": ""
                     },
                     {
-                        "field": "[concat('tags[', parameters('requiredTags')[3], ']')]",
+                        "field": "[concat('tags[', parameters('requiredTags')[2], ']')]",
                         "equals": ""
                     }
                 ]

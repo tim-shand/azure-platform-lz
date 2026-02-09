@@ -79,7 +79,7 @@ policy_initiatives_builtin = {
 }
 
 # Policy: Custom
-policy_effect_mode  = "audit" # DeployIfNotExists, Disabled
+policy_effect_mode  = "Audit" # DeployIfNotExists, Disabled
 policy_enforce_mode = false   # True / False
 
 # Policy: Parameters

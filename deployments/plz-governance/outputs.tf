@@ -51,22 +51,6 @@ output "policy_initiatives" {
 # GOVERNANCE: Policy Assignments
 # ------------------------------------------------------------- #
 
-# output "mg_initiatives" {
-#   value = local.mg_initiative_pairs
-# }
-
-# output "mg_initiatives" {
-#   value = local.mg_initiatives
-# }
-
-# output "mg_initiatives" {
-#   value = local.mg_with_initiatives
-# }
-
-# output "policy_assignments" {
-#   value = azurerm_management_group_policy_assignment.custom
-# }
-
-# output "mg_policy_sets" {
-#   value = azurerm_management_group_policy_set_definition.custom
-# }
+output "mg_initiative_pairs" {
+  value = local.mg_initiative_pairs
+}
