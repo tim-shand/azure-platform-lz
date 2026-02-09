@@ -13,8 +13,16 @@ stack = {
   }
 }
 
-# Management Groups: First level nested under the core manangement group.
-management_group_core_policy_initiatives = ["core_baseline"] # Direct assign policy initiatives to core management group (MG created during bootstrap). 
+# Management Groups: Top level nested under the tenant root. 
+management_group_core = {
+  "core" = {
+    display_name             = "Core"            # Top-level Management Group representing the organisation.  
+    subscription_identifiers = []                # PLACEHOLDER. SHOULD be empty, as this object needs to match other MG structure. 
+    policy_initiatives       = ["core_baseline"] # Assign Policy Initiatives directly to MGs. 
+  }
+}
+
+# Management Groups: First level nested under the core manangement group. 
 management_groups_level1 = {
   "platform" = {
     display_name             = "Platform"                               # Contains all platform subscriptions (management, connectivity, security and identity). 

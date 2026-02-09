@@ -30,30 +30,21 @@ resource "github_actions_secret" "client_id" {
 resource "github_actions_variable" "iac_rg" {
   repository    = data.github_repository.repo.name
   variable_name = "TF_BACKEND_RG"
-  value         = azurerm_resource_group.backend[var.backend_categories["platform"].name].name
+  value         = azurerm_resource_group.backend[var.backend_categories["platform"]].name
 }
 
 # GitHub: Repo [VARIABLE] - Backend: Storage Account
 resource "github_actions_variable" "iac_sa" {
   repository    = data.github_repository.repo.name
   variable_name = "TF_BACKEND_SA"
-  value         = azurerm_storage_account.backend[var.backend_categories["platform"].name].name
+  value         = azurerm_storage_account.backend[var.backend_categories["platform"]].name
 }
 
-# GitHub: Repo [VARIABLE] - Shared: App Config (Name)
+# GitHub: Repo [VARIABLE] - Global Output: App Config (Name)
 resource "github_actions_variable" "iac_cfg" {
-  for_each      = local.backend_categories_shared_services # Create GitHub repo variable for each App Config. 
   repository    = data.github_repository.repo.name
-  variable_name = "CFG_NAME_${upper(each.key)}"
-  value         = azurerm_app_configuration.iac[each.key].name
-}
-
-# GitHub: Repo [VARIABLE] - Shared: App Config (Resource Group)
-resource "github_actions_variable" "iac_cfg_rg" {
-  for_each      = local.backend_categories_shared_services # Create GitHub repo variable for each App Config. 
-  repository    = data.github_repository.repo.name
-  variable_name = "CFG_RESOURCE_GROUP_${upper(each.key)}"
-  value         = azurerm_app_configuration.iac[each.key].resource_group_name
+  variable_name = "GLOBAL_OUTPUT_NAME"
+  value         = azurerm_app_configuration.iac.name
 }
 
 #----------------------------------------------------------------#

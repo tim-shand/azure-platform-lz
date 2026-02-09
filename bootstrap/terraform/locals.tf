@@ -1,19 +1,6 @@
 locals {
   tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
 
-  # Map backend cateogories that require shared services registry to be created.  
-  # backend_categories_keyvault = {
-  #   for key, category in var.backend_categories :
-  #   key => category
-  #   if category.enable_keyvault # Filter on categories with Key Vault enabled.  
-  # }
-
-  backend_categories_shared_services = {
-    for key, category in var.backend_categories :
-    key => category
-    if category.enable_shared_services # Filter on categories with Shared Services registry enabled.  
-  }
-
   # Map deployment stacks to relevant subscriptions, by data call using 'key' as identifier. 
   platform_stack_subscriptions = {
     for key, stack in var.platform_stacks :
@@ -42,7 +29,6 @@ locals {
       backend_resource_group  = azurerm_storage_account.backend[stack.backend_category].resource_group_name
       backend_storage_account = azurerm_storage_account.backend[stack.backend_category].name
       backend_blob_container  = azurerm_storage_container.backend[key].name
-      backend_shared_services = try(azurerm_app_configuration.iac[stack.backend_category].name, "N/A")
       github_environment      = try(github_repository_environment.env[key].environment, "N/A")
     }
   }

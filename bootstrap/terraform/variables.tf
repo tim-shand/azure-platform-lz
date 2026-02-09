@@ -18,31 +18,14 @@ variable "stack" {
   default     = {}
 }
 
-variable "management_group_core_id" {
-  description = "ID used for the naming of the top-level management group to be created."
-  type        = string
-  nullable    = false
-  default     = "core"
-}
-
-variable "management_group_core_display_name" {
-  description = "Display name of the top-level management group to be created."
-  type        = string
-  nullable    = false
-  default     = "Core"
-}
-
-variable "shared_services" {
+variable "global_outputs" {
   description = "Map of Shared Service key names, used to get IDs and names in data calls."
   type        = map(string)
 }
 
 variable "backend_categories" {
-  description = "Backend category objects, used to define the top-level IaC backend structure."
-  type = map(object({
-    name                   = string # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-    enable_shared_services = bool   # Enable to create an App Configuration to stored shared resource key/values. 
-  }))
+  description = "Backend category map, used to define the top-level IaC backend structure."
+  type        = map(string) # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
 }
 
 variable "platform_stacks" {
@@ -52,14 +35,5 @@ variable "platform_stacks" {
     backend_category        = string # Group deployments by backend category (platform, workloads). 
     subscription_identifier = string # Name part that is used in "contains" filter to resolve ID.
     create_environment      = bool   # Enable to create related environment in GitHub for stack.  
-  }))
-}
-
-variable "workload_stacks" {
-  description = "Map of deployment objects listing the workload stack details."
-  type = map(object({
-    stack_name              = string
-    stack_category          = string # Group deployments by category (platform, workloads). 
-    subscription_identifier = string # Name part that is used in "contains" filter to resolve ID.
   }))
 }

@@ -51,26 +51,3 @@ resource "azurerm_storage_container" "backend" {
   storage_account_id    = azurerm_storage_account.backend[each.value.backend_category].id
   container_access_type = "private"
 }
-
-# App Configuration: Used to store key/value pairs for Shared Service resources (IDs/Names). 
-resource "azurerm_app_configuration" "iac" {
-  for_each                 = local.backend_categories_shared_services # Only create for categories with shared_services enabled. 
-  name                     = "${module.naming_backend[each.key].full_name}-cfg"
-  resource_group_name      = azurerm_resource_group.backend[each.key].name
-  location                 = azurerm_resource_group.backend[each.key].location
-  sku                      = "free"
-  public_network_access    = "Enabled"
-  purge_protection_enabled = false
-  tags                     = local.tags_merged
-}
-
-resource "azurerm_app_configuration_key" "mg_core" {
-  for_each               = local.backend_categories_shared_services
-  configuration_store_id = azurerm_app_configuration.iac[each.key].id
-  key                    = var.shared_services.plz_gov_mg_core # Use key from shared_services. 
-  value                  = azurerm_management_group.core.name
-  tags                   = local.tags_merged
-  depends_on = [
-    azurerm_role_assignment.rbac_sp_cfg # Need the role in place before attempting to create. 
-  ]
-}
