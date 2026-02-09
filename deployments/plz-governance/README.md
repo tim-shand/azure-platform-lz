@@ -11,12 +11,16 @@ This stack deploys the Governance layer for a custom, light-weight, CAF-aligned 
 - Levels 2 and below are assigned to a parent Management Groups from Level 1 based on provided Management Group name. 
 - Automated subscription assignments using name value identifiers. 
 
+![Management Group hierarchy and subscription assignments.](../docs/images/gov_mg_subs_01.png)
+
 ### Policy Definitions and Initiatives
 
 - Policy Definitions are defined in JSON files within the `policy_definitions` directory. 
 - Policy Initiatives are created using the Policy Definitions defined in the `policy_initiatives` variable within the `plz-governance.tfvars` file. 
 - Policy Initiatives are mapped to Management Groups using the `policy_initiatives` field in the Management Group structure. 
 - Built-in Policy Initiatives are resolved by ID and assigned to target Management Groups in the `policy_initiatives_builtin` variable. 
+
+![Azure Policy Definitions and Initiatives.](../docs/images/gov_policy_01.png)
 
 ## Example Structure
 
