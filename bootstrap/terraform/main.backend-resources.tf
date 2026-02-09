@@ -51,17 +51,3 @@ resource "azurerm_storage_container" "backend" {
   storage_account_id    = azurerm_storage_account.backend[each.value.backend_category].id
   container_access_type = "private"
 }
-
-# Key Vault: Used to store shared resource IDs and names for cross-stack access. 
-resource "azurerm_key_vault" "backend" {
-  for_each                   = local.backend_categories_keyvault # Only create for categories with Key Vault enabled. 
-  name                       = module.naming_backend[each.key].key_vault_name
-  resource_group_name        = azurerm_resource_group.backend[each.key].name
-  location                   = azurerm_resource_group.backend[each.key].location
-  tags                       = local.tags_merged
-  tenant_id                  = data.azuread_client_config.current.tenant_id
-  sku_name                   = "standard"
-  rbac_authorization_enabled = true  # Enforce RBAC over access policy. 
-  purge_protection_enabled   = false # Not required. 
-  soft_delete_retention_days = 7     # Set low intentionally to allow quick delete. 
-}

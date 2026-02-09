@@ -13,24 +13,11 @@ stack = {
   }
 }
 
-# Management Groups: Core (Top Level)
-management_group_core_id           = "core"     # Management Group ID used for resource naming.  
-management_group_core_display_name = "TimShand" # Management Group display name.  
-
 # Backend Categories: Define the top-level IaC backend structure. NOTE: Opinionated (DO NOT change key structure). 
 backend_categories = {
-  bootstrap = {
-    name            = "bootstrap" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-    enable_keyvault = false       # [true/false]: Enable to create a Key Vault in this backend category Resource Group. 
-  }
-  platform = {
-    name            = "platform" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-    enable_keyvault = true       # [true/false]: Enable to create a Key Vault in this backend category Resource Group.  
-  }
-  workload = {
-    name            = "workload" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-    enable_keyvault = false      # [true/false]: Enable to create a Key Vault in this backend category Resource Group. 
-  }
+  bootstrap = "bootstrap" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
+  platform  = "platform"  # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
+  workload  = "workload"  # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
 }
 
 # Deployment Stacks: Map of objects representing the platform workloads to provision. 
@@ -65,13 +52,4 @@ platform_stacks = {
     subscription_identifier = "platform-plz-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
     create_environment      = true               # Enable to create related environment in GitHub for stack. 
   }
-}
-
-# Workload Stacks: Used to deploy workload backend resources. 
-workload_stacks = {
-  # "example" = {
-  #   stack_name              = "app-example"          # Name of stack directory and GitHub environment.  
-  #   backend_category        = "workloads"            # Backend Category [backend_categories]: bootstrap, platform, workload. 
-  #   subscription_identifier = "visualstudio-dev-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
-  # }
 }

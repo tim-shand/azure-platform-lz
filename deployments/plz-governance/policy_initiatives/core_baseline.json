@@ -1,0 +1,79 @@
+{
+    "properties": {
+        "displayName": "Core Baseline",
+        "description": "Initiative to enforce mandatory baseline governance and security controls.",
+        "policyType": "Custom",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "Governance"
+        },
+        "version": "1.0.0",
+        "parameters": {
+            "allowedLocations": {
+                "type": "Array",
+                "metadata": {
+                    "strongType": "locations",
+                    "displayName": "Allowed Locations",
+                    "description": "List of approved locations for resource deployment."
+                }
+            },
+            "requiredTags": {
+                "type": "Array",
+                "metadata": {
+                    "strongType": "tags",
+                    "displayName": "Required Tags",
+                    "description": "List of tags required on resources."
+                }
+            },
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "strongType": "effect",
+                    "displayName": "Effect",
+                    "description": "Determine the effect of the policy assignment."
+                },
+                "allowedValues": [
+                    "Audit",
+                    "Deny",
+                    "Disabled"
+                ],
+                "defaultValue": "Audit"
+            }
+        },
+        "policyDefinitions": [
+            {
+                "policyDefinitionReferenceId": "allowed_locations",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/allowed_locations",
+                "parameters": {
+                    "allowedLocations": {
+                        "value": "[parameters('allowedLocations')]"
+                    },
+                    "effect": {
+                        "value": "[parameters('effect')]"
+                    }
+                }
+            },
+            {
+                "policyDefinitionReferenceId": "required_tag_list",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/required_tag_list",
+                "parameters": {
+                    "requiredTags": {
+                        "value": "[parameters('requiredTags')]"
+                    },
+                    "effect": {
+                        "value": "[parameters('effect')]"
+                    }
+                }
+            },
+            {
+                "policyDefinitionReferenceId": "storage_accounts_https",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/storage_accounts_https",
+                "parameters": {
+                    "effect": {
+                        "value": "[parameters('effect')]"
+                    }
+                }
+            }
+        ]
+    }
+}

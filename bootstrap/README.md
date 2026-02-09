@@ -4,6 +4,7 @@ This project automates the **initial bootstrapping** process of both Azure and G
 
 - Locally executed PowerShell script that creates bootstrap and deployment stack resources. 
 - Generates repository environments, secrets and variables used by deployment stack workflows. 
+- Creates Azure App Configuration to store shared/global resource IDs and names as key value pairs. 
 - Automates the migration process of the local bootstrap state file to Azure (remote state). 
 
 ---
@@ -125,9 +126,9 @@ platform_stacks = {
 - **Blob Containers:** 
   - Created per deployment stack (plz-governance, plz-management, etc) under each parent category Storage Account to hold the remote Terraform state files. 
 
-#### Azure Key Vault
+#### Azure App Config
 
-- Stores resource IDs, names and other details for shared services (Hub VNet, Log Analytics Workspace etc). 
+- Used to store key/value pairs for shared services resource IDs and names (Hub VNet, Log Analytics Workspace etc). 
 - This allows the Service Principal to resolve these resources by ID/name during data calls in other stacks running in **separate workflows**. 
 
 ### 👜 GitHub
@@ -172,20 +173,21 @@ org-platform-iac-rg
     └── tfstate-plz-identity
 ```
 
-| Object                  | Created Per  | Example Name             | Purpose                                                   |
-| ----------------------- | ------------ | ------------------------ | --------------------------------------------------------- |
-| Resource Group          | **Category** | org-bootstrap-iac-rg     | Resource group containing bootstrap and global resources. |
-| Resource Group          | **Category** | org-platform-iac-rg      | Resource group containing components for platform LZ.     |
-| Storage Account         | **Category** | orgbootstrapiacsa12345   | Holds blob container for bootstrap and global resources.  |
-| Storage Account         | **Category** | orgplatformiacsa12345    | Holds blob containers per platform deployment stack.      |
-| Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow. |
-| Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow. |
-| Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow. |
-| Blob Container          | **Stack**    | tfstate-plz-identity     | Contains remote state file, referenced by stack workflow. |
-| Repository Environment  | **Stack**    | plz-governance           | Repository environment, contains stack related variables. |
-| Repository Environment  | **Stack**    | plz-management           | Repository environment, contains stack related variables. |
-| Repository Environment  | **Stack**    | plz-connectivity         | Repository environment, contains stack related variables. |
-| Repository Environment  | **Stack**    | plz-identity             | Repository environment, contains stack related variables. |
+| Object                  | Created Per  | Example Name             | Purpose                                                      |
+| ----------------------- | ------------ | ------------------------ | ------------------------------------------------------------ |
+| Resource Group          | **Category** | org-bootstrap-iac-rg     | Resource group containing bootstrap and global resources.    |
+| Resource Group          | **Category** | org-platform-iac-rg      | Resource group containing components for platform LZ.        |
+| Storage Account         | **Category** | orgbootstrapiacsa12345   | Holds blob container for bootstrap and global resources.     |
+| Storage Account         | **Category** | orgplatformiacsa12345    | Holds blob containers per platform deployment stack.         |
+| App Configuration       | **Category** | org-platform-iac-cfg     | Stores key/value pairs of shared service resources names/IDs.|
+| Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow.    |
+| Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow.    |
+| Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow.    |
+| Blob Container          | **Stack**    | tfstate-plz-identity     | Contains remote state file, referenced by stack workflow.    |
+| Repository Environment  | **Stack**    | plz-governance           | Repository environment, contains stack related variables.    |
+| Repository Environment  | **Stack**    | plz-management           | Repository environment, contains stack related variables.    |
+| Repository Environment  | **Stack**    | plz-connectivity         | Repository environment, contains stack related variables.    |
+| Repository Environment  | **Stack**    | plz-identity             | Repository environment, contains stack related variables.    |
 
 ---
 
