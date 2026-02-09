@@ -18,10 +18,6 @@ global = {
   }
 }
 
-# Management Groups: Core (Top Level)
-management_group_core_id           = "core"     # Management Group ID used for resource naming.  
-management_group_core_display_name = "TimShand" # Management Group display name.  
-
 # Global Outputs: Map of Shared Services and the key name containing the value in global outputs.  
 global_outputs = {
   plz_service_principal_appid = "iac-service-principal-appid"    # Pipeline Service Principal name. 
