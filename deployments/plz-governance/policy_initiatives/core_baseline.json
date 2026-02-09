@@ -1,7 +1,7 @@
 {
     "properties": {
         "displayName": "Core Baseline",
-        "description": "Initiative to enforce mandatory baseline governance controls.",
+        "description": "Initiative to enforce mandatory baseline governance and security controls.",
         "policyType": "Custom",
         "metadata": {
             "version": "1.0.0",
@@ -43,7 +43,7 @@
         "policyDefinitions": [
             {
                 "policyDefinitionReferenceId": "allowed_locations",
-                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/root/providers/Microsoft.Authorization/policyDefinitions/allowed_locations",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/allowed_locations",
                 "parameters": {
                     "allowedLocations": {
                         "value": "[parameters('allowedLocations')]"
@@ -51,14 +51,11 @@
                     "effect": {
                         "value": "[parameters('effect')]"
                     }
-                },
-                "groupNames": [
-                    "baseline"
-                ]
+                }
             },
             {
                 "policyDefinitionReferenceId": "required_tag_list",
-                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/root/providers/Microsoft.Authorization/policyDefinitions/required_tag_list",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/required_tag_list",
                 "parameters": {
                     "requiredTags": {
                         "value": "[parameters('requiredTags')]"
@@ -66,10 +63,16 @@
                     "effect": {
                         "value": "[parameters('effect')]"
                     }
-                },
-                "groupNames": [
-                    "baseline"
-                ]
+                }
+            },
+            {
+                "policyDefinitionReferenceId": "storage_accounts_https",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/storage_accounts_https",
+                "parameters": {
+                    "effect": {
+                        "value": "[parameters('effect')]"
+                    }
+                }
             }
         ]
     }

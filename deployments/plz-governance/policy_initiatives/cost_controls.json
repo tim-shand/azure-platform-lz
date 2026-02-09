@@ -35,7 +35,7 @@
         "policyDefinitions": [
             {
                 "policyDefinitionReferenceId": "restrict_vm_skus",
-                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/root/providers/Microsoft.Authorization/policyDefinitions/restrict_vm_skus",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/restrict_vm_skus",
                 "parameters": {
                     "allowedVmSkus": {
                         "value": "[parameters('allowedVmSkus')]"
@@ -43,10 +43,7 @@
                     "effect": {
                         "value": "[parameters('effect')]"
                     }
-                },
-                "groupNames": [
-                    "baseline"
-                ]
+                }
             }
         ]
     }

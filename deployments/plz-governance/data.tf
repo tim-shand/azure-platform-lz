@@ -16,19 +16,19 @@ data "azurerm_app_configuration" "iac" {
 # GOVERNANCE: Management Groups
 # ------------------------------------------------------------- #
 
+# Subscriptions: Collect all available subscriptions, to be nested under management groups.  
+data "azurerm_subscriptions" "all" {}
+
 # Root Management Group: Pass in tenant ID to get root management group.
 data "azurerm_management_group" "root" {
   name = data.azuread_client_config.current.tenant_id
 }
 
-# Get creatednames for all MGs. 
-# data "azurerm_management_group" "lookup" {
-#   for_each     = local.management_groups_all
-#   display_name = each.value.display_name
-# }
-
-# Subscriptions: Collect all available subscriptions, to be nested under management groups.  
-data "azurerm_subscriptions" "all" {}
+# Get created names for all MGs. 
+data "azurerm_management_group" "lookup" {
+  for_each     = local.management_groups_all_created
+  display_name = each.value.display_name
+}
 
 
 # GOVERNANCE: Policy and Initiatives (Built-In)

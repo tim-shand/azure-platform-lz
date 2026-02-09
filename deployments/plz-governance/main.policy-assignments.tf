@@ -14,7 +14,7 @@
 #   name                 = each.key
 #   display_name         = "[${upper(var.stack.naming.workload_code)}] BuiltIn - ${each.key}"
 #   policy_definition_id = data.azurerm_policy_set_definition.builtin[each.key].id # Get from resolved initiative data call. 
-#   management_group_id  = data.azurerm_management_group.core.id                   # Assign directly to core MG. 
+#   management_group_id  = local.management_groups_all_created.core.id             # Assign directly to core MG. 
 #   enforce              = each.value.enforce                                      # True/False
 # }
 

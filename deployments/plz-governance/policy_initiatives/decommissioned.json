@@ -26,16 +26,13 @@
         },
         "policyDefinitions": [
             {
-                "policyDefinitionReferenceId": "decommissioned",
-                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/root/providers/Microsoft.Authorization/policyDefinitions/decommissioned",
+                "policyDefinitionReferenceId": "deny_all_resources",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/deny_all_resources",
                 "parameters": {
                     "effect": {
                         "value": "[parameters('effect')]"
                     }
-                },
-                "groupNames": [
-                    "decommissioned"
-                ]
+                }
             }
         ]
     }

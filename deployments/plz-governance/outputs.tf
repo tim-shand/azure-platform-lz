@@ -1,30 +1,23 @@
 # GOVERNANCE: Management Groups
 # ------------------------------------------------------------- #
 
-# output "management_groups_all" {
-#   value = local.management_groups_all
-# }
-
-# output "management_groups_all" {
-#   value = merge(
-#     azurerm_management_group.level1,
-#     azurerm_management_group.level2,
-#     azurerm_management_group.level3
-#   )
-# }
+output "management_groups_all" {
+  description = "Full details of created Management Groups."
+  value       = local.management_groups_all_created
+}
 
 # GOVERNANCE: Policy Definitions
 # ------------------------------------------------------------- #
 
-# output "policy_definitions" {
-#   description = "Map of custom policy definitions."
-#   value = {
-#     for k, v in azurerm_policy_definition.custom :
-#     k => {
-#       display_name = v.display_name
-#     }
-#   }
-# }
+output "policy_definitions" {
+  description = "Map of custom policy definitions."
+  value = {
+    for k, v in azurerm_policy_definition.custom :
+    k => {
+      display_name = v.display_name
+    }
+  }
+}
 
 # GOVERNANCE: Policy Initiatives
 # ------------------------------------------------------------- #
@@ -41,19 +34,19 @@
 #   }
 # }
 
-# output "policy_initiatives" {
-#   description = "Map of custom policy initiatives."
-#   value = {
-#     for k, v in azurerm_policy_set_definition.custom :
-#     k => {
-#       display_name = v.display_name
-#       name         = v.name
-#       policies = [
-#         for value in v.policy_definition_reference : value.reference_id
-#       ]
-#     }
-#   }
-# }
+output "policy_initiatives" {
+  description = "Map of custom policy initiatives."
+  value = {
+    for k, v in azurerm_management_group_policy_set_definition.custom :
+    k => {
+      display_name = v.display_name
+      name         = v.name
+      policies = [
+        for value in v.policy_definition_reference : value.reference_id
+      ]
+    }
+  }
+}
 
 # GOVERNANCE: Policy Assignments
 # ------------------------------------------------------------- #

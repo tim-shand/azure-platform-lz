@@ -63,6 +63,12 @@ locals {
     var.management_groups_level2,
     var.management_groups_level3
   )
+  management_groups_all_created = merge(
+    azurerm_management_group.core,
+    azurerm_management_group.level1,
+    azurerm_management_group.level2,
+    azurerm_management_group.level3
+  )
 }
 
 # GOVERNANCE: Policy Initiatives (Custom)
@@ -81,12 +87,6 @@ locals {
       effect        = var.policy_effect_mode
     }
     decommissioned = {
-      effect = var.policy_effect_mode
-    }
-    management_controls = {
-      effect = var.policy_effect_mode
-    }
-    security_controls = {
       effect = var.policy_effect_mode
     }
   }
