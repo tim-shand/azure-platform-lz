@@ -16,7 +16,7 @@ stack = {
 # Management Groups: Top level nested under the tenant root. 
 management_group_core = {
   "core" = {
-    display_name             = "Core"            # Top-level Management Group representing the organisation.  
+    display_name             = "TimShand"        # Top-level Management Group representing the organisation.  
     subscription_identifiers = []                # PLACEHOLDER. SHOULD be empty, as this object needs to match other MG structure. 
     policy_initiatives       = ["core_baseline"] # Assign Policy Initiatives directly to MGs. 
   }
@@ -26,21 +26,25 @@ management_group_core = {
 management_groups_level1 = {
   "platform" = {
     display_name             = "Platform"                               # Contains all platform subscriptions (management, connectivity, security and identity). 
+    parent_mg_name           = "core"                                   # Key ID of the parent Management Group. 
     subscription_identifiers = ["platform-iac-sub", "platform-plz-sub"] # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
     policy_initiatives       = []                                       # Assign Policy Initiatives directly to MGs. 
   }
   "workload" = {
     display_name             = "Workload"        # Contains the landing zone child management groups for workloads. 
+    parent_mg_name           = "core"            # Key ID of the parent Management Group. 
     subscription_identifiers = []                # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
     policy_initiatives       = ["cost_controls"] # Assign Policy Initiatives directly to MGs. 
   }
   "sandbox" = {
     display_name             = "Sandbox"                # Contains subscriptions for testing. Isolated from corporate and online landing zones. Less restrictive set of policies assigned. 
+    parent_mg_name           = "core"                   # Key ID of the parent Management Group. 
     subscription_identifiers = ["visualstudio-dev-sub"] # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
     policy_initiatives       = []                       # Assign Policy Initiatives directly to MGs
   }
   "decom" = {
     display_name             = "Decommissioned"   # Contains cancelled subscriptions. Deny resource creation via policy. 
+    parent_mg_name           = "core"             # Key ID of the parent Management Group. 
     subscription_identifiers = []                 # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
     policy_initiatives       = ["decommissioned"] # Assign Policy Initiatives directly to MGs. 
   }
@@ -49,16 +53,16 @@ management_groups_level1 = {
 # Management Groups: Second level nested under level 1 manangement groups.
 management_groups_level2 = {
   "online" = {
-    display_name             = "Online" # Workloads requiring direct internet inbound or outbound connectivity, or may not require a virtual network.
-    parent_mg_name           = "workload"
+    display_name             = "Online"              # Workloads requiring direct internet inbound or outbound connectivity, or may not require a virtual network.
+    parent_mg_name           = "workload"            # Key ID of the parent Management Group. 
     subscription_identifiers = ["tshandcom-prd-sub"] # List of subscription prefixes (first 3 segments). Maps MG to sub associations keeping full sub out of code.
     policy_initiatives       = []                    # Assign Policy Initiatives directly to MGs. 
   }
   "corporate" = {
     display_name             = "Corporate" # Workloads that require connectivity with the corporate/on-prem network via the hub in the connectivity subscription. 
-    parent_mg_name           = "workload"
-    subscription_identifiers = [] # List of subscription prefixes (first 3 segments). Maps MG to sub associations keeping full sub out of code.
-    policy_initiatives       = [] # Assign Policy Initiatives directly to MGs. 
+    parent_mg_name           = "workload"  # Key ID of the parent Management Group. 
+    subscription_identifiers = []          # List of subscription prefixes (first 3 segments). Maps MG to sub associations keeping full sub out of code.
+    policy_initiatives       = []          # Assign Policy Initiatives directly to MGs. 
   }
 }
 # Management Groups: Third level nested under level 2 manangement groups.

@@ -24,36 +24,51 @@ variable "stack" {
   default     = {}
 }
 
-variable "shared_services_name" {
-  description = "Name of shared service App Configuration created during bootstrap."
-  type        = string
-}
-
-variable "shared_services_rg" {
-  description = "Map of shared service Resource Group for App Configuration created during bootstrap."
-  type        = string
-}
-
-variable "shared_services" {
+variable "global_outputs" {
   description = "Map of Shared Service key names, used to get IDs and names in data calls."
   type        = map(string)
+}
+
+variable "global_outputs_name" {
+  description = "Name of global outputs shared service App Configuration created during bootstrap."
+  type        = string
+}
+
+variable "global_outputs_rg" {
+  description = "Map of global outputs shared service Resource Group for App Configuration created during bootstrap."
+  type        = string
 }
 
 # GOVERNANCE: Management Groups
 # ------------------------------------------------------------- #
 
+variable "management_group_core" {
+  description = "Map of top-level Management Group object, placed under tenant root."
+  type = map(object({
+    display_name       = string
+    policy_initiatives = optional(list(string)) # Assign Policy Initiatives directly to MGs. 
+  }))
+  validation {
+    condition = alltrue([
+      for mg, details in var.management_group_core : length(details.display_name) >= 3
+    ])
+    error_message = "Display name is required for top-level (core) Management Group."
+  }
+}
+
 variable "management_groups_level1" {
   description = "Map of first level Management Group objects, nested under the core Manangement Group."
   type = map(object({
     display_name             = string
-    subscription_identifiers = optional(list(string)) # Optional list of subscription name identifier values.  
+    parent_mg_name           = string
+    subscription_identifiers = optional(list(string)) # Optional list of subscription name identifier values. 
     policy_initiatives       = optional(list(string)) # Assign Policy Initiatives directly to MGs. 
   }))
   validation {
     condition = alltrue([
       for mg, details in var.management_groups_level1 : length(details.display_name) >= 3
     ])
-    error_message = "Display name is required for all Level 1 Management Groups."
+    error_message = "Both a display name and parent Management Group is required for all Level 1 Management Groups."
   }
 }
 
@@ -61,8 +76,8 @@ variable "management_groups_level2" {
   description = "Map of second level Management Group objects, nested under defined parent Management Group."
   type = map(object({
     display_name             = string
-    subscription_identifiers = optional(list(string)) # Optional list of subscription name identifier values.  
     parent_mg_name           = string
+    subscription_identifiers = optional(list(string)) # Optional list of subscription name identifier values.  
     policy_initiatives       = optional(list(string)) # Assign Policy Initiatives directly to MGs.
   }))
   validation {
@@ -77,8 +92,8 @@ variable "management_groups_level3" {
   description = "Map of third level Management Group objects, nested under defined parent Management Group."
   type = map(object({
     display_name             = string
-    subscription_identifiers = optional(list(string)) # Optional list of subscription name identifier values.
     parent_mg_name           = string
+    subscription_identifiers = optional(list(string)) # Optional list of subscription name identifier values.
     policy_initiatives       = optional(list(string)) # Assign Policy Initiatives directly to MGs.
   }))
   validation {
@@ -88,6 +103,9 @@ variable "management_groups_level3" {
     error_message = "Both a display name and parent Management Group is required for all Level 3 Management Groups."
   }
 }
+
+# GOVERNANCE: Policy and Initiatives
+# ------------------------------------------------------------- #
 
 variable "policy_initiatives_builtin" {
   description = "Map of objects containing built-in policy initiatives and their configuration settings."
@@ -99,9 +117,6 @@ variable "policy_initiatives_builtin" {
   }))
 }
 
-# GOVERNANCE: Policy and Initiatives
-# ------------------------------------------------------------- #
-
 variable "policy_effect_mode" {
   description = "String value to control the effect mode of policy assignments (audit, deployIfNotExists, disabled)."
   type        = string
@@ -110,11 +125,6 @@ variable "policy_effect_mode" {
 variable "policy_enforce_mode" {
   description = "True/false value to control the enforcement mode of policy assignments."
   type        = bool
-}
-
-variable "management_group_core_policy_initiatives" {
-  description = "List of policy initiatives to at the core management group level."
-  type        = list(string)
 }
 
 variable "policy_param_allowed_locations" {

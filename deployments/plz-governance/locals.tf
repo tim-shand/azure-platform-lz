@@ -16,7 +16,7 @@ locals {
 
   # Lookup maps of management group IDs for created parent/child assignments, and policy assignment. 
   management_group_ids_level1 = {
-    for k, v in azurerm_management_group.level1 :
+    for k, v in azurerm_management_group.core :
     k => v.id
   }
   management_group_ids_level2 = {
@@ -56,19 +56,14 @@ locals {
       ]
     ]))
   }
+  # Merge the individual lookup maps into a single map (flatten).
+  management_groups_all = merge(
+    var.management_group_core,
+    var.management_groups_level1,
+    var.management_groups_level2,
+    var.management_groups_level3
+  )
 }
-
-# GOVERNANCE: Policy Initiatives (Built-In)
-# ------------------------------------------------------------- #
-
-# locals {
-#   # BUILT-IN: Map of policy initiatives that are enabled. 
-#   policy_initiatives_builtin = {
-#     for i, cfg in var.policy_initiatives_builtin :
-#     i => cfg
-#     if cfg.enabled == true # Only add to map if enabled. 
-#   }
-# }
 
 # GOVERNANCE: Policy Initiatives (Custom)
 # ------------------------------------------------------------- #
@@ -101,26 +96,13 @@ locals {
 # ------------------------------------------------------------- #
 
 locals {
-  management_groups_all = merge( # Merge the individual lookup maps into a single map (flatten). 
-    {
-      core = { # Inject the core MG as an object with policy_initiatives as it was created during bootstrap. 
-        display_name             = data.azurerm_management_group.core.display_name
-        subscription_identifiers = [] # Structure is 'object', so must match other MG variables. 
-        policy_initiatives       = var.management_group_core_policy_initiatives
-      }
-    },
-    var.management_groups_level1,
-    var.management_groups_level2,
-    var.management_groups_level3
-  )
   # Build flattened map of MG -> Initiative mappings. 
-  initiative_assignments = flatten([
-    for mg, cfg in local.management_groups_all : [
-      for init in cfg.initiatives : {
-        mg         = mg
-        initiative = init
-      }
-    ]
-  ])
-
+  # initiative_assignments = flatten([
+  #   for mg, cfg in local.management_groups_all : [
+  #     for init in cfg.initiatives : {
+  #       mg         = mg
+  #       initiative = init
+  #     }
+  #   ]
+  # ])
 }
