@@ -24,9 +24,10 @@ management_group_core_display_name = "TimShand" # Management Group display name.
 
 # Global Outputs: Map of Shared Services and the key name containing the value in global outputs.  
 global_outputs = {
-  plz_service_principal_name = "iac-service-principal-name"     # Pipeline Service Principal name. 
-  plz_core_mg_id             = "gov-management-group-core-id"   # Shared Services: Top-level Management Group. 
-  plz_core_mg_name           = "gov-management-group-core-name" # Shared Services: Top-level Management Group. 
-  plz_hub_vnet_id            = "con-hub-vnet-id"                # Shared Services: Hub VNet ID. 
-  plz_mgt_law_id             = "mgt-logging-law-id"             # Shared Services: Log Analytics Workspace ID. 
+  plz_service_principal_appid = "iac-service-principal-appid"    # Pipeline Service Principal name. 
+  plz_service_principal_name  = "iac-service-principal-name"     # Pipeline Service Principal name.
+  plz_core_mg_id              = "gov-management-group-core-id"   # Shared Services: Top-level Management Group. 
+  plz_core_mg_name            = "gov-management-group-core-name" # Shared Services: Top-level Management Group. 
+  plz_hub_vnet_id             = "con-hub-vnet-id"                # Shared Services: Hub VNet ID. 
+  plz_mgt_law_id              = "mgt-logging-law-id"             # Shared Services: Log Analytics Workspace ID. 
 }

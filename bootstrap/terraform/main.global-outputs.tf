@@ -26,6 +26,13 @@ resource "azurerm_app_configuration" "iac" {
   depends_on               = [azuread_application.iac_sp] # Requires RBAC to be assigned first. 
 }
 
+# Global Output: Service Principal AppID
+resource "azurerm_app_configuration_key" "sp_appid" {
+  configuration_store_id = azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.plz_service_principal_appid # See mapping in 'global.tfvars'. 
+  value                  = azuread_service_principal.iac_sp.client_id     # Add SP client ID to global output key/value. 
+}
+
 # Global Output: Service Principal Name
 resource "azurerm_app_configuration_key" "sp_name" {
   configuration_store_id = azurerm_app_configuration.iac.id
