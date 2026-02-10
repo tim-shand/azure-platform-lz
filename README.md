@@ -1,6 +1,6 @@
 # Azure Platform Landing Zone
 
-This repository contains a **custom** Azure platform landing zone (PLZ), providing an environment _based_ on enterprise-scale architecture and CAF guidelines.  
+This repository contains a customised Azure platform landing zone (PLZ), providing an environment _based_ on enterprise-scale architecture and CAF guidelines.  
 
 Designed to be light-weight and cost efficient, utilizing free or low-cost options where possible, while maintaining a minimalistic footprint. 
 
@@ -8,53 +8,50 @@ Deployed and managed using infrastructure as Code (IaC), this platform landing z
 
 ---
 
-
 ## 🏢 Architecture & Design
 
 TBC
 
 ---
 
-
 ## 🚀 Deployments / Stacks
 
 ### 👢 [Bootstrapping](./bootstrap)
 
 - Provides the initial setup process to configure Azure and GitHub for automation and IaC. 
-- Using templated Terraform configuration and triggering post-deployment state migration to new resources in Azure. 
+- Powershell script to perform initial checks and execute Terraform, triggering post-deployment state migration to Azure backend. 
 - Creates Entra ID Service Principal:
-  - Secured with Federated Credentials (OIDC). 
+  - Secured with Federated Credentials (OIDC) for GitHub repository and environments. 
   - Details added as repository variables and referenced by workflows. 
 - Deploys backend resources **per stack** into a dedicated IaC subscription:
   - Maintaining isolation and independence per stack. 
   - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads). 
   - One state file per stack (governance, connectivity, management, identity). 
-  - Azure App Configuration used to store shared service global outputs (IDs and names) to be used by other stacks. 
+  - Azure App Configuration used to store **shared service global outputs** (IDs and names) to be accessed by other stacks. 
 
-### 🏰 [Governance](./deployments/plz-governance)
-
-- Management groups providing Azure Policy assignment hierarchy and subscription management. 
-- Automated mapping of subscriptions to target management groups using an identifier value, keeping IDs out of code base. 
-- RBAC and policy assignments providing guard rails to secure the environment and reduce unwanted spend. 
-
-### 📊 [Management](./deployments/plz-management)
-
-- Centralized Log Analytics workspace for monitoring and observability. 
-- Diagnostic settings applied to resources via Azure Policy. 
-- Microsoft Defender for Cloud (Foundational CSPM) providing base level security and recommendations. 
-
-### 📡 [Connectivity](./deployments/plz-connectivity)
-
-- Hub-Spoke architecture, providing centralized network management and flow control. 
-- Workload VNets to be peered with the hub VNet as spokes, utilizing User-Defined-Routes (UDR) to direct traffic via Azure Firewall.
-
-### 🤓 [Identity](./deployments/plz-identity)
+### 👤 [Identity](./deployments/plz-identity)
 
 - Create base groups within Entra ID to be used with RBAC assignments. 
 - User-Assigned Managed Identity used to deploy policy configurations such as diagnostic settings to resources. 
 
----
+### 📑 [Management](./deployments/plz-management)
 
+- Centralized Log Analytics workspace for monitoring and observability. 
+- Diagnostic settings applied to resources via Azure Policy. 
+- Microsoft Defender for Cloud (Foundational CSPM) providing base level security and recommendations.
+
+### 🏢 [Governance](./deployments/plz-governance)
+
+- Management groups providing Azure Policy assignment hierarchy and subscription association. 
+- Automated mapping of subscriptions to target management groups using an identifier value, keeping IDs out of code base. 
+- RBAC and policy assignments providing guard rails to secure the environment and reduce unwanted spend. 
+
+### 🌐 [Connectivity](./deployments/plz-connectivity)
+
+- Hub-Spoke architecture, providing centralized network management and flow control. 
+- Workload VNets to be peered with the hub VNet as spokes, utilizing User-Defined-Routes (UDR) to direct traffic via Azure Firewall.
+
+---
 
 ## 🛠️ Tooling & Platforms
 
@@ -70,7 +67,6 @@ TBC
 
 ---
 
-
 ## ▶️ Deployment Process
 
 1. **Bootstrap:** Execute [bootstrap script](./bootstrap) to begin deployment process. 
@@ -80,7 +76,6 @@ TBC
 5. **Identity:** Deploy core Entra ID groups, RBAC assignments, and managed identities for policy enforcement. 
 
 ---
-
 
 ## 📕 Naming Conventions
 
@@ -151,7 +146,6 @@ Resource names are provided using a custom [naming module](./modules/global-reso
 
 ---
 
-
 ## 📚 Reference Materials
 
 A list of references, material and content that contributed to, or influnenced this project. 
@@ -159,4 +153,3 @@ A list of references, material and content that contributed to, or influnenced t
 - [Azure Landing Zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
 - [Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/overview)
 - [Terraform Azure Verified Modules](https://azure.github.io/Azure-Landing-Zones/terraform/)
-

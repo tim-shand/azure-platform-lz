@@ -82,22 +82,6 @@ locals {
     if length(mg.policy_initiatives) > 0
   }
 
-  # Initiative specific parameters for assignment. 
-  initiative_assignment_parameters = {
-    core_baseline = {
-      allowedLocations = var.policy_param_allowed_locations
-      requiredTags     = var.policy_param_required_tags
-      effect           = var.policy_effect_mode
-    }
-    cost_controls = {
-      allowedVmSkus = var.policy_param_allowed_vm_skus
-      effect        = var.policy_effect_mode
-    }
-    decommissioned = {
-      effect = var.policy_effect_mode
-    }
-  }
-
   # Build map of MG -> initiative pairs. 
   mg_initiative_pairs = tomap({
     for pair in flatten([
@@ -113,4 +97,20 @@ locals {
       initiative = pair.initiative
     }
   })
+
+  # Initiative specific parameters for assignment. 
+  initiative_assignment_parameters = {
+    core_baseline = {
+      allowedLocations = var.policy_param_allowed_locations
+      requiredTags     = var.policy_param_required_tags
+      effect           = var.policy_effect_mode
+    }
+    cost_controls = {
+      allowedVmSkus = var.policy_param_allowed_vm_skus
+      effect        = var.policy_effect_mode
+    }
+    decommissioned = {
+      effect = var.policy_effect_mode
+    }
+  }
 }

@@ -6,9 +6,9 @@ This stack deploys the Governance layer for a custom, light-weight, CAF-aligned 
 
 ### Management Groups
 
-- Create top-level (core) Management Group to represent the organisation. 
-- Deploy Management Group structure defined within the `plz-governance.tfvars` file. 
-- Management Groups are assigned to a "Level", determining the layer of depth at which each Management Group sits. 
+- Create top-level (core) Management Group representing the organisation. 
+- Deploy semi-opinionated Management Group structure defined within the `plz-governance.tfvars` file, allowing for expansion. 
+- Management Groups are assigned to a "Level", determining the layer of depth at which each Management Group sits (parent/child). 
 - Levels 2 and below are assigned to a parent Management Groups from Level 1 based on provided Management Group name. 
 - Automated subscription assignments using name value identifiers. 
 
