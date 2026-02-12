@@ -45,7 +45,7 @@ Azure Tenant
 entra_groups_admins_prefix = "GRP_ADM_" # GRP_ADM_NetworkAdmins
 entra_groups_users_prefix  = "GRP_USR_" # GRP_ADM_NetworkAdmins
 
-# Admin Groups
+# Admin Groups. 
 entra_groups_admins = {
   "NetworkAdmins" = {
     description       = "RBAC - Privilaged Group: Network Administrators"
@@ -59,7 +59,7 @@ entra_groups_admins = {
   }
 }
 
-# User Groups
+# User Groups. 
 entra_groups_users = {
   "FinanceTeam" = {
     description       = "User Access: Finance Department"
