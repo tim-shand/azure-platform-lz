@@ -57,16 +57,18 @@ variable "entra_groups_users_prefix" {
 variable "entra_groups_admins" {
   description = "Map of objects defining the base groups for privilaged administrator roles."
   type = map(object({
-    Description = string
-    Active      = bool
+    description       = string
+    active            = bool
+    owner_employee_id = string
   }))
 }
 
 variable "entra_groups_users" {
   description = "Map of objects defining the base groups for standard user access/team roles."
   type = map(object({
-    Description = string
-    Active      = bool
+    description       = string
+    active            = bool
+    owner_employee_id = string
   }))
 }
 

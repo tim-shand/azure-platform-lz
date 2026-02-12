@@ -16,6 +16,16 @@ data "azurerm_app_configuration" "iac" {
 # IDENTITY: General
 # ------------------------------------------------------------- #
 
+data "azuread_user" "group_owners_adm" {
+  for_each    = var.entra_groups_admins
+  employee_id = each.value.owner_employee_id
+}
+
+data "azuread_user" "group_owners_usr" {
+  for_each    = var.entra_groups_users
+  employee_id = each.value.owner_employee_id
+}
+
 # [DISABLED - not required].
 # Domain: Get the initial domain suffix to use for UPNs.  
 # data "azuread_domains" "initial" {
@@ -26,3 +36,4 @@ data "azurerm_app_configuration" "iac" {
 # data "azuread_domains" "default" {
 #   only_default = true # Only pull the default custom domain. 
 # }
+

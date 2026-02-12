@@ -20,39 +20,47 @@ entra_groups_users_prefix  = "GRP_USR_" # GRP_ADM_NetworkAdmins
 # Entra ID: Groups (Privilaged RBAC)
 entra_groups_admins = {
   "NetworkAdmins" = {
-    Description = "RBAC - Privilaged Group: Network Administrators"
-    Active      = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    description       = "RBAC - Privilaged Group: Network Administrators"
+    active            = true      # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TJS0001" # Use dummy employee ID as this is public repo. 
   }
   "SecurityAdmins" = {
-    Description = "RBAC - Privilaged Group: Security Administrators"
-    Active      = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    description       = "RBAC - Privilaged Group: Security Administrators"
+    active            = true      # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TJS0001" # Use dummy employee ID as this is public repo. 
   }
   "PlatformAdmins" = {
-    Description = "RBAC - Privilaged Group: Platform Administrators"
-    Active      = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    description       = "RBAC - Privilaged Group: Platform Administrators"
+    active            = true      # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TJS0001" # Use dummy employee ID as this is public repo. 
   }
   "UserAccessAdmins" = {
-    Description = "RBAC - Privilaged Group: User Access Administrators"
-    Active      = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    description       = "RBAC - Privilaged Group: User Access Administrators"
+    active            = true      # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TJS0001" # Use dummy employee ID as this is public repo. 
   }
 }
 
 # Entra ID: Groups (User Teams)
 entra_groups_users = {
   "FinanceTeam" = {
-    Description = "User Access: Finance Department"
-    Active      = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    description       = "User Access: Finance Department"
+    active            = true      # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TJS0001" # Use dummy employee ID as this is public repo. 
   }
   "ManagementTeam" = {
-    Description = "User Access: Management Department"
-    Active      = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    description       = "User Access: Management Department"
+    active            = true      # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TJS0001" # Use dummy employee ID as this is public repo. 
   }
   "SalesTeam" = {
-    Description = "User Access: Sales Department"
-    Active      = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    description       = "User Access: Sales Department"
+    active            = true      # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TJS0001" # Use dummy employee ID as this is public repo. 
   }
   "SupportTeam" = {
-    Description = "User Access: Helpdesk Department"
-    Active      = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    description       = "User Access: Helpdesk Department"
+    active            = true      # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TJS0001" # Use dummy employee ID as this is public repo. 
   }
 }

@@ -1,15 +1,18 @@
 # Azure: Platform Landing Zone (Identity Stack)
 
-This Terraform stack manages the base Azure Entra ID groups for the platform landing zone. It establishes core identity groups that can be used by other deployment stacks for RBAC assignments. 
+The Identity stack is responsible for managing Entra ID groups used across your Azure landing zone. This stack centralises the creation of administrator and user groups, ensuring consistent naming, ownership, and active status management. 
 
-## 🌟 Overview
+⚠️ **NOTE:** This stack does not create service principals, assign RBAC roles, or manage subscription/resource level access. Those tasks belong in the Management or Governance stacks. 
 
-The Identity stack is responsible for:
+## 🌟 Features
 
-- Creating privileged administrator groups in Entra ID (Azure AD).
-- Creating standard user/team groups in Entra ID.
-- This stack does not create managed identities, resource groups, or Key Vaults — those are handled by the Management stack.
-- **Note:** Only groups marked as Active = true in TFVARS will be created. 
+The Identity Stack manages Entra ID resources required for the platform. This includes:
+
+- Admin and User groups created from TFVARS definitions. 
+- Only groups marked as active are created. 
+- Owners are resolved dynamically using employee IDs or SP object IDs. 
+- Group names follow enterprise prefix conventions. 
+- Groups are security-enabled and duplicate names are prevented. 
 
 ---
 
@@ -18,6 +21,7 @@ The Identity stack is responsible for:
 - **Entra ID Groups:** 
   - GRP_ADM_* = Privileged administrator roles. 
   - GRP_USR_* = Standard user or team roles. 
+  - Owners = assigned to each group via employee ID. 
 
 ```text
 Azure Tenant
@@ -30,9 +34,45 @@ Azure Tenant
 
 ## ▶️ Usage
 
-1. Update stack TFVARS file with required group configurations. 
+1. Update stack TFVARS file with required group configurations, including owner employee ID. 
 2. Deploy the stack using the related workflow in GitHub Actions. 
 3. Validate outputs match desired state. 
+
+**Example TFVARS:**  
+
+```hcl
+# Entra ID: Set naming format. 
+entra_groups_admins_prefix = "GRP_ADM_" # GRP_ADM_NetworkAdmins
+entra_groups_users_prefix  = "GRP_USR_" # GRP_ADM_NetworkAdmins
+
+# Admin Groups
+entra_groups_admins = {
+  "NetworkAdmins" = {
+    description       = "RBAC - Privilaged Group: Network Administrators"
+    active            = true          # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "STAFF123456" # Use dummy employee ID as this is public repo. 
+  }
+  "PlatformAdmins" = {
+    description       = "RBAC - Privilaged Group: Platform Administrators"
+    active            = true          # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "STAFF123456" # Use dummy employee ID as this is public repo. 
+  }
+}
+
+# User Groups
+entra_groups_users = {
+  "FinanceTeam" = {
+    description       = "User Access: Finance Department"
+    active            = true          # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "STAFF998800" # Use dummy employee ID as this is public repo. 
+  }
+  "ManagementTeam" = {
+    description       = "User Access: Management Department"
+    active            = true          # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "STAFF998800" # Use dummy employee ID as this is public repo. 
+  }
+}
+```
 
 ---
 
@@ -60,9 +100,9 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_entra_groups_admins"></a> [entra\_groups\_admins](#input\_entra\_groups\_admins) | Map of objects defining the base groups for privilaged administrator roles. | <pre>map(object({<br/>    Description = string<br/>    Active      = bool<br/>  }))</pre> | n/a | yes |
+| <a name="input_entra_groups_admins"></a> [entra\_groups\_admins](#input\_entra\_groups\_admins) | Map of objects defining the base groups for privilaged administrator roles. | <pre>map(object({<br/>    description       = string<br/>    active            = bool<br/>    owner_employee_id = string<br/>  }))</pre> | n/a | yes |
 | <a name="input_entra_groups_admins_prefix"></a> [entra\_groups\_admins\_prefix](#input\_entra\_groups\_admins\_prefix) | Prefix value to append to administrator group naming format. | `string` | `"GRP_ADM_"` | no |
-| <a name="input_entra_groups_users"></a> [entra\_groups\_users](#input\_entra\_groups\_users) | Map of objects defining the base groups for standard user access/team roles. | <pre>map(object({<br/>    Description = string<br/>    Active      = bool<br/>  }))</pre> | n/a | yes |
+| <a name="input_entra_groups_users"></a> [entra\_groups\_users](#input\_entra\_groups\_users) | Map of objects defining the base groups for standard user access/team roles. | <pre>map(object({<br/>    description       = string<br/>    active            = bool<br/>    owner_employee_id = string<br/>  }))</pre> | n/a | yes |
 | <a name="input_entra_groups_users_prefix"></a> [entra\_groups\_users\_prefix](#input\_entra\_groups\_users\_prefix) | Prefix value to append to user access group naming format. | `string` | `"GRP_USR_"` | no |
 | <a name="input_global"></a> [global](#input\_global) | Map of global variables used across multiple deployment stacks. | `map(map(string))` | `{}` | no |
 | <a name="input_global_outputs"></a> [global\_outputs](#input\_global\_outputs) | Map of Shared Service key names, used to get IDs and names in data calls. | `map(string)` | n/a | yes |
