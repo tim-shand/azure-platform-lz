@@ -1,80 +1,72 @@
-# General ----------------------------------------------------------|
-variable "global" {
-  description = "Map of global variable configuration values."
-  type        = map(map(string))
-}
-
-variable "naming" {
-  description = "Map of deployment naming parameters to use with resources."
-  type        = map(string)
+variable "subscription_id_iac" {
+  description = "Subscription ID of the dedicated IaC subscription."
+  type        = string
   nullable    = false
-  default     = {}
-}
-
-variable "tags" {
-  description = "Map of deployment tags to apply to resources."
-  type        = map(string)
-  nullable    = false
-  default     = {}
-}
-
-variable "shared_services" {
-  description = "Map of Key Vault secret names where shared service names/IDs are stored."
-  type        = map(string)
-  nullable    = false
-  default     = {}
 }
 
 variable "subscription_id" {
-  description = "Subscription ID for the target changes. Provided by workflow variable or terminal input."
+  description = "Subscription ID for the stack resources."
   type        = string
-  validation { # Functions to verify if the string can be parsed as a UUID, catch invalid or mising characters. 
-    condition     = length(var.subscription_id) == 36
-    error_message = "The subscription ID must be a valid 36-character GUID."
-  }
+  nullable    = false
 }
 
-variable "global_outputs_kv" {
-  description = "Object of details for global outputs Key Vault. Passed in via command line or workflow."
-  type = object({
-    name           = string
-    resource_group = string
-  })
+variable "global" {
+  description = "Map of global variables used across multiple deployment stacks."
+  type        = map(map(string))
+  nullable    = false
+  default     = {}
 }
 
-# Entra ID ----------------------------------------------------------|
-variable "entra_groups" {
-  description = "Map of objects defining the default Entra ID groups to deploy."
+variable "stack" {
+  description = "Map of stack specific variables for use within current deployment."
+  type        = map(map(string))
+  nullable    = false
+  default     = {}
+}
+
+variable "global_outputs" {
+  description = "Map of Shared Service key names, used to get IDs and names in data calls."
+  type        = map(string)
+}
+
+variable "global_outputs_name" {
+  description = "Name of global outputs shared service App Configuration created during bootstrap."
+  type        = string
+}
+
+variable "global_outputs_rg" {
+  description = "Map of global outputs shared service Resource Group for App Configuration created during bootstrap."
+  type        = string
+}
+
+# IDENTITY: Entra ID Groups
+# ------------------------------------------------------------- #
+
+variable "entra_groups_admins_prefix" {
+  description = "Prefix value to append to administrator group naming format."
+  type        = string
+  default     = "GRP_ADM_"
+}
+
+variable "entra_groups_users_prefix" {
+  description = "Prefix value to append to user access group naming format."
+  type        = string
+  default     = "GRP_USR_"
+}
+
+variable "entra_groups_admins" {
+  description = "Map of objects defining the base groups for privilaged administrator roles."
   type = map(object({
-    display_name = string
-    description  = string
+    Description = string
+    Active      = bool
   }))
 }
 
-# RBAC ----------------------------------------------------------|
-variable "group_role_assignments" {
+variable "entra_groups_users" {
+  description = "Map of objects defining the base groups for standard user access/team roles."
   type = map(object({
-    role_name    = string # Azure built-in role or custom role. 
-    scope_type   = string # management_group | subscription | resource_group
-    scope_target = string # Name or ID of the target (MG name). 
+    Description = string
+    Active      = bool
   }))
 }
 
-# Key Vault ----------------------------------------------------------|
-variable "kv_sku" {
-  description = "Key Vault SKU to use for Identity stack."
-  type        = string
-  default     = "standard"
-}
-
-variable "kv_soft_delete_retention_days" {
-  description = "Number of days to retain soft-deleted key vault."
-  type        = number
-  default     = 7
-}
-
-variable "kv_purge_protection_enabled" {
-  description = "Enable purge protection on the Key Vault."
-  type        = bool
-  default     = false
-}

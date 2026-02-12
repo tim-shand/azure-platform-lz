@@ -1,19 +1,40 @@
-#=====================================================#
-# Platform LZ: Identity - Entra ID
-#=====================================================#
+#====================================================================================#
+# Identity: Entra ID Groups
+# Description: 
+# - Create groups in Entra ID for privilaged administrator RBAC roles. 
+# - Create groups in Entra ID for user/team standard access RBAC roles.   
+#====================================================================================#
 
-# Naming: Generate uniform, consistent name outputs to be used with resources. 
-module "naming_identity" {
-  source        = "../../modules/global-naming"
-  sections      = [var.global.naming.org_code, var.global.naming.project_name, var.global.naming.environment, var.naming.stack_code]
-  append_random = true # Required for Key Vaults. 
+# Entra ID: Groups [ADMIN] - Create per definition in TFVARS. 
+resource "azuread_group" "grp_adm" {
+  for_each = {
+    for k, v in var.entra_groups_admins :
+    k => v
+    if v.Active == true # Only create groups that are set to be active. 
+  }
+  display_name = "${var.entra_groups_admins_prefix}${each.key}" # GRP_ADM_NetworkAdmins
+  description  = each.value.Description
+  owners = [
+    data.azuread_client_config.current.object_id # Group owner = this SP. 
+  ]
+  security_enabled        = true # At least one of security_enabled or mail_enabled must be specified.  
+  prevent_duplicate_names = true # Return an error if an existing group is found with the same name. 
 }
 
-# Entra ID: Groups (Default)
-resource "azuread_group" "default" {
-  for_each         = var.entra_groups # For each group defined in groups variable. 
-  display_name     = each.value.display_name
-  description      = each.value.description
-  owners           = [data.azuread_client_config.current.object_id]
-  security_enabled = true
+# Entra ID: Groups [USER] - Create per definition in TFVARS. 
+resource "azuread_group" "grp_usr" {
+  for_each = {
+    for k, v in var.entra_groups_users :
+    k => v
+    if v.Active == true # Only create groups that are set to be active. 
+  }
+  display_name = "${var.entra_groups_users_prefix}${each.key}" # GRP_ADM_NetworkAdmins
+  description  = each.value.Description
+  owners = [
+    data.azuread_client_config.current.object_id # Group owner = this SP. 
+  ]
+  security_enabled        = true # At least one of security_enabled or mail_enabled must be specified.  
+  prevent_duplicate_names = true # Return an error if an existing group is found with the same name. 
 }
+
+# Entra ID: Breakglass Account

@@ -34,6 +34,10 @@ resource "azuread_application" "iac_sp" {
       id   = "62a82d76-70ea-41e2-9197-370581804d09" # Group.ReadWrite.All
       type = "Role"                                 # Required to allow SP to create groups in Entra ID. 
     }
+    resource_access {
+      id   = "741f803b-c850-494e-b5df-cde7c675a1ca" # User.ReadWrite.All
+      type = "Role"                                 # Required to allow SP to create users in Entra ID. 
+    }
   }
 }
 
