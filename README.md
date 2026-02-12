@@ -31,25 +31,27 @@ TBC
 
 ### 👤 [Identity](./deployments/plz-identity)
 
-- Create base groups within Entra ID to be used with RBAC assignments. 
-- User-Assigned Managed Identity used to deploy policy configurations such as diagnostic settings to resources. 
+- Create base admin and user groups within Entra ID, to be used with future RBAC assignments. 
+- Owners are resolved dynamically using employee IDs. 
+- Group names follow enterprise prefix conventions. 
+- Groups are security-enabled and duplicate names are prevented. 
 
 ### 📑 [Management](./deployments/plz-management)
 
 - Centralized Log Analytics workspace for monitoring and observability. 
 - Diagnostic settings applied to resources via Azure Policy. 
-- Microsoft Defender for Cloud (Foundational CSPM) providing base level security and recommendations.
+- Microsoft Defender for Cloud (Foundational CSPM) providing base level security and recommendations. 
 
 ### 🏢 [Governance](./deployments/plz-governance)
 
-- Management groups providing Azure Policy assignment hierarchy and subscription association. 
-- Automated mapping of subscriptions to target management groups using an identifier value, keeping IDs out of code base. 
-- RBAC and policy assignments providing guard rails to secure the environment and reduce unwanted spend. 
+- Management Groups providing Azure Policy assignment hierarchy. 
+- Automated mapping of subscriptions to target management groups using a subscription identifier value, keeping IDs out of code base. 
+- Custom policy definitions and initiatives, defined in JSON and generated using Terraform. 
 
 ### 🌐 [Connectivity](./deployments/plz-connectivity)
 
 - Hub-Spoke architecture, providing centralized network management and flow control. 
-- Workload VNets to be peered with the hub VNet as spokes, utilizing User-Defined-Routes (UDR) to direct traffic via Azure Firewall.
+- Workload VNets to be peered with the hub VNet as spokes, utilizing User-Defined-Routes (UDR) to direct traffic via Azure Firewall. 
 
 ---
 
@@ -70,10 +72,10 @@ TBC
 ## ▶️ Deployment Process
 
 1. **Bootstrap:** Execute [bootstrap script](./bootstrap) to begin deployment process. 
-2. **Governance:** Deploy Management Group structure and assign policies at management group levels. 
-3. **Management:** Create monitoring/observability resources, referenced by policies in Governance stack. 
-4. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized control. 
-5. **Identity:** Deploy core Entra ID groups, RBAC assignments, and managed identities for policy enforcement. 
+2. **Identity:** Deploy core Entra ID groups and application service principals (if required). 
+3. **Management:** Create monitoring/observability resources, to be referenced by policies in Governance stack. 
+4. **Governance:** Assign policies at defined management group and subscription structure. 
+5. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized flow control. 
 
 ---
 
