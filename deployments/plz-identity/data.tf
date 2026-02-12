@@ -15,3 +15,14 @@ data "azurerm_app_configuration" "iac" {
 
 # IDENTITY: General
 # ------------------------------------------------------------- #
+
+# [DISABLED - not required].
+# Domain: Get the initial domain suffix to use for UPNs.  
+# data "azuread_domains" "initial" {
+#   only_initial = true # Only pull the initial domain (onmicrosoft.com). 
+# }
+
+# # Get the current default domain suffix to use for UPNs. 
+# data "azuread_domains" "default" {
+#   only_default = true # Only pull the default custom domain. 
+# }

@@ -15,7 +15,7 @@ resource "azuread_group" "grp_adm" {
   display_name = "${var.entra_groups_admins_prefix}${each.key}" # GRP_ADM_NetworkAdmins
   description  = each.value.Description
   owners = [
-    data.azuread_client_config.current.object_id # Group owner = this SP. 
+    azuread_group.grp_adm["PlatformAdmins"].object_id # Group owner. 
   ]
   security_enabled        = true # At least one of security_enabled or mail_enabled must be specified.  
   prevent_duplicate_names = true # Return an error if an existing group is found with the same name. 
@@ -31,10 +31,10 @@ resource "azuread_group" "grp_usr" {
   display_name = "${var.entra_groups_users_prefix}${each.key}" # GRP_ADM_NetworkAdmins
   description  = each.value.Description
   owners = [
-    data.azuread_client_config.current.object_id # Group owner = this SP. 
+    azuread_group.grp_adm["PlatformAdmins"].object_id # Group owner. 
   ]
   security_enabled        = true # At least one of security_enabled or mail_enabled must be specified.  
   prevent_duplicate_names = true # Return an error if an existing group is found with the same name. 
 }
 
-# Entra ID: Breakglass Account
+# ------------------------------------------------------------- #

@@ -1,7 +1,8 @@
 # Global: Map of global variables used across multiple deployment stacks. 
 global = {
-  naming = {           # Map of name related variables (merge with "stack.naming"). 
-    org_prefix = "tjs" # Organisation abbreviated name. Example: "abc" (Azure Balloon Company).
+  naming = {                      # Map of name related variables (merge with "stack.naming"). 
+    org_prefix       = "tjs"      # Organisation abbreviated name. Example: "abc" (Azure Balloon Company).
+    workload_project = "platform" # Workload project, overall category or additional grouping name. 
   }
   location = {
     primary   = "newzealandnorth" # Default, preferred location. 

@@ -21,6 +21,7 @@ provider "azurerm" {
   tenant_id           = data.azuread_client_config.current.tenant_id # Get tenant ID from current session. 
   subscription_id     = var.subscription_id                          # Target subscription ID for stqack resources. 
   storage_use_azuread = true                                         # Use Entra ID only for interacting with Storage services. 
+
 }
 provider "azurerm" {
   alias = "iac" # Setup secondary alias "iac" for accessing shared services Key Vault. 
