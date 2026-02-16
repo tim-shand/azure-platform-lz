@@ -4,12 +4,10 @@ stack = {
     workload_code = "gov"        # Short code for deployment stack. Can be used in naming methods. 
     workload_name = "Governance" # Workload name for deployment stack. Can be used in naming methods. 
   }
-  tags = {                              # Tags to be merged with "global.tags" from "global.tfvars" file. 
-    Project     = "PlatformLandingZone" # Workload/project name, used to group and identify related resources.
-    Environment = "plz"                 # Workload environment: dev, tst, prd, alz, plz. 
-    Owner       = "CloudOpsTeam"        # Name of the team that owns the project. 
-    CostCenter  = "Platform"            # Useful for grouping resources for billing/financial accountability.
-    Deployment  = "plz-governance"      # Workload/project name, used to group and identify related resources.
+  tags = {                        # Tags to be merged with "global.tags" from "global.tfvars" file. 
+    Owner      = "CloudOpsTeam"   # Name of the team that owns the project. 
+    CostCenter = "Platform"       # Useful for grouping resources for billing/financial accountability.
+    Deployment = "plz-governance" # Workload/project name, used to group and identify related resources.
   }
 }
 

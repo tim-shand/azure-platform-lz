@@ -39,37 +39,29 @@ variable "global_outputs_rg" {
   type        = string
 }
 
-# IDENTITY: Entra ID Groups
+# MANAGEMENT: General
 # ------------------------------------------------------------- #
 
-variable "entra_groups_admins_prefix" {
-  description = "Prefix value to append to administrator group naming format."
+variable "law_retenion_days" {
+  description = "Number of days to retain logs in Log Analytics Workspace."
+  type        = number
+  default     = 30
+  validation {
+    condition     = var.law_retenion_days >= 7 && var.law_retenion_days <= 180
+    error_message = "Number of days to retain logs must be between 7 and 180 days."
+  }
+}
+
+variable "policy_diagnostics_effect" {
+  description = "Determines the effect mode when assigning policy to deploy diagnostic settings (DiagSettings)."
   type        = string
-  default     = "GRP_ADM_"
+  default     = "AuditIfNotExists"
 }
 
-variable "entra_groups_users_prefix" {
-  description = "Prefix value to append to user access group naming format."
+variable "policy_activity_effect" {
+  description = "Determines the effect mode when assigning policy to deploy diagnostic settings (AzureActivity)."
   type        = string
-  default     = "GRP_USR_"
-}
-
-variable "entra_groups_admins" {
-  description = "Map of objects defining the base groups for privilaged administrator roles."
-  type = map(object({
-    description       = string
-    active            = bool
-    owner_employee_id = string
-  }))
-}
-
-variable "entra_groups_users" {
-  description = "Map of objects defining the base groups for standard user access/team roles."
-  type = map(object({
-    description       = string
-    active            = bool
-    owner_employee_id = string
-  }))
+  default     = "Disabled"
 }
 
 # ------------------------------------------------------------- #

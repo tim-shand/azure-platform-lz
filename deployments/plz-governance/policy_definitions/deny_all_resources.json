@@ -5,7 +5,7 @@
         "policyType": "Custom",
         "mode": "All",
         "metadata": {
-            "category": "Resources"
+            "category": "Governance"
         },
         "parameters": {
             "effect": {

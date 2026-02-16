@@ -4,12 +4,10 @@ stack = {
     workload_code = "idn"      # Short code for deployment stack. Can be used in naming methods. 
     workload_name = "Identity" # Workload name for deployment stack. Can be used in naming methods. 
   }
-  tags = {                              # Tags to be merged with "global.tags" from "global.tfvars" file. 
-    Project     = "PlatformLandingZone" # Workload/project name, used to group and identify related resources.
-    Environment = "plz"                 # Workload environment: dev, tst, prd, alz, plz. 
-    Owner       = "CloudOpsTeam"        # Name of the team that owns the project. 
-    CostCenter  = "Platform"            # Useful for grouping resources for billing/financial accountability.
-    Deployment  = "plz-identity"        # Workload/project name, used to group and identify related resources.
+  tags = {                      # Tags to be merged with "global.tags" from "global.tfvars" file. 
+    Owner      = "CloudOpsTeam" # Name of the team that owns the project. 
+    CostCenter = "Platform"     # Useful for grouping resources for billing/financial accountability.
+    Deployment = "plz-identity" # Workload/project name, used to group and identify related resources.
   }
 }
 
