@@ -13,5 +13,10 @@ data "azurerm_app_configuration" "iac" {
   resource_group_name = var.global_outputs_rg   # Pass in shared services App Configuration Resource Group name via workflow variable. 
 }
 
-# MANGEMENT: General
+# MANAGEMENT: General
 # ------------------------------------------------------------- #
+
+data "azurerm_app_configuration_key" "mg_core" {
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outptus.plz_core_mg_id
+}

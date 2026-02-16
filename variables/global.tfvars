@@ -24,11 +24,14 @@ global = {
 # Global Outputs: Map of Shared Services and the key name containing the value in global outputs.  
 # [DO NOT MODIFY]
 global_outputs = {
+  # Subscriptions
+  # plz_sub_governance_id   = "sub-plz-governance-id"   # Subscription ID: Governance
+  # plz_sub_identity_id     = "sub-plz-identity-id"     # Subscription ID: Identity
+  # plz_sub_management_id   = "sub-plz-management-id"   # Subscription ID: Management
+  # plz_sub_connectivity_id = "sub-plz-connectivity-id" # Subscription ID: Connectivity
+  # Workflow
   plz_service_principal_appid = "iac-service-principal-appid" # Pipeline Service Principal name. 
   plz_service_principal_name  = "iac-service-principal-name"  # Pipeline Service Principal name.
-  # # Identity
-  # plz_rbac_grp_platformadmins = "idn-rbac-admin-platform" # Group for RBAC: Platform Admins
-  # plz_rbac_grp_networkadmins  = "idn-rbac-admin-network"  # Group for RBAC: Network Admins
   # Governance
   plz_core_mg_id   = "gov-management-group-core-id"   # Shared Services: Top-level Management Group. 
   plz_core_mg_name = "gov-management-group-core-name" # Shared Services: Top-level Management Group. 
