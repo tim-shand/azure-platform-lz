@@ -1,8 +1,8 @@
 # Global: Map of global variables used across multiple deployment stacks. 
 global = {
-  naming = {                      # Map of name related variables (merge with "stack.naming"). 
-    org_prefix       = "tjs"      # Organisation abbreviated name. Example: "abc" (Azure Balloon Company).
-    workload_project = "platform" # Workload project, overall category or additional grouping name. 
+  naming = {                 # Map of name related variables (merge with "stack.naming"). 
+    org_prefix       = "tjs" # Organisation abbreviated name. Example: "abc" (Azure Balloon Company).
+    workload_project = "plz" # Workload project, overall category or additional grouping name. 
   }
   location = {
     primary   = "newzealandnorth" # Default, preferred location. 
@@ -24,11 +24,6 @@ global = {
 # Global Outputs: Map of Shared Services and the key name containing the value in global outputs.  
 # [DO NOT MODIFY]
 global_outputs = {
-  # Subscriptions
-  # plz_sub_governance_id   = "sub-plz-governance-id"   # Subscription ID: Governance
-  # plz_sub_identity_id     = "sub-plz-identity-id"     # Subscription ID: Identity
-  # plz_sub_management_id   = "sub-plz-management-id"   # Subscription ID: Management
-  # plz_sub_connectivity_id = "sub-plz-connectivity-id" # Subscription ID: Connectivity
   # Workflow
   plz_service_principal_appid = "iac-service-principal-appid" # Pipeline Service Principal name. 
   plz_service_principal_name  = "iac-service-principal-name"  # Pipeline Service Principal name.
@@ -41,3 +36,26 @@ global_outputs = {
   # Connectivity
   plz_hub_vnet_id = "con-hub-vnet-id" # Shared Services: Hub VNet ID. 
 }
+
+# global_outputs = {
+#   worklfow = {
+#     service_principal_appid = "" # Pipeline Service Principal App ID.
+#     service_principal_name = "" # Pipeline Service Principal name.
+#   }
+#   management_groups = {
+#     core_mg_id   = "gov-management-group-core-id"   # Top-level Management Group ID. 
+#     core_mg_name = "gov-management-group-core-name" # Top-level Management Group name. 
+#     platform_mg_id = "" # Platform Management Group ID. 
+#     platform_mg_name = "" # Platform Management Group name. 
+#   }
+#   connectivity = {
+#     hub_vnet_id = "" # Shared Services: Hub VNet ID. 
+#     hub_vnet_name = "" # Shared Services: Hub VNet name.  
+#     firewall_id = ""
+#     firewall_name = ""
+#   }
+#   management = {
+#     log_analytics_workspace_id = "" # Shared Services: Log Analytics Workspace ID. 
+#     log_analytics_workspace_name = "" # Shared Services: Log Analytics Workspace ID. 
+#   }
+# }

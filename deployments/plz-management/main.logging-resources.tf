@@ -5,21 +5,14 @@
 # - Deploy Storage Account for log archiving.    
 #====================================================================================#
 
-# Naming: Generate naming convention, pre-determined values and format. 
-module "naming_mgt_logs" {
-  source        = "../../modules/global-resource-naming"
-  prefix        = var.global.naming.org_prefix
-  workload      = var.global.naming.workload_project
-  stack_or_env  = "mgt" # Primary category for naming format. 
-  category      = "log" # Secondary category for naming format. 
-  ensure_unique = true
-}
-
-# Resource Group: Contain logging and management resources.  
-resource "azurerm_resource_group" "mgt_logs" {
-  name     = "${module.naming_mgt_logs.full_name}-rg"
-  location = var.global.location.primary
-  tags     = local.tags_merged
+# Log Analytics Workspace
+resource "azurerm_log_analytics_workspace" "mgt_logs" {
+  name                = "${module.naming_mgt_logs.full_name}-law"
+  resource_group_name = azurerm_resource_group.mgt_logs.id
+  location            = azurerm_resource_group.mgt_logs.location
+  tags                = local.tags_merged
+  sku                 = "PerGB2018"
+  retention_in_days   = var.law_retenion_days
 }
 
 # Storage Account: Retain archived logs from Log Analytics. 
@@ -40,14 +33,4 @@ resource "azurerm_storage_account" "mgt_logs" {
       error_message = "Storage Account names must be equal to, or less than 24 characters total."
     }
   }
-}
-
-# Log Analytics Workspace
-resource "azurerm_log_analytics_workspace" "mgt_logs" {
-  name                = "${module.naming_mgt_logs.full_name}-law"
-  resource_group_name = azurerm_resource_group.mgt_logs.id
-  location            = azurerm_resource_group.mgt_logs.location
-  tags                = local.tags_merged
-  sku                 = "PerGB2018"
-  retention_in_days   = var.law_retenion_days
 }
