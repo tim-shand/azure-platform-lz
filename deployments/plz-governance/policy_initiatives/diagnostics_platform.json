@@ -36,6 +36,18 @@
                     "Disabled"
                 ],
                 "defaultValue": "AuditIfNotExists"
+            },
+            "logsEnabled": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Enable logs",
+                    "description": "Whether to enable logs stream to the Log Analytics workspace - True or False"
+                },
+                "allowedValues": [
+                    "True",
+                    "False"
+                ],
+                "defaultValue": "True"
             }
         },
         "policyDefinitions": [
@@ -51,6 +63,21 @@
                     },
                     "effect": {
                         "value": "[parameters('effect')]"
+                    }
+                }
+            },
+            {
+                "policyDefinitionReferenceId": "azure_activity_law",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/azure_activity_law",
+                "parameters": {
+                    "logAnalyticsWorkspaceId": {
+                        "value": "[parameters('logAnalyticsWorkspaceId')]"
+                    },
+                    "effect": {
+                        "value": "[parameters('effect')]"
+                    },
+                    "logsEnabled": {
+                        "value": "[parameters('logsEnabled')]"
                     }
                 }
             }
