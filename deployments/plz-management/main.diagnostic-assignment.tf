@@ -9,8 +9,8 @@ resource "azurerm_management_group_policy_assignment" "diag" {
   name                 = "${var.stack.naming.stack_code}-deploy-diagnostics"
   display_name         = "${upper(var.stack.naming.stack_code)} - Deploy Diagnostic Settings"
   location             = var.global.location.primary # REQUIRED when using managed identity. 
-  policy_definition_id = azurerm_management_group_policy_set_definition.diag.id
-  management_group_id  = local.management_groups.platform.id
+  policy_definition_id = data.azurerm_policy_set_definition.policy_diag_plz_name.id
+  management_group_id  = data.azurerm_app_configuration_key.mg_platform_id
   identity {
     type         = "UserAssigned"                        # Alt. System-Assigned
     identity_ids = [azurerm_user_assigned_identity.diag] # Use created managed identity. 

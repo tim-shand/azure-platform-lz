@@ -16,8 +16,27 @@ data "azurerm_app_configuration" "iac" {
 # MANAGEMENT: General
 # ------------------------------------------------------------- #
 
+# Management Group: Core MG ID - used for Managed Identity RBAC scope. 
 data "azurerm_app_configuration_key" "mg_core_id" {
   configuration_store_id = data.azurerm_app_configuration.iac.id
   key                    = var.global_outputs.governance.core_mg_id
   label                  = var.global_outputs.governance.label
 }
+
+# Management Group: Platform MG ID - used for assigning diagnostics policy.  
+data "azurerm_app_configuration_key" "mg_platform_id" {
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.governance.platform_mg_id
+  label                  = var.global_outputs.governance.label
+}
+
+# Policy Diagnostics (Platform) - Used for assignment after LAW deployment. 
+data "azurerm_app_configuration_key" "policy_diag_plz_name" {
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.governance.policy_diag_plz_name
+  label                  = var.global_outputs.governance.label
+}
+data "azurerm_policy_set_definition" "policy_diag_plz_name" {
+  name = data.azurerm_app_configuration_key.policy_diag_plz_name.value
+}
+
