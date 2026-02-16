@@ -52,10 +52,16 @@ variable "law_retenion_days" {
   }
 }
 
-variable "policy_diagnostics_mode" {
-  description = "Determines the effect mode when assigning policy to deploy diagnostic settings."
+variable "policy_diagnostics_effect" {
+  description = "Determines the effect mode when assigning policy to deploy diagnostic settings (DiagSettings)."
   type        = string
   default     = "AuditIfNotExists"
+}
+
+variable "policy_activity_effect" {
+  description = "Determines the effect mode when assigning policy to deploy diagnostic settings (AzureActivity)."
+  type        = string
+  default     = "Disabled"
 }
 
 # ------------------------------------------------------------- #

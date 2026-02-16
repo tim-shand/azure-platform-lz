@@ -23,8 +23,11 @@ resource "azurerm_management_group_policy_assignment" "diag" {
     diagnosticSettingName = {
       value = "${var.stack.naming.workload_code}-deployed-by-policy"
     }
-    effect = {
-      value = var.policy_diagnostics_mode # See TFVARS. 
+    effectDiagSettings = {
+      value = var.policy_diagnostics_effect # See TFVARS. 
+    }
+    effectAzureActivity = {
+      value = var.policy_activity_effect # See TFVARS. 
     }
   })
 }

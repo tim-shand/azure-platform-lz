@@ -14,5 +14,6 @@ stack = {
 # Log Analytics
 law_retenion_days = 30 # Days to retain logs in LOg Analytics Workspace. 
 
-# Diagnostics
-policy_diagnostics_mode = "AuditIfNotExists" # DeployIfNotExists, Disabled
+# Diagnostics & Logging
+policy_diagnostics_effect = "DeployIfNotExists" # AuditIfNotExists, DeployIfNotExists, Disabled
+policy_activity_effect    = "DeployIfNotExists" # DeployIfNotExists, Disabled

@@ -23,19 +23,32 @@
                     "displayName": "Diagnostic Setting Name"
                 }
             },
-            "effect": {
+            "effectDiagSettings": {
                 "type": "String",
                 "metadata": {
-                    "strongType": "effect",
-                    "displayName": "Effect",
+                    "strongType": "effectDiagSettings",
+                    "displayName": "Effect (Diagnostic Settings)",
+                    "description": "Determine the effect of the policy assignment."
+                },
+                "allowedValues": [
+                    "AuditIfNotExists",
+                    "DeployIfNotExists",
+                    "Disabled"
+                ],
+                "defaultValue": "AuditIfNotExists"
+            },
+            "effectAzureActivity": {
+                "type": "String",
+                "metadata": {
+                    "strongType": "effectAzureActivity",
+                    "displayName": "Effect (Azure Activity)",
                     "description": "Determine the effect of the policy assignment."
                 },
                 "allowedValues": [
                     "DeployIfNotExists",
-                    "AuditIfNotExists",
                     "Disabled"
                 ],
-                "defaultValue": "AuditIfNotExists"
+                "defaultValue": "DeployIfNotExists"
             },
             "logsEnabled": {
                 "type": "String",
@@ -62,7 +75,7 @@
                         "value": "[parameters('diagnosticSettingName')]"
                     },
                     "effect": {
-                        "value": "[parameters('effect')]"
+                        "value": "[parameters('effectDiagSettings')]"
                     }
                 }
             },
@@ -74,7 +87,7 @@
                         "value": "[parameters('logAnalyticsWorkspaceId')]"
                     },
                     "effect": {
-                        "value": "[parameters('effect')]"
+                        "value": "[parameters('effectAzureActivity')]"
                     },
                     "logsEnabled": {
                         "value": "[parameters('logsEnabled')]"
