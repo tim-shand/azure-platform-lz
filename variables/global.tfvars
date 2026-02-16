@@ -9,8 +9,10 @@ global = {
     secondary = "australiaeast"   # Secondary location for resources not available in primary region. 
   }
   tags = {
-    Organisation = "TimShand"      # Name or abbreviation used to identify the organisation.  
-    CreatedBy    = "IaC-Terraform" # Name of the user or service that created the resources. 
+    Organisation = "TimShand"            # Name or abbreviation used to identify the organisation.  
+    CreatedBy    = "IaC-Terraform"       # Name of the user or service that created the resources. 
+    Project      = "PlatformLandingZone" # Workload/project name, used to group and identify related resources.
+    Environment  = "plz"                 # Workload environment: dev, tst, prd, alz, plz. 
   }
   repo_config = {
     org    = "tim-shand"         # Name of the repository organisation owner. 
