@@ -1,6 +1,6 @@
 {
     "properties": {
-        "displayName": "Diagnostic Settings - Platform",
+        "displayName": "Diagnostic Settings (Platform)",
         "description": "Initiative to deploy diagnostic settings to platform resources.",
         "policyType": "Custom",
         "metadata": {
@@ -31,11 +31,11 @@
                     "description": "Determine the effect of the policy assignment."
                 },
                 "allowedValues": [
-                    "Audit",
-                    "Deny",
+                    "DeployIfNotExists",
+                    "AuditIfNotExists",
                     "Disabled"
                 ],
-                "defaultValue": "Audit"
+                "defaultValue": "AuditIfNotExists"
             }
         },
         "policyDefinitions": [
