@@ -8,7 +8,7 @@
 # Log Analytics Workspace
 resource "azurerm_log_analytics_workspace" "mgt_logs" {
   name                = "${module.naming_mgt_logs.full_name}-law"
-  resource_group_name = azurerm_resource_group.mgt_logs.id
+  resource_group_name = azurerm_resource_group.mgt_logs.name
   location            = azurerm_resource_group.mgt_logs.location
   tags                = local.tags_merged
   sku                 = "PerGB2018"
@@ -18,7 +18,7 @@ resource "azurerm_log_analytics_workspace" "mgt_logs" {
 # Storage Account: Retain archived logs from Log Analytics. 
 resource "azurerm_storage_account" "mgt_logs" {
   name                            = module.naming_mgt_logs.storage_account_name
-  resource_group_name             = azurerm_resource_group.mgt_logs.id
+  resource_group_name             = azurerm_resource_group.mgt_logs.name
   location                        = azurerm_resource_group.mgt_logs.location
   tags                            = local.tags_merged
   account_tier                    = "Standard"  # Standard, Premium

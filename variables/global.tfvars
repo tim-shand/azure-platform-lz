@@ -21,41 +21,37 @@ global = {
   }
 }
 
-# Global Outputs: Map of Shared Services and the key name containing the value in global outputs.  
-# [DO NOT MODIFY]
+# Global Outputs (Shared Services): Mapping of key names used with global output value storage. 
+# *** DO NOT MODIFY **** - This structure is relied on for accessing cross-subscription resources. 
 global_outputs = {
-  # Workflow
-  plz_service_principal_appid = "iac-service-principal-appid" # Pipeline Service Principal name. 
-  plz_service_principal_name  = "iac-service-principal-name"  # Pipeline Service Principal name.
-  # Governance
-  plz_core_mg_id   = "gov-management-group-core-id"   # Shared Services: Top-level Management Group. 
-  plz_core_mg_name = "gov-management-group-core-name" # Shared Services: Top-level Management Group. 
-  # Management/Logging
-  plz_mgt_law_id = "mgt-logging-law-id" # Shared Services: Log Analytics Workspace ID. 
-  plz_mgt_sa_id  = "mgt-logging-sa-id"  # Shared Services: Storage Account ID. 
-  # Connectivity
-  plz_hub_vnet_id = "con-hub-vnet-id" # Shared Services: Hub VNet ID. 
+  iac = {
+    label                       = "iac"
+    iac_service_principal_appid = "iac-service-principal-appid" # Pipeline Service Principal App ID.
+    iac_service_principal_name  = "iac-service-principal-name"  # Pipeline Service Principal name.
+  }
+  governance = {
+    label            = "governance"
+    core_mg_id       = "gov-mg-core-id"       # Top-level Management Group ID. 
+    core_mg_name     = "gov-mg-core-name"     # Top-level Management Group name. 
+    platform_mg_id   = "gov-mg-platform-id"   # Platform Management Group ID. 
+    platform_mg_name = "gov-mg-platform-name" # Platform Management Group name. 
+  }
+  management = {
+    label                                  = "management"
+    log_analytics_workspace_id             = "mgt-log-law-id"   # Log Analytics Workspace ID. 
+    log_analytics_workspace_name           = "mgt-log-law-name" # Log Analytics Workspace name. 
+    log_analytics_workspace_resource_group = "mgt-log-law-rg"   # Log Analytics Workspace resource group. 
+    storage_account_id                     = "mgt-log-sa-id"    # Storage Account ID. 
+    storage_account_name                   = "mgt-log-sa-name"  # Storage Account name. 
+    storage_account_resource_group         = "mgt-log-sa-rg"    # Storage Account resource group. 
+  }
+  connectivity = {
+    label                   = "connectivity"
+    hub_vnet_id             = "con-hub-vnet-id"   # Hub VNet ID. 
+    hub_vnet_name           = "con-hub-vnet-name" # Hub VNet name. 
+    hub_vnet_resource_group = "con-hub-vnet-rg"   # Hub VNet resource group. 
+    firewall_id             = "con-hub-afw-id"    # Azure Firewall ID. 
+    firewall_name           = "con-hub-afw-name"  # Azure Firewall name. 
+    firewall_resource_group = "con-hub-afw-rg"    # Azure Firewall resource group.
+  }
 }
-
-# global_outputs = {
-#   worklfow = {
-#     service_principal_appid = "" # Pipeline Service Principal App ID.
-#     service_principal_name = "" # Pipeline Service Principal name.
-#   }
-#   management_groups = {
-#     core_mg_id   = "gov-management-group-core-id"   # Top-level Management Group ID. 
-#     core_mg_name = "gov-management-group-core-name" # Top-level Management Group name. 
-#     platform_mg_id = "" # Platform Management Group ID. 
-#     platform_mg_name = "" # Platform Management Group name. 
-#   }
-#   connectivity = {
-#     hub_vnet_id = "" # Shared Services: Hub VNet ID. 
-#     hub_vnet_name = "" # Shared Services: Hub VNet name.  
-#     firewall_id = ""
-#     firewall_name = ""
-#   }
-#   management = {
-#     log_analytics_workspace_id = "" # Shared Services: Log Analytics Workspace ID. 
-#     log_analytics_workspace_name = "" # Shared Services: Log Analytics Workspace ID. 
-#   }
-# }

@@ -26,7 +26,7 @@ variable "stack" {
 
 variable "global_outputs" {
   description = "Map of Shared Service key names, used to get IDs and names in data calls."
-  type        = map(string)
+  type        = map(map(string))
 }
 
 variable "global_outputs_name" {

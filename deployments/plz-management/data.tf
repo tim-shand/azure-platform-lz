@@ -16,7 +16,8 @@ data "azurerm_app_configuration" "iac" {
 # MANAGEMENT: General
 # ------------------------------------------------------------- #
 
-data "azurerm_app_configuration_key" "mg_core" {
+data "azurerm_app_configuration_key" "mg_core_id" {
   configuration_store_id = data.azurerm_app_configuration.iac.id
-  key                    = var.global_outputs.plz_core_mg_id
+  key                    = var.global_outputs.governance.core_mg_id
+  label                  = var.global_outputs.governance.label
 }
