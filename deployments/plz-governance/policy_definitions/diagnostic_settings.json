@@ -1,0 +1,144 @@
+{
+    "properties": {
+        "displayName": "Deploy Diagnostic Settings to Log Analytics for Platform Resources",
+        "policyType": "Custom",
+        "mode": "Indexed",
+        "description": "Deploys diagnostic settings to supported resource types and sends all logs and metrics to a Log Analytics workspace.",
+        "metadata": {
+            "category": "Monitoring",
+            "version": "1.0.0"
+        },
+        "parameters": {
+            "logAnalyticsWorkspaceId": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Log Analytics Workspace ID",
+                    "description": "Resource ID of the Log Analytics workspace."
+                }
+            },
+            "diagnosticSettingName": {
+                "type": "String",
+                "defaultValue": "set-by-policy",
+                "metadata": {
+                    "displayName": "Diagnostic Setting Name"
+                }
+            },
+            "effect": {
+                "type": "String",
+                "allowedValues": [
+                    "DeployIfNotExists",
+                    "AuditIfNotExists",
+                    "Disabled"
+                ],
+                "defaultValue": "AuditIfNotExists",
+                "metadata": {
+                    "displayName": "Effect",
+                    "description": "Enable or disable the execution of the policy."
+                }
+            }
+        },
+        "policyRule": {
+            "if": {
+                "anyOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.KeyVault/vaults"
+                    },
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Storage/storageAccounts"
+                    },
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Network/networkSecurityGroups"
+                    },
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Network/azureFirewalls"
+                    },
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Network/applicationGateways"
+                    },
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Compute/virtualMachines"
+                    },
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Web/sites"
+                    },
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.ContainerService/managedClusters"
+                    },
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Sql/servers/databases"
+                    }
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effect')]",
+                "details": {
+                    "type": "Microsoft.Insights/diagnosticSettings",
+                    "existenceCondition": {
+                        "field": "Microsoft.Insights/diagnosticSettings/workspaceId",
+                        "equals": "[parameters('logAnalyticsWorkspaceId')]"
+                    },
+                    "roleDefinitionIds": [
+                        "/providers/Microsoft.Authorization/roleDefinitions/749f88d5-cbae-40b8-bcfc-e573ddc772fa"
+                    ],
+                    "deployment": {
+                        "properties": {
+                            "mode": "incremental",
+                            "template": {
+                                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                "contentVersion": "1.0.0.0",
+                                "parameters": {
+                                    "logAnalyticsWorkspaceId": {
+                                        "type": "string"
+                                    },
+                                    "diagnosticSettingName": {
+                                        "type": "string"
+                                    }
+                                },
+                                "resources": [
+                                    {
+                                        "type": "Microsoft.Insights/diagnosticSettings",
+                                        "apiVersion": "2021-05-01-preview",
+                                        "name": "[parameters('diagnosticSettingName')]",
+                                        "scope": "[field('fullName')]",
+                                        "properties": {
+                                            "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                                            "logs": [
+                                                {
+                                                    "categoryGroup": "allLogs",
+                                                    "enabled": true
+                                                }
+                                            ],
+                                            "metrics": [
+                                                {
+                                                    "categoryGroup": "allMetrics",
+                                                    "enabled": true
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            "parameters": {
+                                "logAnalyticsWorkspaceId": {
+                                    "value": "[parameters('logAnalyticsWorkspaceId')]"
+                                },
+                                "diagnosticSettingName": {
+                                    "value": "[parameters('diagnosticSettingName')]"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
