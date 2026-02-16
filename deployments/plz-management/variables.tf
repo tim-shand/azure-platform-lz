@@ -52,5 +52,10 @@ variable "law_retenion_days" {
   }
 }
 
+variable "policy_diagnostics_mode" {
+  description = "Determines the effect mode when assigning policy to deploy diagnostic settings."
+  type        = string
+  default     = "AuditIfNotExists"
+}
 
 # ------------------------------------------------------------- #

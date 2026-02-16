@@ -42,3 +42,12 @@ resource "azurerm_app_configuration_key" "mg_platform_name" {
   label                  = var.global_outputs.governance.label # Related label used to identify entries. 
   depends_on             = [azurerm_management_group.level1]
 }
+
+# Policy Initiatives
+resource "azurerm_app_configuration_key" "policy_diag_plz_name" {
+  provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.governance.policy_diag_plz_name # Refer to variable in globals.
+  value                  = azurerm_management_group_policy_set_definition.custom["diag_platform"].name
+  label                  = var.global_outputs.governance.label # Related label used to identify entries. 
+}

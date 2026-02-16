@@ -30,11 +30,12 @@ global_outputs = {
     iac_service_principal_name  = "iac-service-principal-name"  # Pipeline Service Principal name.
   }
   governance = {
-    label            = "governance"
-    core_mg_id       = "gov-mg-core-id"       # Top-level Management Group ID. 
-    core_mg_name     = "gov-mg-core-name"     # Top-level Management Group name. 
-    platform_mg_id   = "gov-mg-platform-id"   # Platform Management Group ID. 
-    platform_mg_name = "gov-mg-platform-name" # Platform Management Group name. 
+    label                = "governance"
+    core_mg_id           = "gov-mg-core-id"           # Top-level Management Group ID. 
+    core_mg_name         = "gov-mg-core-name"         # Top-level Management Group name. 
+    platform_mg_id       = "gov-mg-platform-id"       # Platform Management Group ID. 
+    platform_mg_name     = "gov-mg-platform-name"     # Platform Management Group name. 
+    policy_diag_plz_name = "gov-policy-diag-plz-name" # Name of initiative for deploying platform diagnostics. 
   }
   management = {
     label                                  = "management"
