@@ -22,6 +22,11 @@ data "azurerm_app_configuration_key" "mg_core_id" {
   key                    = var.global_outputs.governance.core_mg_id
   label                  = var.global_outputs.governance.label
 }
+data "azurerm_app_configuration_key" "mg_core_name" {
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.governance.core_mg_name
+  label                  = var.global_outputs.governance.label
+}
 
 # Management Group: Platform MG ID - used for assigning diagnostics policy.  
 data "azurerm_app_configuration_key" "mg_platform_id" {
@@ -36,7 +41,7 @@ data "azurerm_app_configuration_key" "policy_diag_plz_name" {
   key                    = var.global_outputs.governance.policy_diag_plz_name
   label                  = var.global_outputs.governance.label
 }
-data "azurerm_policy_set_definition" "policy_diag_plz_name" {
-  name = data.azurerm_app_configuration_key.policy_diag_plz_name.value
+data "azurerm_policy_set_definition" "policy_diag_plz" {
+  name                  = data.azurerm_app_configuration_key.policy_diag_plz_name.value
+  management_group_name = data.azurerm_app_configuration_key.mg_core_name.value
 }
-
