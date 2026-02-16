@@ -42,5 +42,15 @@ variable "global_outputs_rg" {
 # MANAGEMENT: General
 # ------------------------------------------------------------- #
 
+variable "law_retenion_days" {
+  description = "Number of days to retain logs in Log Analytics Workspace."
+  type        = number
+  default     = 30
+  validation {
+    condition     = var.law_retenion_days >= 7 && var.law_retenion_days <= 180
+    error_message = "Number of days to retain logs must be between 7 and 180 days."
+  }
+}
+
 
 # ------------------------------------------------------------- #

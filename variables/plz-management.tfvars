@@ -11,3 +11,5 @@ stack = {
   }
 }
 
+# Log Analytics
+law_retenion_days = 30 # Days to retain logs in LOg Analytics Workspace. 
