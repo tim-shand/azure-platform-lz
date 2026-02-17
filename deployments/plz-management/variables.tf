@@ -74,21 +74,6 @@ variable "action_groups" {
   }))
 }
 
-# variable "alert_P1_recipients" {
-#   description = "Map of P1 alert recipients, key is the name and value is the email address."
-#   type        = map(map(string))
-# }
-
-# variable "alert_P2_recipients" {
-#   description = "Map of P2 alert recipients, key is the name and value is the email address."
-#   type        = map(map(string))
-# }
-
-# variable "alert_P3_recipients" {
-#   description = "Map of P3 alert recipients, key is the name and value is the email address."
-#   type        = map(map(string))
-# }
-
 # MANAGEMENT: Alerts
 # ------------------------------------------------------------- #
 
