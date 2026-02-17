@@ -64,4 +64,35 @@ variable "policy_activity_effect" {
   default     = "Disabled"
 }
 
+# MANAGEMENT: Action Groups
 # ------------------------------------------------------------- #
+
+variable "action_groups" {
+  description = "Map of objects containing the action group definitions."
+  type = map(object({
+    email_address = list(string)
+  }))
+}
+
+# variable "alert_P1_recipients" {
+#   description = "Map of P1 alert recipients, key is the name and value is the email address."
+#   type        = map(map(string))
+# }
+
+# variable "alert_P2_recipients" {
+#   description = "Map of P2 alert recipients, key is the name and value is the email address."
+#   type        = map(map(string))
+# }
+
+# variable "alert_P3_recipients" {
+#   description = "Map of P3 alert recipients, key is the name and value is the email address."
+#   type        = map(map(string))
+# }
+
+# MANAGEMENT: Alerts
+# ------------------------------------------------------------- #
+
+variable "activity_log_alerts" {
+  description = "Map of alert group priorities."
+  type        = map(string)
+}
