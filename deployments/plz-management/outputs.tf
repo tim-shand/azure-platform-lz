@@ -12,3 +12,4 @@ output "activity_log_alerts" {
     }
   }
 }
+

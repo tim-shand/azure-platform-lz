@@ -23,17 +23,19 @@ resource "azurerm_monitor_action_group" "all" {
 }
 
 # Alert: Multiple Categories, defined in TFVARS.  
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_activity_log_alert
 resource "azurerm_monitor_activity_log_alert" "all" {
   for_each            = var.activity_log_alerts
   name                = "ActivityLog-${each.key}"
   resource_group_name = azurerm_resource_group.mgt_alerts.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
-  scopes              = [data.azurerm_app_configuration_key.mg_platform_id.value] # Assign at platform management group. 
+  scopes              = local.platform_subs # Assign to platform subscriptions.  
   criteria {
     category = each.key
+    level    = try(each.value.level, null) # Only required for Administrative category. 
   }
   action {
-    action_group_id = local.action_group_map[each.value] # each.value is the severity level ("p1", "p2"). 
+    action_group_id = local.action_group_map[each.value.severity_level] # each.value severity level ("p1", "p2"). 
   }
 }

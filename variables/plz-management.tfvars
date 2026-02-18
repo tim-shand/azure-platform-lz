@@ -39,9 +39,20 @@ action_groups = {
 
 # Alert Priorities: Map to priorities for Action Group assignments. 
 activity_log_alerts = {
-  Administrative = "p3" # Assign Action Group (p1, p2, p3). 
-  Policy         = "p3" # Assign Action Group (p1, p2, p3). 
-  Security       = "p2" # Assign Action Group (p1, p2, p3). 
-  ServiceHealth  = "p1" # Assign Action Group (p1, p2, p3). 
-  ResourceHealth = "p1" # Assign Action Group (p1, p2, p3). 
+  Administrative = {
+    severity_level = "p3"    # Assign Action Group (p1, p2, p3). 
+    level          = "Error" # Only required for Administrative category. 
+  }
+  Policy = {
+    severity_level = "p3" # Assign Action Group (p1, p2, p3).
+  }
+  Security = {
+    severity_level = "p2" # Assign Action Group (p1, p2, p3).
+  }
+  ServiceHealth = {
+    severity_level = "p1" # Assign Action Group (p1, p2, p3).
+  }
+  ResourceHealth = {
+    severity_level = "p1" # Assign Action Group (p1, p2, p3).
+  }
 }

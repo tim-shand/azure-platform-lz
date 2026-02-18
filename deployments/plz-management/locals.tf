@@ -7,10 +7,17 @@ locals {
 # MANAGEMENT: Alerts
 # ------------------------------------------------------------- #
 
+# Map severity level to the deployed action group ID. 
 locals {
-  # Map severity level to the deployed action group ID. 
   action_group_map = {
     for k, v in var.action_groups :
     k => azurerm_monitor_action_group.all[k].id
   }
+}
+
+# List of platform subscriptions. 
+locals {
+  platform_subs = [
+    for s in data.azurerm_subscription.platform_subs : s.id # s.subscription_id
+  ]
 }
