@@ -41,3 +41,12 @@ resource "azurerm_app_configuration_key" "sp_name" {
   value                  = azuread_application.iac_sp.display_name           # Add SP name to global output key/value. 
   label                  = var.global_outputs.iac.label                      # Related label used to identify entries. 
 }
+
+# Global Output: Subscription IDs
+resource "azurerm_app_configuration_key" "subs" {
+  for_each               = local.platform_stacks_with_env # Loop for each stack to get sub ID. 
+  configuration_store_id = azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.subscriptions[each.key] # See mapping in 'global.tfvars'. 
+  value                  = each.value.subscription_id                 # Add SP name to global output key/value. 
+  label                  = var.global_outputs.iac.label               # Related label used to identify entries. 
+}

@@ -18,19 +18,19 @@ law_retenion_days = 30 # Days to retain logs in LOg Analytics Workspace.
 policy_diagnostics_effect = "DeployIfNotExists" # AuditIfNotExists, DeployIfNotExists, Disabled
 policy_activity_effect    = "DeployIfNotExists" # DeployIfNotExists, Disabled
 
-# Define Action Groups and recipients. 
+# Define Action Groups and email recipients. 
 action_groups = {
-  "P1" = {
+  "p1" = {
     email_address = [
       "alerts@tshand.com"
     ]
   }
-  "P2" = {
+  "p2" = {
     email_address = [
       "alerts@tshand.com"
     ]
   }
-  "P3" = {
+  "p3" = {
     email_address = [
       "alerts@tshand.com"
     ]
@@ -39,9 +39,9 @@ action_groups = {
 
 # Alert Priorities: Map to priorities for Action Group assignments. 
 activity_log_alerts = {
-  Administrative = "P3" # Assign Action Group (P1, P2, P3). 
-  Policy         = "P3" # Assign Action Group (P1, P2, P3). 
-  Security       = "P2" # Assign Action Group (P1, P2, P3). 
-  ServiceHealth  = "P1" # Assign Action Group (P1, P2, P3). 
-  ResourceHealth = "P1" # Assign Action Group (P1, P2, P3). 
+  Administrative = "p3" # Assign Action Group (p1, p2, p3). 
+  Policy         = "p3" # Assign Action Group (p1, p2, p3). 
+  Security       = "p2" # Assign Action Group (p1, p2, p3). 
+  ServiceHealth  = "p1" # Assign Action Group (p1, p2, p3). 
+  ResourceHealth = "p1" # Assign Action Group (p1, p2, p3). 
 }
