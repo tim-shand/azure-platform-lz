@@ -28,6 +28,11 @@ variable "backend_categories" {
   type        = map(string) # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
 }
 
+variable "management_group_core" {
+  description = "Map of top-level Management Group object, placed under tenant root."
+  type        = map(string)
+}
+
 variable "platform_stacks" {
   description = "Map of deployment objects listing the platform stack details."
   type = map(object({

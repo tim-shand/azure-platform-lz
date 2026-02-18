@@ -62,15 +62,3 @@ data "azurerm_subscription" "platform_subs" {
   for_each        = data.azurerm_app_configuration_key.platform_subs
   subscription_id = each.value.value
 }
-
-# MANAGEMENTE: Policy and Initiatives (Built-In)
-# ------------------------------------------------------------- #
-
-# Use provided variable value to assign a built-in policy initiative. 
-data "azurerm_policy_set_definition" "builtin" {
-  for_each = {
-    for k, v in var.policy_initiatives_builtin :
-    k => v if v.enabled # Only select initiatives that are set to be enabled. 
-  }
-  name = each.value.definition_id # Name equals GUID for built-in initiatives. 
-}

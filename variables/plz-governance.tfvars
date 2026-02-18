@@ -11,14 +11,14 @@ stack = {
   }
 }
 
-# Management Groups: Top level nested under the tenant root. 
-management_group_core = {
-  "core" = {
-    display_name             = "TimShand"        # Top-level Management Group representing the organisation.  
-    subscription_identifiers = []                # PLACEHOLDER. SHOULD be empty, as this object needs to match other MG structure. 
-    policy_initiatives       = ["core_baseline"] # Assign Policy Initiatives directly to MGs. 
-  }
-}
+# # Management Groups: Top level nested under the tenant root. 
+# management_group_core = {
+#   "core" = {
+#     display_name             = "TimShand"        # Top-level Management Group representing the organisation.  
+#     subscription_identifiers = []                # PLACEHOLDER. SHOULD be empty, as this object needs to match other MG structure. 
+#     policy_initiatives       = ["core_baseline"] # Assign Policy Initiatives directly to MGs. 
+#   }
+# }
 
 # Management Groups: First level nested under the core manangement group. 
 management_groups_level1 = {
@@ -66,15 +66,14 @@ management_groups_level2 = {
 # Management Groups: Third level nested under level 2 manangement groups.
 management_groups_level3 = {} # Leave blank if not required. Repeat same structure as "management_groups_level2". 
 
-# # Policy: Built-In 
-# policy_initiatives_builtin = {
-#   "New Zealand ISM" = {
-#     definition_id    = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
-#     assignment_mg_id = "core"                                 # Short code for Management Group ID to assign the initiative to (see 'management_group_registry'). 
-#     enabled          = false                                  # [true/false]: Toggle assignment.  
-#     enforce          = false                                  # [true/false]: Toggle enforcement of policy initiative. 
-#   }
-# }
+# Policy: Built-In 
+policy_initiatives_builtin = {
+  "New Zealand ISM" = {
+    definition_id = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
+    enabled       = false                                  # [true/false]: Toggle assignment.  
+    enforce       = false                                  # [true/false]: Toggle enforcement of policy initiative. 
+  }
+}
 
 # Policy: Custom
 policy_effect_mode  = "Audit" # DeployIfNotExists, Disabled

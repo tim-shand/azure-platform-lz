@@ -15,10 +15,6 @@ locals {
   }
 
   # Lookup maps of management group IDs for created parent/child assignments, and policy assignment. 
-  management_group_ids_level1 = {
-    for k, v in azurerm_management_group.core :
-    k => v.id
-  }
   management_group_ids_level2 = {
     for k, v in azurerm_management_group.level1 : # Use level 1 MGs as base. 
     k => v.id
@@ -58,13 +54,11 @@ locals {
   }
   # Merge the individual lookup maps into a single map (flatten).
   management_groups_all = merge(
-    var.management_group_core,
     var.management_groups_level1,
     var.management_groups_level2,
     var.management_groups_level3
   )
   management_groups_all_created = merge(
-    azurerm_management_group.core,
     azurerm_management_group.level1,
     azurerm_management_group.level2,
     azurerm_management_group.level3
