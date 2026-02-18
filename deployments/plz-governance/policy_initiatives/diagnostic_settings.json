@@ -1,7 +1,7 @@
 {
     "properties": {
-        "displayName": "Diagnostic Settings (Platform)",
-        "description": "Initiative to deploy diagnostic settings to platform resources.",
+        "displayName": "Diagnostic Settings",
+        "description": "Initiative to deploy diagnostic settings to resources.",
         "policyType": "Custom",
         "metadata": {
             "version": "1.0.0",

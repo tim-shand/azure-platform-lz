@@ -29,16 +29,3 @@ data "azurerm_management_group" "lookup" {
   for_each     = local.management_groups_all_created
   display_name = each.value.display_name
 }
-
-
-# GOVERNANCE: Policy and Initiatives (Built-In)
-# ------------------------------------------------------------- #
-
-# Use provided variable value to assign a built-in policy initiative. 
-data "azurerm_policy_set_definition" "builtin" {
-  for_each = {
-    for k, v in var.policy_initiatives_builtin :
-    k => v if v.enabled # Only select initiatives that are set to be enabled. 
-  }
-  name = each.value.definition_id # Name equals GUID for built-in initiatives. 
-}

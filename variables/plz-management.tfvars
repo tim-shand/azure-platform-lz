@@ -14,9 +14,21 @@ stack = {
 # Log Analytics
 law_retenion_days = 30 # Days to retain logs in LOg Analytics Workspace. 
 
-# Diagnostics & Logging
+# Policy, Diagnostics & Logging
 policy_diagnostics_effect = "DeployIfNotExists" # AuditIfNotExists, DeployIfNotExists, Disabled
 policy_activity_effect    = "DeployIfNotExists" # DeployIfNotExists, Disabled
+policy_initiatives_builtin = {
+  "New Zealand ISM" = {
+    definition_id    = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
+    assignment_mg_id = "core"                                 # Short code for Management Group ID to assign the initiative to (see 'management_group_registry'). 
+    enabled          = true                                   # [true/false]: Toggle assignment.  
+    enforce          = false                                  # [true/false]: Toggle enforcement of policy initiative. 
+  }
+}
+
+# Policy: Custom
+policy_effect_mode  = "Audit" # DeployIfNotExists, Disabled
+policy_enforce_mode = false   # True / False
 
 # Define Action Groups and email recipients. 
 action_groups = {
