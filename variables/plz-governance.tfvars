@@ -11,15 +11,6 @@ stack = {
   }
 }
 
-# # Management Groups: Top level nested under the tenant root. 
-# management_group_core = {
-#   "core" = {
-#     display_name             = "TimShand"        # Top-level Management Group representing the organisation.  
-#     subscription_identifiers = []                # PLACEHOLDER. SHOULD be empty, as this object needs to match other MG structure. 
-#     policy_initiatives       = ["core_baseline"] # Assign Policy Initiatives directly to MGs. 
-#   }
-# }
-
 # Management Groups: First level nested under the core manangement group. 
 management_groups_level1 = {
   "platform" = {
@@ -63,6 +54,7 @@ management_groups_level2 = {
     policy_initiatives       = []          # Assign Policy Initiatives directly to MGs. 
   }
 }
+
 # Management Groups: Third level nested under level 2 manangement groups.
 management_groups_level3 = {} # Leave blank if not required. Repeat same structure as "management_groups_level2". 
 

@@ -22,17 +22,17 @@ output "policy_definitions" {
 # GOVERNANCE: Policy Initiatives
 # ------------------------------------------------------------- #
 
-# output "policies_builtin" {
-#   description = "Map of built-in policy initiatives to assign."
-#   value = {
-#     for k, v in azurerm_management_group_policy_assignment.builtin :
-#     k => {
-#       display_name = v.display_name
-#       mg_id        = v.management_group_id
-#       enforce      = v.enforce
-#     }
-#   }
-# }
+output "policies_builtin" {
+  description = "Map of built-in policy initiatives to assign."
+  value = {
+    for k, v in azurerm_management_group_policy_assignment.builtin :
+    k => {
+      display_name = v.display_name
+      mg_id        = v.management_group_id
+      enforce      = v.enforce
+    }
+  }
+}
 
 output "policy_initiatives" {
   description = "Map of custom policy initiatives."
