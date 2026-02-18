@@ -23,11 +23,11 @@
                     "displayName": "Diagnostic Setting Name"
                 }
             },
-            "effect": {
+            "effectDiagSettings": {
                 "type": "String",
                 "metadata": {
-                    "strongType": "effect",
-                    "displayName": "Effect",
+                    "strongType": "effectDiagSettings",
+                    "displayName": "Effect (Diagnostic Settings)",
                     "description": "Determine the effect of the policy assignment."
                 },
                 "allowedValues": [
@@ -36,6 +36,31 @@
                     "Disabled"
                 ],
                 "defaultValue": "AuditIfNotExists"
+            },
+            "effectAzureActivity": {
+                "type": "String",
+                "metadata": {
+                    "strongType": "effectAzureActivity",
+                    "displayName": "Effect (Azure Activity)",
+                    "description": "Determine the effect of the policy assignment."
+                },
+                "allowedValues": [
+                    "DeployIfNotExists",
+                    "Disabled"
+                ],
+                "defaultValue": "DeployIfNotExists"
+            },
+            "logsEnabled": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Enable logs",
+                    "description": "Whether to enable logs stream to the Log Analytics workspace - True or False"
+                },
+                "allowedValues": [
+                    "True",
+                    "False"
+                ],
+                "defaultValue": "True"
             }
         },
         "policyDefinitions": [
@@ -50,7 +75,22 @@
                         "value": "[parameters('diagnosticSettingName')]"
                     },
                     "effect": {
-                        "value": "[parameters('effect')]"
+                        "value": "[parameters('effectDiagSettings')]"
+                    }
+                }
+            },
+            {
+                "policyDefinitionReferenceId": "azure_activity_law",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/azure_activity_law",
+                "parameters": {
+                    "logAnalyticsWorkspaceId": {
+                        "value": "[parameters('logAnalyticsWorkspaceId')]"
+                    },
+                    "effect": {
+                        "value": "[parameters('effectAzureActivity')]"
+                    },
+                    "logsEnabled": {
+                        "value": "[parameters('logsEnabled')]"
                     }
                 }
             }
