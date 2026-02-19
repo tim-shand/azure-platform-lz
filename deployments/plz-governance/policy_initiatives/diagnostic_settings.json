@@ -1,0 +1,59 @@
+{
+    "properties": {
+        "displayName": "Diagnostic Settings",
+        "description": "Initiative to deploy diagnostic settings to resources.",
+        "policyType": "Custom",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "Monitoring"
+        },
+        "version": "1.0.0",
+        "parameters": {
+            "logAnalyticsWorkspaceId": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Log Analytics Workspace ID",
+                    "description": "Resource ID of the Log Analytics workspace."
+                }
+            },
+            "diagnosticSettingName": {
+                "type": "String",
+                "defaultValue": "set-by-policy",
+                "metadata": {
+                    "displayName": "Diagnostic Setting Name"
+                }
+            },
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "strongType": "effect",
+                    "displayName": "Effect",
+                    "description": "Determine the effect of the policy assignment."
+                },
+                "allowedValues": [
+                    "AuditIfNotExists",
+                    "DeployIfNotExists",
+                    "Disabled"
+                ],
+                "defaultValue": "AuditIfNotExists"
+            }
+        },
+        "policyDefinitions": [
+            {
+                "policyDefinitionReferenceId": "diagnostic_settings",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/diagnostic_settings",
+                "parameters": {
+                    "logAnalyticsWorkspaceId": {
+                        "value": "[parameters('logAnalyticsWorkspaceId')]"
+                    },
+                    "diagnosticSettingName": {
+                        "value": "[parameters('diagnosticSettingName')]"
+                    },
+                    "effect": {
+                        "value": "[parameters('effect')]"
+                    }
+                }
+            }
+        ]
+    }
+}

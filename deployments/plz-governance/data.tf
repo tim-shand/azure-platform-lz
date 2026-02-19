@@ -19,26 +19,31 @@ data "azurerm_app_configuration" "iac" {
 # Subscriptions: Collect all available subscriptions, to be nested under management groups.  
 data "azurerm_subscriptions" "all" {}
 
-# Root Management Group: Pass in tenant ID to get root management group.
-data "azurerm_management_group" "root" {
-  name = data.azuread_client_config.current.tenant_id
+# Management Group: Core MG ID/name.  
+data "azurerm_app_configuration_key" "mg_core_id" {
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.governance.core_mg_id
+  label                  = var.global_outputs.governance.label
+}
+data "azurerm_app_configuration_key" "mg_core_name" {
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.governance.core_mg_name
+  label                  = var.global_outputs.governance.label
 }
 
 # Get created names for all MGs. 
 data "azurerm_management_group" "lookup" {
   for_each     = local.management_groups_all_created
   display_name = each.value.display_name
+  depends_on = [
+    azurerm_management_group.level1,
+    azurerm_management_group.level2,
+    azurerm_management_group.level3
+  ]
 }
 
-
-# GOVERNANCE: Policy and Initiatives (Built-In)
-# ------------------------------------------------------------- #
-
-# Use provided variable value to assign a built-in policy initiative. 
+# GOVERNANCE: Policy Initiative (Built-in)
 data "azurerm_policy_set_definition" "builtin" {
-  for_each = {
-    for k, v in var.policy_initiatives_builtin :
-    k => v if v.enabled # Only select initiatives that are set to be enabled. 
-  }
-  name = each.value.definition_id # Name equals GUID for built-in initiatives. 
+  for_each     = var.policy_initiatives_builtin # Resolve name of each initiative to ID. 
+  display_name = each.key
 }

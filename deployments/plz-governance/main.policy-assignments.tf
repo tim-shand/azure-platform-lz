@@ -28,17 +28,15 @@ resource "azurerm_management_group_policy_assignment" "custom" {
   })
 }
 
-# # BUILT-IN: Assign built-in policy initiatives at the provided level (in the variable map, short name resolved in locals). 
-# resource "azurerm_management_group_policy_assignment" "builtin" {
-#   for_each = {
-#     for k, v in var.policy_initiatives_builtin :
-#     k => v if v.enabled # Only select initiatives that are set to be enabled.
-#   }
-#   name                 = each.key
-#   display_name         = "[${upper(var.stack.naming.workload_code)}] BuiltIn - ${each.key}"
-#   policy_definition_id = data.azurerm_policy_set_definition.builtin[each.key].id # Get from resolved initiative data call. 
-#   management_group_id  = local.management_groups_all_created.core.id             # Assign directly to core MG. 
-#   enforce              = each.value.enforce                                      # True/False
-# }
-
-
+# BUILT-IN: Assign built-in policy initiatives at the provided level (in the variable map, short name resolved in locals). 
+resource "azurerm_management_group_policy_assignment" "builtin" {
+  for_each = {
+    for k, v in var.policy_initiatives_builtin :
+    k => v if v.enabled # Only select initiatives that are set to be enabled.
+  }
+  name                 = each.key
+  display_name         = "[${upper(var.stack.naming.workload_code)}] BuiltIn - ${each.key}"
+  policy_definition_id = data.azurerm_policy_set_definition.builtin[each.key].id # Get from resolved initiative data call. 
+  management_group_id  = data.azurerm_app_configuration_key.mg_core_id.value     # Assign directly to core MG. 
+  enforce              = each.value.enforce                                      # True/False
+}

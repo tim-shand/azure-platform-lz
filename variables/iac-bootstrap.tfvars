@@ -18,6 +18,12 @@ backend_categories = {
   workload  = "workload"  # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
 }
 
+# Management Group CORE: Top level nested under the tenant root. 
+management_group_core = {
+  name         = "core"     # Short name used to make up naming structure. 
+  display_name = "TimShand" # Top-level Management Group representing the organisation.  
+}
+
 # Deployment Stacks: Map of objects representing the platform workloads to provision. 
 platform_stacks = {
   "bootstrap" = {

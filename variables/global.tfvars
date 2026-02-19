@@ -29,6 +29,12 @@ global_outputs = {
     iac_service_principal_appid = "iac-service-principal-appid" # Pipeline Service Principal App ID.
     iac_service_principal_name  = "iac-service-principal-name"  # Pipeline Service Principal name.
   }
+  subscriptions = {
+    identity     = "sub-identity-id"     # Subscription ID for the Identity stack. 
+    governance   = "sub-governance-id"   # Subscription ID for the Governance stack. 
+    management   = "sub-management-id"   # Subscription ID for the Managementstack. 
+    connectivity = "sub-connectivity-id" # Subscription ID for the Connectivity stack. 
+  }
   governance = {
     label                = "governance"
     core_mg_id           = "gov-mg-core-id"           # Top-level Management Group ID. 

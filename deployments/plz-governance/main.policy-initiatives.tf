@@ -22,14 +22,14 @@ resource "azurerm_management_group_policy_set_definition" "custom" {
   display_name        = "[${upper(var.stack.naming.workload_code)}] - Initiative - ${each.value.displayName}"
   description         = try(each.value.description, null)
   policy_type         = "Custom"
-  management_group_id = local.management_groups_all_created.core.id # Create at core MG for use with all subs and MGs.
-  parameters          = jsonencode(try(each.value.parameters, {}))  # Try if it exists, use it - otherwise use empty.
-  metadata            = jsonencode(try(each.value.metadata, {}))    # Try if it exists, use it - otherwise use empty.
+  management_group_id = data.azurerm_app_configuration_key.mg_core_id.value # Create at core MG for use with all subs and MGs.
+  parameters          = jsonencode(try(each.value.parameters, {}))          # Try if it exists, use it - otherwise use empty.
+  metadata            = jsonencode(try(each.value.metadata, {}))            # Try if it exists, use it - otherwise use empty.
   dynamic "policy_definition_reference" {
     for_each = each.value.policyDefinitions # Generate dynamic object for each policy definition added in initiative.
     content {
       policy_definition_id = replace(
-        policy_definition_reference.value.policyDefinitionId, "PLACEHOLDER", "${local.management_groups_all_created.core.name}"
+        policy_definition_reference.value.policyDefinitionId, "PLACEHOLDER", "${data.azurerm_app_configuration_key.mg_core_name.value}"
       )
       reference_id       = policy_definition_reference.value.policyDefinitionReferenceId
       parameter_values   = jsonencode(try(policy_definition_reference.value.parameters, {}))

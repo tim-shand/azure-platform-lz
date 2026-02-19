@@ -45,3 +45,20 @@ data "azurerm_policy_set_definition" "policy_diag_plz" {
   name                  = data.azurerm_app_configuration_key.policy_diag_plz_name.value
   management_group_name = data.azurerm_app_configuration_key.mg_core_name.value
 }
+
+# MANAGEMENT: Subscriptions
+# ------------------------------------------------------------- #
+
+# Subscription IDs (Platform)
+data "azurerm_app_configuration_key" "platform_subs" {
+  for_each               = var.global_outputs.subscriptions # Loop for each entry in subscription keys list. 
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = each.value
+  label                  = var.global_outputs.iac.label
+}
+
+# Subscriptions Details (Platform)
+data "azurerm_subscription" "platform_subs" {
+  for_each        = data.azurerm_app_configuration_key.platform_subs
+  subscription_id = each.value.value
+}

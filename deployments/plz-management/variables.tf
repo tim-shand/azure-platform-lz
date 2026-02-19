@@ -64,4 +64,21 @@ variable "policy_activity_effect" {
   default     = "Disabled"
 }
 
+# MANAGEMENT: Action Groups
 # ------------------------------------------------------------- #
+
+variable "action_groups" {
+  description = "Map of objects containing the action group definitions."
+  type = map(object({
+    email_address = list(string)
+  }))
+}
+
+# MANAGEMENT: Alerts
+# ------------------------------------------------------------- #
+
+variable "activity_log_alerts" {
+  description = "Map of alert group priorities."
+  type        = map(map(string))
+}
+

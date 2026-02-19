@@ -21,7 +21,7 @@ resource "azurerm_policy_definition" "custom" {
   name                = each.key       # Use trimmed filename as policy definition name. 
   policy_type         = "Custom"
   mode                = each.value.mode
-  management_group_id = local.management_groups_all_created.core.id # Create at core MG for use with all subs and MGs.
+  management_group_id = data.azurerm_app_configuration_key.mg_core_id.value # Create at core MG for use with all subs and MGs.
   display_name        = "[${upper(var.stack.naming.workload_code)}] - ${each.value.displayName}"
   description         = try(each.value.description, null)          # Try if it exists, use it - otherwise use null.
   metadata            = jsonencode(try(each.value.metadata, {}))   # Try if it exists, use it - otherwise empty. 
