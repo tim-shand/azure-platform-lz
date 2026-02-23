@@ -62,7 +62,7 @@ management_groups_level3 = {} # Leave blank if not required. Repeat same structu
 policy_initiatives_builtin = {
   "New Zealand ISM" = {
     definition_id = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
-    enabled       = false                                  # [true/false]: Toggle assignment.  
+    enabled       = true                                   # [true/false]: Toggle assignment.  
     enforce       = false                                  # [true/false]: Toggle enforcement of policy initiative. 
   }
 }

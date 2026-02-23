@@ -39,4 +39,8 @@ resource "azurerm_management_group_policy_assignment" "builtin" {
   policy_definition_id = data.azurerm_policy_set_definition.builtin[each.key].id # Get from resolved initiative data call. 
   management_group_id  = data.azurerm_app_configuration_key.mg_core_id.value     # Assign directly to core MG. 
   enforce              = each.value.enforce                                      # True/False
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.policy.id] # Managed Identity ID for policy. 
+  }
 }

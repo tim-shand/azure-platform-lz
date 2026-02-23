@@ -42,6 +42,7 @@ global_outputs = {
     platform_mg_id       = "gov-mg-platform-id"       # Platform Management Group ID. 
     platform_mg_name     = "gov-mg-platform-name"     # Platform Management Group name. 
     policy_diag_plz_name = "gov-policy-diag-plz-name" # Name of initiative for deploying platform diagnostics. 
+    policy_managed_idn   = "gov-policy-deploy-mi-id"  # ID of the managed identity for deploying policy settings. 
   }
   management = {
     label                                  = "management"

@@ -32,3 +32,12 @@ resource "azurerm_app_configuration_key" "policy_diag_plz_name" {
   value                  = azurerm_management_group_policy_set_definition.custom["diagnostic_settings"].name
   label                  = var.global_outputs.governance.label # Related label used to identify entries. 
 }
+
+# Managed Identity
+resource "azurerm_app_configuration_key" "policy_mi" {
+  provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.governance.policy_managed_idn # Refer to variable in globals.
+  value                  = azurerm_user_assigned_identity.policy.id
+  label                  = var.global_outputs.governance.label # Related label used to identify entries. 
+}
