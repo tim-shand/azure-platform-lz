@@ -36,12 +36,14 @@ global_outputs = {
     connectivity = "sub-connectivity-id" # Subscription ID for the Connectivity stack. 
   }
   governance = {
-    label                = "governance"
-    core_mg_id           = "gov-mg-core-id"           # Top-level Management Group ID. 
-    core_mg_name         = "gov-mg-core-name"         # Top-level Management Group name. 
-    platform_mg_id       = "gov-mg-platform-id"       # Platform Management Group ID. 
-    platform_mg_name     = "gov-mg-platform-name"     # Platform Management Group name. 
-    policy_diag_plz_name = "gov-policy-diag-plz-name" # Name of initiative for deploying platform diagnostics. 
+    label                             = "governance"
+    core_mg_id                        = "gov-mg-core-id"            # Top-level Management Group ID. 
+    core_mg_name                      = "gov-mg-core-name"          # Top-level Management Group name. 
+    platform_mg_id                    = "gov-mg-platform-id"        # Platform Management Group ID. 
+    platform_mg_name                  = "gov-mg-platform-name"      # Platform Management Group name. 
+    policy_diag_plz_name              = "gov-policy-diag-plz-name"  # Name of initiative for deploying platform diagnostics. 
+    policy_managed_idn_name           = "gov-policy-deploy-mi-name" # ID of the managed identity for deploying policy settings. 
+    policy_managed_idn_resource_group = "gov-policy-deploy-mi-rg"   # Resource Group of the managed identity for deploying policy settings. 
   }
   management = {
     label                                  = "management"

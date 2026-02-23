@@ -79,6 +79,6 @@ variable "action_groups" {
 
 variable "activity_log_alerts" {
   description = "Map of alert group priorities."
-  type        = map(map(string))
+  type        = any
 }
 

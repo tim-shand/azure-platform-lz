@@ -58,11 +58,11 @@ management_groups_level2 = {
 # Management Groups: Third level nested under level 2 manangement groups.
 management_groups_level3 = {} # Leave blank if not required. Repeat same structure as "management_groups_level2". 
 
-# Policy: Built-In 
+# Policy: Built-In Initiatives
 policy_initiatives_builtin = {
   "New Zealand ISM" = {
-    definition_id = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative (4f5b1359-4f8e-4d7c-9733-ea47fcde891e). 
-    enabled       = false                                  # [true/false]: Toggle assignment.  
+    definition_id = "4f5b1359-4f8e-4d7c-9733-ea47fcde891e" # ID of the initiative. 
+    enabled       = true                                   # [true/false]: Toggle assignment.  
     enforce       = false                                  # [true/false]: Toggle enforcement of policy initiative. 
   }
 }
@@ -72,6 +72,7 @@ policy_effect_mode  = "Audit" # DeployIfNotExists, Disabled
 policy_enforce_mode = false   # True / False
 
 # Policy: Parameters
+#policy_param_builtin_resource_logging_effect = "AuditIfNotExists" # DeployIfNotExists, AuditIfNotExists, Disabled
 policy_param_allowed_locations = ["newzealandnorth", "australiaeast", "westus", "westus2"]
 policy_param_required_tags     = ["Owner", "Environment", "Project"]
 policy_param_allowed_vm_skus = [
