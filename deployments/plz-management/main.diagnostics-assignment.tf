@@ -17,17 +17,14 @@ resource "azurerm_management_group_policy_assignment" "diag" {
     identity_ids = [azurerm_user_assigned_identity.diag.id] # Use created managed identity. 
   }
   parameters = jsonencode({
-    logAnalyticsWorkspaceId = {
+    logAnalytics = {
       value = azurerm_log_analytics_workspace.mgt_logs.id
     }
     diagnosticSettingName = {
       value = "${var.stack.naming.workload_code}-deployed-by-policy"
     }
-    effectDiagSettings = {
+    effect = {
       value = var.policy_diagnostics_effect # See TFVARS. 
-    }
-    effectAzureActivity = {
-      value = var.policy_activity_effect # See TFVARS. 
     }
   })
 }
