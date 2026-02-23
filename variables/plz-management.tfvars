@@ -15,44 +15,57 @@ stack = {
 law_retenion_days = 30 # Days to retain logs in LOg Analytics Workspace. 
 
 # Policy, Diagnostics & Logging
-policy_diagnostics_effect = "DeployIfNotExists" # DeployIfNotExists, AuditIfNotExists, Disabled
-policy_activity_effect    = "DeployIfNotExists" # DeployIfNotExists, Disabled
+policy_diagnostics_effect = "AuditIfNotExists" # DeployIfNotExists, AuditIfNotExists, Disabled
+#policy_activity_effect    = "DeployIfNotExists" # DeployIfNotExists, Disabled
 
 # Define Action Groups and email recipients. 
 action_groups = {
-  "p1" = {
+  "platform" = {
     email_address = [
       "alerts@tshand.com"
     ]
   }
-  "p2" = {
+  "security" = {
     email_address = [
       "alerts@tshand.com"
     ]
   }
-  "p3" = {
+  "support" = {
     email_address = [
       "alerts@tshand.com"
     ]
   }
 }
 
-# Alert Priorities: Map to priorities for Action Group assignments. 
+# Activity Alerts: Map of properties.  
 activity_log_alerts = {
   Administrative = {
-    severity_level = "p3"    # Assign Action Group (p1, p2, p3). 
-    level          = "Error" # Only required for Administrative category. 
+    action_group = "platform"              # Assign Action Group from "action_groups". 
+    enabled      = true                    # [True/False]: Enable this activity log alert. 
+    level        = "Warning"               # Define the severity levels ("Warning", "Error", "Critical"). 
+    statuses     = ["Succeeded", "Failed"] # Define the status events ("Started", Failed", "Succeeded"). []
   }
   Policy = {
-    severity_level = "p3" # Assign Action Group (p1, p2, p3).
+    action_group = "platform" # Assign Action Group from "action_groups". 
+    enabled      = true       # [True/False]: Enable this activity log alert. 
+    level        = "Warning"  # Define the severity levels ("Warning", "Error", "Critical"). 
+    statuses     = ["Failed"] # Define the status events ("Started", Failed", "Succeeded"). []
   }
   Security = {
-    severity_level = "p2" # Assign Action Group (p1, p2, p3).
+    action_group = "security"              # Assign Action Group from "action_groups". 
+    enabled      = true                    # [True/False]: Enable this activity log alert. 
+    level        = "Warning"               # Define the severity levels ("Warning", "Error", "Critical"). 
+    statuses     = ["Succeeded", "Failed"] # Define the status events ("Started", Failed", "Succeeded"). []
   }
   ServiceHealth = {
-    severity_level = "p1" # Assign Action Group (p1, p2, p3).
+    action_group = "support"                                                 # Assign Action Group from "action_groups". 
+    enabled      = true                                                      # [True/False]: Enable this activity log alert. 
+    events       = ["Incident", "Maintenance", "ActionRequired", "Security"] # "Incident", "Maintenance", "Informational", "ActionRequired", "Security"
+    locations    = ["Global", "New Zealand North", "Australia East"]
   }
   ResourceHealth = {
-    severity_level = "p1" # Assign Action Group (p1, p2, p3).
+    action_group = "support"                              # Assign Action Group from "action_groups". 
+    enabled      = true                                   # [True/False]: Enable this activity log alert. 
+    current      = ["Degraded", "Unavailable", "Unknown"] # Define status: Available, Degraded, Unavailable and Unknown
   }
 }

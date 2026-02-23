@@ -34,6 +34,17 @@ data "azurerm_app_configuration_key" "mg_platform_id" {
   key                    = var.global_outputs.governance.platform_mg_id
   label                  = var.global_outputs.governance.label
 }
+data "azurerm_app_configuration_key" "policy_mi_name" {
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.governance.policy_managed_idn_name
+  label                  = var.global_outputs.governance.label
+}
+data "azurerm_app_configuration_key" "policy_mi_rg" {
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.governance.policy_managed_idn_resource_group
+  label                  = var.global_outputs.governance.label
+}
+
 data "azurerm_app_configuration_key" "policy_diag_plz_name" {
   configuration_store_id = data.azurerm_app_configuration.iac.id
   key                    = var.global_outputs.governance.policy_diag_plz_name
@@ -42,6 +53,10 @@ data "azurerm_app_configuration_key" "policy_diag_plz_name" {
 data "azurerm_policy_set_definition" "policy_diag_plz" {
   name                  = data.azurerm_app_configuration_key.policy_diag_plz_name.value
   management_group_name = data.azurerm_app_configuration_key.mg_core_name.value
+}
+data "azurerm_user_assigned_identity" "policy_mi" {
+  name                = data.azurerm_app_configuration_key.policy_mi_name.value
+  resource_group_name = data.azurerm_app_configuration_key.policy_mi_rg.value
 }
 
 # MANAGEMENT: Subscriptions
