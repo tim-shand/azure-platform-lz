@@ -39,11 +39,11 @@ This stack assigns a pre-created policy initiatives that automatically deploy lo
 **Implements standardized alert routing:** 
 - Subscription Activity Log Alerts. 
   - Administrative operations. 
-  - Service health issues. 
-  - Resource health changes. 
-  - Security-related events. 
+  - Service Health issues. 
+  - Resource Health changes. 
+  - Security related events. 
 - Category-based action groups (Platform, Security, Support). 
-- Dynamic notification configuration. 
+- Dynamic notification configuration, based on desired support team. 
 
 ### 📨 Action Groups
 

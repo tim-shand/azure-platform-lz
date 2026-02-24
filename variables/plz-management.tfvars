@@ -69,3 +69,70 @@ activity_log_alerts = {
     current      = ["Degraded", "Unavailable", "Unknown"] # Define status: Available, Degraded, Unavailable and Unknown
   }
 }
+
+# Diagnostic Logs: Entra ID
+entraid_log_types = {
+  "AuditLogs" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "SignInLogs" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "NonInteractiveUserSignInLogs" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "ServicePrincipalSignInLogs" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "ManagedIdentitySignInLogs" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "ProvisioningLogs" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "ADFSSignInLogs" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "RiskyUsers" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "UserRiskEvents" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "NetworkAccessTrafficLogs" = {
+    enabled = false # [True/False]: Enable or disable logging for category. 
+  }
+  "RiskyServicePrincipals" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "ServicePrincipalRiskEvents" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "EnrichedOffice365AuditLogs" = {
+    enabled = false # [True/False]: Enable or disable logging for category. 
+  }
+  "MicrosoftGraphActivityLogs" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "RemoteNetworkHealthLogs" = {
+    enabled = false # [True/False]: Enable or disable logging for category. 
+  }
+  "NetworkAccessAlerts" = {
+    enabled = false # [True/False]: Enable or disable logging for category. 
+  }
+  "NetworkAccessConnectionEvents" = {
+    enabled = false # [True/False]: Enable or disable logging for category. 
+  }
+  "MicrosoftServicePrincipalSignInLogs" = {
+    enabled = false # [True/False]: Enable or disable logging for category. 
+  }
+  "AzureADGraphActivityLogs" = {
+    enabled = true # [True/False]: Enable or disable logging for category. 
+  }
+  "NetworkAccessGenerativeAIInsights" = {
+    enabled = false # [True/False]: Enable or disable logging for category. 
+  }
+  "GraphNotificationsActivityLogs" = {
+    enabled = false # [True/False]: Enable or disable logging for category. 
+  }
+}

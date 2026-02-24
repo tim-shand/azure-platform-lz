@@ -82,3 +82,10 @@ variable "activity_log_alerts" {
   type        = any
 }
 
+# MANAGEMENT: Entra ID Logging
+# ------------------------------------------------------------- #
+
+variable "entraid_log_types" {
+  description = "Map of Entra ID logging categories, boolean value to enable/disable."
+  type        = map(bool)
+}
