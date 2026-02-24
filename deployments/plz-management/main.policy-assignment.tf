@@ -24,8 +24,7 @@ resource "azurerm_management_group_policy_assignment" "activity_logs" {
       value = "${var.stack.naming.workload_code}-deployed-by-policy"
     }
     effect = {
-      value = var.policy_diagnostics_effect # See TFVARS. 
+      value = var.policy_activity_logs_effect # See TFVARS. 
     }
   })
 }
-

@@ -10,8 +10,8 @@ module "naming_backend" {
   for_each      = var.backend_categories # Create naming structure for each backend category. 
   source        = "../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
-  workload      = each.key # bootstrap, platform, workload
-  stack_or_env  = var.stack.naming.workload_code
+  workload      = var.stack.naming.workload_code
+  stack_or_env  = each.key # bootstrap, platform, workload
   ensure_unique = true
 }
 

@@ -4,15 +4,6 @@ The Management stack deploys and configures the core shared operational services
 This stack provides centralized logging, monitoring, alerting, and policy-driven diagnostic configuration for all platform subscriptions. 
 It is designed to be environment-agnostic, reusable, and aligned with enterprise Azure landing zone best practices. 
 
-The Management stack provides the operational backbone of the Platform Landing Zone by delivering:
-
-- Visibility. 
-- Compliance enforcement. 
-- Monitoring automation. 
-- Alert standardization. 
-
----
-
 ## 🌟 Features
 
 - Centralized logging infrastructure (Log Analytics). 
@@ -21,9 +12,7 @@ The Management stack provides the operational backbone of the Platform Landing Z
 - Action group notification routing. 
 - Shared monitoring resources. 
 
----
-
-## 🔍 Centralized Monitoring
+### 🔍 Centralized Monitoring
 
 **Provides a single location for:** 
 - Platform logs. 
@@ -32,7 +21,7 @@ The Management stack provides the operational backbone of the Platform Landing Z
 - Security auditing. 
 - Operational telemetry. 
 
-## 📜 Policy-Driven Diagnostics
+### 📜 Policy-Driven Diagnostics
 
 This stack assigns a pre-created policy initiatives that automatically deploy logging and diagnostic settings across platform resources. 
 
@@ -45,7 +34,7 @@ This stack assigns a pre-created policy initiatives that automatically deploy lo
   - All current resources are monitored. 
   - Future resources automatically become compliant. 
 
-## ⚠️ Alerting
+### ⚠️ Alerting
 
 **Implements standardized alert routing:** 
 - Subscription Activity Log Alerts. 
@@ -56,7 +45,7 @@ This stack assigns a pre-created policy initiatives that automatically deploy lo
 - Category-based action groups (Platform, Security, Support). 
 - Dynamic notification configuration. 
 
-## 📨 Action Groups
+### 📨 Action Groups
 
 Dynamic action groups are created based on TFVARS configuration.
 
