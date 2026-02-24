@@ -52,6 +52,18 @@ variable "law_retenion_days" {
   }
 }
 
+variable "law_archive_logs" {
+  description = "Boolean value, enable to archive Log Analytics logs to Storage Account."
+  type        = bool
+  default     = false
+}
+
+variable "law_export_log_tables" {
+  description = "List of table names to export to Storage Account."
+  type        = list(string)
+  default     = ["Alert", "Operation", "Metrics"]
+}
+
 variable "policy_diagnostic_settings_effect" {
   description = "Determines the effect mode when assigning policy to deploy diagnostic settings (DiagSettings)."
   type        = string

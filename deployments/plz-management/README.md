@@ -15,15 +15,14 @@ It is designed to be environment-agnostic, reusable, and aligned with enterprise
 ### 🔍 Centralized Monitoring
 
 **Provides a single location for:** 
-- Platform logs. 
-- Resource diagnostics. 
-- Activity logs. 
+- Entra ID logging (category logs defined/enabled within TFVARS). 
+- Platform and resource activity logs. 
+- Resource diagnostics and metrics. 
 - Security auditing. 
-- Operational telemetry. 
 
 ### 📜 Policy-Driven Diagnostics
 
-This stack assigns a pre-created policy initiatives that automatically deploy logging and diagnostic settings across platform resources. 
+This stack assigns a pre-created policy initiative that automatically deploys logging and diagnostic settings across platform resources. 
 
 **The policy:** 
 - Uses a managed identity (defined in the governance stack). 

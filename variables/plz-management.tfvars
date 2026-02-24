@@ -13,6 +13,14 @@ stack = {
 
 # Log Analytics
 law_retenion_days = 30 # Days to retain logs in LOg Analytics Workspace. 
+law_export_log_tables = [
+  "Alert",
+  "AppCenterError",
+  "ComputerGroup",
+  "InsightsMetrics",
+  "Operation",
+  "Usage"
+]
 
 # Policy, Diagnostics & Logging
 policy_diagnostic_settings_effect = "AuditIfNotExists" # DeployIfNotExists, AuditIfNotExists, Disabled
