@@ -33,8 +33,7 @@ locals {
 # ------------------------------------------------------------- #
 locals {
   entraid_log_types_enabled = {
-    for k, v in var.entraid_log_types :
-    k => v
-    if v.enabled # Filter on categories with 'enabled' equal to 'true'. 
+    for k, v in var.entraid_log_types : k => v
+    if v # Filter on category names that are enabled. 
   }
 }

@@ -12,7 +12,7 @@ resource "azurerm_monitor_aad_diagnostic_setting" "main" {
   dynamic "enabled_log" {
     for_each = local.entraid_log_types_enabled # Loop dynamic for each enabled category log type. 
     content {
-      category = each.key
+      category = enabled_log.key # Must use name of dynamic object as the "each". 
     }
   }
 }
