@@ -34,3 +34,13 @@ resource "azurerm_storage_account" "mgt_logs" {
     }
   }
 }
+
+# Data Export: Archive LAW logs to Storage Account. 
+resource "azurerm_log_analytics_data_export_rule" "mgt_logs" {
+  name                    = "${module.naming_mgt_logs.full_name}-der" # Data Export Rule
+  resource_group_name     = azurerm_resource_group.mgt_logs.name
+  workspace_resource_id   = azurerm_log_analytics_workspace.mgt_logs.id
+  destination_resource_id = azurerm_storage_account.mgt_logs.id
+  table_names             = var.law_export_log_tables # List of table names to export to Storage Account. 
+  enabled                 = var.law_archive_logs      # True/False
+}

@@ -1,25 +1,12 @@
 # MANAGEMENT: General
 # ------------------------------------------------------------- #
 
-# output "activity_log_alerts" {
-#   description = "Map of generated activity log alerts."
-#   value = {
-#     #for k, v in azurerm_monitor_activity_log_alert.all :
-#     for k, v in local.activity_log_alerts_merged :
-#     k => {
-#       name         = v.name
-#       category     = v.criteria[0].category
-#       action_group = v.action
-#     }
-#   }
-# }
-
-output "activity_log_alerts_merged" {
-  description = "Merged map of activity log alert rules."
-  value       = local.activity_log_alerts_merged
+# Log Analytics Workspace
+output "mgt_law_name" {
+  description = "Log Analytics Workspace name."
+  value       = azurerm_log_analytics_workspace.mgt_logs.name
 }
-
-# output "test" {
-#   value = local.activity_log_alerts_action_groups
-# }
-
+output "mgt_law_rg" {
+  description = "Log Analytics Workspace resource group."
+  value       = azurerm_log_analytics_workspace.mgt_logs.resource_group_name
+}

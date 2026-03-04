@@ -13,10 +13,18 @@ stack = {
 
 # Log Analytics
 law_retenion_days = 30 # Days to retain logs in LOg Analytics Workspace. 
+law_export_log_tables = [
+  "Alert",
+  "AppCenterError",
+  "ComputerGroup",
+  "InsightsMetrics",
+  "Operation",
+  "Usage"
+]
 
 # Policy, Diagnostics & Logging
-policy_diagnostics_effect = "AuditIfNotExists" # DeployIfNotExists, AuditIfNotExists, Disabled
-#policy_activity_effect    = "DeployIfNotExists" # DeployIfNotExists, Disabled
+policy_diagnostic_settings_effect = "AuditIfNotExists" # DeployIfNotExists, AuditIfNotExists, Disabled
+policy_activity_logs_effect       = "AuditIfNotExists" # DeployIfNotExists, AuditIfNotExists, Disabled
 
 # Define Action Groups and email recipients. 
 action_groups = {
@@ -68,4 +76,29 @@ activity_log_alerts = {
     enabled      = true                                   # [True/False]: Enable this activity log alert. 
     current      = ["Degraded", "Unavailable", "Unknown"] # Define status: Available, Degraded, Unavailable and Unknown
   }
+}
+
+# Diagnostic Logs: Entra ID
+entraid_log_types = {
+  "AuditLogs"                           = true  # [True/False]: Enable or disable logging for category. 
+  "SignInLogs"                          = true  # [True/False]: Enable or disable logging for category. 
+  "NonInteractiveUserSignInLogs"        = true  # [True/False]: Enable or disable logging for category. 
+  "ServicePrincipalSignInLogs"          = true  # [True/False]: Enable or disable logging for category. 
+  "ManagedIdentitySignInLogs"           = true  # [True/False]: Enable or disable logging for category. 
+  "ProvisioningLogs"                    = true  # [True/False]: Enable or disable logging for category. 
+  "ADFSSignInLogs"                      = true  # [True/False]: Enable or disable logging for category. 
+  "RiskyUsers"                          = true  # [True/False]: Enable or disable logging for category. 
+  "UserRiskEvents"                      = true  # [True/False]: Enable or disable logging for category. 
+  "NetworkAccessTrafficLogs"            = false # [True/False]: Enable or disable logging for category. 
+  "RiskyServicePrincipals"              = true  # [True/False]: Enable or disable logging for category. 
+  "ServicePrincipalRiskEvents"          = true  # [True/False]: Enable or disable logging for category. 
+  "EnrichedOffice365AuditLogs"          = false # [True/False]: Enable or disable logging for category. 
+  "MicrosoftGraphActivityLogs"          = true  # [True/False]: Enable or disable logging for category. 
+  "RemoteNetworkHealthLogs"             = false # [True/False]: Enable or disable logging for category. 
+  "NetworkAccessAlerts"                 = false # [True/False]: Enable or disable logging for category. 
+  "NetworkAccessConnectionEvents"       = false # [True/False]: Enable or disable logging for category. 
+  "MicrosoftServicePrincipalSignInLogs" = false # [True/False]: Enable or disable logging for category. 
+  "AzureADGraphActivityLogs"            = true  # [True/False]: Enable or disable logging for category. 
+  "NetworkAccessGenerativeAIInsights"   = false # [True/False]: Enable or disable logging for category. 
+  "GraphNotificationsActivityLogs"      = false # [True/False]: Enable or disable logging for category. 
 }

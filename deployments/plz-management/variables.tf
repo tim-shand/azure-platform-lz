@@ -52,13 +52,25 @@ variable "law_retenion_days" {
   }
 }
 
-variable "policy_diagnostics_effect" {
-  description = "Determines the effect mode when assigning policy to deploy diagnostic settings (DiagSettings)."
-  type        = string
-  default     = "AuditIfNotExists"
+variable "law_archive_logs" {
+  description = "Boolean value, enable to archive Log Analytics logs to Storage Account."
+  type        = bool
+  default     = false
 }
 
-variable "policy_activity_effect" {
+variable "law_export_log_tables" {
+  description = "List of table names to export to Storage Account."
+  type        = list(string)
+  default     = ["Alert", "Operation", "Metrics"]
+}
+
+variable "policy_diagnostic_settings_effect" {
+  description = "Determines the effect mode when assigning policy to deploy diagnostic settings (DiagSettings)."
+  type        = string
+  default     = "Disabled"
+}
+
+variable "policy_activity_logs_effect" {
   description = "Determines the effect mode when assigning policy to deploy diagnostic settings (AzureActivity)."
   type        = string
   default     = "Disabled"
@@ -82,3 +94,10 @@ variable "activity_log_alerts" {
   type        = any
 }
 
+# MANAGEMENT: Entra ID Logging
+# ------------------------------------------------------------- #
+
+variable "entraid_log_types" {
+  description = "Map of Entra ID logging categories, boolean value to enable/disable."
+  type        = map(bool)
+}
