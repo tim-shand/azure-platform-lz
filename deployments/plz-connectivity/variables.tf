@@ -41,3 +41,18 @@ variable "global_outputs_rg" {
 
 # CONNECTIVITY: General
 # ------------------------------------------------------------- #
+
+variable "vnet_hub_cidr" {
+  description = "List of address spaces for hub VNet."
+  type        = list(string)
+  nullable    = false
+}
+
+variable "vnet_hub_subnets" {
+  description = "Map of objects defining the hub VNet subnets."
+  type = map(object({
+    enabled                         = bool
+    address_prefixes                = list(string)
+    default_outbound_access_enabled = bool # Enable default outbound access to the internet for the subnet. 
+  }))
+}
