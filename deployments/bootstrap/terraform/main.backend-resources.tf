@@ -8,7 +8,7 @@
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_backend" {
   for_each      = var.backend_categories # Create naming structure for each backend category. 
-  source        = "../../modules/global-resource-naming"
+  source        = "../../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
   workload      = var.stack.naming.workload_code
   stack_or_env  = each.key # bootstrap, platform, workload

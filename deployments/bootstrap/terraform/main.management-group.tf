@@ -6,7 +6,7 @@
 
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_mg" {
-  source       = "../../modules/global-resource-naming"
+  source       = "../../../modules/global-resource-naming"
   prefix       = var.global.naming.org_prefix
   workload     = var.management_group_core.name # Management Group short name. 
   stack_or_env = "mg"                           # Static suffix for Management Groups. 

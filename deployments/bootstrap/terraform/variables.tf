@@ -1,3 +1,9 @@
+variable "terraform_version" {
+  description = "Terraform version to use with workflows."
+  type        = string
+  nullable    = false
+}
+
 variable "subscription_id" {
   description = "Subscription ID of the dedicated IaC subscription."
   type        = string

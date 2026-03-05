@@ -30,7 +30,7 @@ $requiredApps = @(
 
 # Directories, Files and Misc.
 $dir_tf = "$PSScriptRoot/terraform" # Location of Terraform files. 
-$dir_ps_vars = "$PSScriptRoot/../variables" # Location of Terraform variable files (in relation project root).
+$dir_ps_vars = "$PSScriptRoot/../../variables" # Location of Terraform variable files (in relation project root).
 $tf_backend_state_key = "azure-iac-bootstrap.tfstate" # Terraform state file name.
 $var_files = @("global.tfvars", "iac-bootstrap.tfvars") # Array of required variable files for bootstrap process. 
 
@@ -174,6 +174,9 @@ Write-Host ""
 Write-Host -ForegroundColor $WRN "NOTE: Please ensure the above details are correct before proceeding."
 Write-Host -ForegroundColor $WRN "If details above are incorrect, exit this script and make changes within CLI tools before re-running this script."
 Write-Host ""
+Write-Host "Terraform Directory: $dir_tf"
+Write-Host "Variables Directory: $dir_ps_vars"
+Write-Host ""
 if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?")) {
     Write-Host -ForegroundColor $WRN "[!] WARN: User declined to proceed. Exit."
     exit 1
@@ -188,7 +191,8 @@ if (!($Remove)) {
     Write-Host ""
     Write-Host -ForegroundColor $HD1 "[*] Initializing Terraform configuration..."
     Try {
-        terraform -chdir="$dir_tf" init -upgrade > $null 2>&1
+        #terraform -chdir="$dir_tf" init -upgrade > $null 2>&1
+        terraform -chdir="$dir_tf" init -upgrade
         if ($LASTEXITCODE -eq 0) {
             Write-Host -ForegroundColor $PASS "[+] PASS: Terraform is initialized."
         }

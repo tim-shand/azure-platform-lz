@@ -7,16 +7,16 @@
 
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_globals" {
-  source        = "../../modules/global-resource-naming"
+  source        = "../../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
-  workload      = "platform"
-  stack_or_env  = var.stack.naming.workload_code
+  workload      = var.stack.naming.workload_code
+  stack_or_env  = "globals"
   ensure_unique = true
 }
 
 # App Configuration: Used to store key/value pairs for Shared Service (global) resources (IDs/Names). 
 resource "azurerm_app_configuration" "iac" {
-  name                     = "${module.naming_globals.full_name}-globals-cfg"
+  name                     = "${module.naming_globals.full_name}-cfg"
   resource_group_name      = azurerm_resource_group.backend["platform"].name
   location                 = azurerm_resource_group.backend["platform"].location
   sku                      = "free"

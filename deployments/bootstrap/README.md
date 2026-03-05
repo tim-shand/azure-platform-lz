@@ -209,14 +209,14 @@ az account set --subscription mysubscription
 
 ```shell
 # Deploy Bootstrap resources (will perform update on subsequent runs).
-powershell -file .deployments/bootstrap/bootstrap-azure-github.ps1
+powershell -file ./deployments/bootstrap/bootstrap-azure-github.ps1
 ```
 
 5. \[OPTIONAL\]: Remove all Bootstrap resources (if required).
 
 ```shell
 # Remove Bootstrap resources.
-powershell -file .deployments/bootstrap/bootstrap-azure-github.ps1 -Remove
+powershell -file ./deployments/bootstrap/bootstrap-azure-github.ps1 -Remove
 ```
 
 ---

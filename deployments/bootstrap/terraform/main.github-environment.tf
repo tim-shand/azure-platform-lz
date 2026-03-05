@@ -5,6 +5,13 @@
 # - Creates an environment per deployment stack, with environment specific variables. 
 #====================================================================================#
 
+# GitHub: Repo [VARIABLE] - Terraform Version
+resource "github_actions_variable" "tf_version" {
+  repository    = data.github_repository.repo.name
+  variable_name = "TF_VERSION"
+  value         = var.terraform_version
+}
+
 # GitHub: Repo [VARIABLE] - Azure Tenant ID
 resource "github_actions_variable" "tenant_id" {
   repository    = data.github_repository.repo.name
