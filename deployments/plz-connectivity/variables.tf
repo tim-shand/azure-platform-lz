@@ -48,11 +48,27 @@ variable "vnet_hub_cidr" {
   nullable    = false
 }
 
-variable "vnet_hub_subnets" {
-  description = "Map of objects defining the hub VNet subnets."
-  type = map(object({
-    enabled                         = bool
-    address_prefixes                = list(string)
-    default_outbound_access_enabled = bool # Enable default outbound access to the internet for the subnet. 
-  }))
+variable "hub_services" {
+  description = "Map of objects defining the connectivity services."
+  type = object({
+    bastion = optional(object({
+      enabled                = bool
+      subnet                 = list(string)
+      sku                    = string # Standard required for 'Native client support'. 
+      copy_paste_enabled     = bool   # Basic, Standard
+      file_copy_enabled      = bool   # REQUIRES: Standard
+      tunneling_enabled      = bool   # REQUIRES: Standard
+      shareable_link_enabled = bool   # REQUIRES: Standard
+      kerberos_enabled       = bool   # REQUIRES: Standard
+      ip_connect_enabled     = bool   # REQUIRES: Standard
+    })),
+    firewall = optional(object({
+      enabled = bool
+      subnet  = list(string)
+    })),
+    gateway = optional(object({
+      enabled = bool
+      subnet  = list(string)
+    }))
+  })
 }

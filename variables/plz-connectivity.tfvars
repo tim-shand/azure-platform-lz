@@ -13,25 +13,26 @@ stack = {
 
 # VNet: Hub
 vnet_hub_cidr = ["10.50.0.0/22"] # /22 = 4x /24
-vnet_hub_subnets = {
-  firewall = {
-    enabled                         = true
-    address_prefixes                = ["10.50.0.0/24"] # Address space used for Azure Firewall or other NVA.
-    default_outbound_access_enabled = false            # Enable default outbound access to the internet for the subnet.
+
+# Connectivity Services
+hub_services = {
+  "firewall" = {
+    enabled = true
+    subnet  = ["10.50.0.0/24"]
   }
-  gateway = {
-    enabled                         = true
-    address_prefixes                = ["10.50.1.0/24"] # Address space used for VPN Gateway (if enabled).
-    default_outbound_access_enabled = false            # Enable default outbound access to the internet for the subnet.
+  "gateway" = {
+    enabled = true
+    subnet  = ["10.50.1.0/24"]
   }
-  management = {
-    enabled                         = true
-    address_prefixes                = ["10.50.2.0/24"] # Address space used for Management via peered VM networks.
-    default_outbound_access_enabled = false            # Enable default outbound access to the internet for the subnet.
-  }
-  bastion = {
-    enabled                         = true
-    address_prefixes                = ["10.50.3.0/24"] # Address space used for Azure Bastion for remote access.
-    default_outbound_access_enabled = false            # Enable default outbound access to the internet for the subnet.
+  "bastion" = {
+    enabled                = true
+    subnet                 = ["10.50.2.0/24"]
+    sku                    = "Basic" # Standard required for 'Native client support'. 
+    copy_paste_enabled     = true    # Basic, Standard
+    file_copy_enabled      = true    # REQUIRES: Standard
+    tunneling_enabled      = true    # REQUIRES: Standard
+    shareable_link_enabled = true    # REQUIRES: Standard
+    kerberos_enabled       = true    # REQUIRES: Standard
+    ip_connect_enabled     = true    # REQUIRES: Standard
   }
 }
