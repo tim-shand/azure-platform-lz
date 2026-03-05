@@ -1,4 +1,4 @@
-name: "Deploy Stack: PLZ - Governance"
+name: "Deploy Stack: PLZ-Governance"
 
 on: # Define triggers.
     workflow_dispatch: # Manual Run
@@ -14,10 +14,9 @@ on: # Define triggers.
                     - "Destroy" # Run Terraform DESTROY only.
     pull_request: # Trigger on Pull Request
         paths: # Limit trigger to specific files and directories.
-            - ".github/workflows/stack-plz-governance.yml" # Changes to the workflow itself.
-            - "variables/governance.tfvars" # Changes to the TFVARS file.
+            - ".github/workflows/stack_plz_governance.yml" # Changes to the workflow itself.
+            - "variables/plz-governance.tfvars" # Changes to the TFVARS file.
             - "deployments/plz-governance/**" # Changes to the stack root module.
-            - "modules/gov*/**" # Changes any of the stack child modules.
         branches:
             - main # Trigger on pull request to main branch only.
 permissions: # Define workflow permissions.
@@ -37,12 +36,13 @@ jobs: # List jobs to execute.
         env: # Setup environment variables.
             # NOTE: If variable exists at both repo and environment level, the environment value takes priority.
             # Terraform Backend
+            TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to use in workflow.
             TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group [Repo Variable]
             TF_BACKEND_SA: ${{ vars.TF_BACKEND_SA }} # Backend: Storage Account [Repo Variable]
             TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }} # Backend: Blob Container [Env Variable]
             TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Backend: State file name [Env Variable]
             TF_VARS_DIR: "../../variables" # Location of variable files in relation to working directory.
-            TF_VARS_FILE: "governance.tfvars" # Variables file for the target stack.
+            TF_VARS_FILE: "plz-governance.tfvars" # Variables file for the target stack.
 
             # Azure OIDC Auth
             ARM_USE_OIDC: true # Azure: Force use of OIDC/Federated credentials, configured during bootstrap process.
@@ -51,7 +51,7 @@ jobs: # List jobs to execute.
             ARM_SUBSCRIPTION_ID_IAC: ${{ secrets.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for all IaC Backends [Repo Secret].
             ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }} # Azure: Subscription for target deployment [Env Variable].
 
-            # Determine which steps should run (based on input and pull request triggers).
+            # Determine which steps should run (based on input and pull request triggers). ONLY manual apply, pull_request triggers plan only. 
             RUN_PLAN: ${{ github.event_name == 'pull_request' || github.event.inputs.action == 'Plan' || github.event.inputs.action == 'Apply' }}
             RUN_APPLY: ${{ github.event.inputs.action == 'Apply' }}
             RUN_DESTROY: ${{ github.event.inputs.action == 'Destroy' }}
@@ -63,7 +63,7 @@ jobs: # List jobs to execute.
             - name: Setup Terraform # Configure Terraform on the runner instance.
               uses: hashicorp/setup-terraform@v3
               with:
-                  terraform_version: 1.14.0
+                  terraform_version: ${{ vars.TF_VERSION }}
 
             - name: "Terraform: Init" # Initialize Terraform. Use IaC backend subscription in this step.
               timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
