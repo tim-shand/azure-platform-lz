@@ -1,27 +1,27 @@
 # Azure: Platform Landing Zone (Identity Stack)
 
-The Identity stack is responsible for managing Entra ID groups used across your Azure landing zone. This stack centralises the creation of administrator and user groups, ensuring consistent naming, ownership, and active status management. 
+The Identity stack is responsible for managing Entra ID groups used across your Azure landing zone. This stack centralises the creation of administrator and user groups, ensuring consistent naming, ownership, and active status management.
 
-⚠️ **NOTE:** This stack does not create service principals, assign RBAC roles, or manage subscription/resource level access. Those tasks belong in the Management or Governance stacks. 
+⚠️ **NOTE:** This stack does not create service principals, assign RBAC roles, or manage subscription/resource level access. Those tasks belong in the Management or Governance stacks.
 
 ## 🌟 Features
 
 The Identity Stack manages Entra ID resources required for the platform. This includes:
 
-- Admin and User groups created from TFVARS definitions. 
-- Only groups marked as active are created. 
-- Owners are resolved dynamically using employee IDs. 
-- Group names follow enterprise prefix conventions. 
-- Groups are security-enabled and duplicate names are prevented. 
+- Admin and User groups created from TFVARS definitions.
+- Only groups marked as active are created.
+- Owners are resolved dynamically using employee IDs.
+- Group names follow enterprise prefix conventions.
+- Groups are security-enabled and duplicate names are prevented.
 
 ---
 
 ## 🏦 Architecture
 
-- **Entra ID Groups:** 
-  - GRP_ADM_* = Privileged administrator roles. 
-  - GRP_USR_* = Standard user or team roles. 
-  - Owners = assigned to each group via employee ID. 
+- **Entra ID Groups:**
+  - GRP_ADM_* = Privileged administrator roles.
+  - GRP_USR_* = Standard user or team roles.
+  - Owners = assigned to each group via employee ID.
 
 ```text
 Azure Tenant
@@ -34,9 +34,9 @@ Azure Tenant
 
 ## ▶️ Usage
 
-1. Update stack TFVARS file with required group configurations, including owner employee ID. 
-2. Deploy the stack using the related workflow in GitHub Actions. 
-3. Validate outputs match desired state. 
+1. Update stack TFVARS file with required group configurations, including owner employee ID.
+2. Deploy the stack using the related workflow in GitHub Actions.
+3. Validate outputs match desired state.
 
 **Example TFVARS:**  
 
