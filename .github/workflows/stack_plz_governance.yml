@@ -62,6 +62,13 @@ jobs: # List jobs to execute.
             - name: Checkout Repository # Pull down the repo to local filesystem on workflow runner instance.
               uses: actions/checkout@v4
 
+            - name: Azure login with OIDC
+              uses: azure/login@v2
+              with:
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID_IAC }}
+
             - name: Setup Terraform # Configure Terraform on the runner instance.
               uses: hashicorp/setup-terraform@v3
               with:
