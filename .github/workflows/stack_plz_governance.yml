@@ -48,9 +48,9 @@ jobs: # List jobs to execute.
 
             # Azure OIDC Auth
             ARM_USE_OIDC: true # Azure: Force use of OIDC/Federated credentials, configured during bootstrap process.
-            ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }} # Azure: Tenant ID [Repo Secret]
+            ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure: Tenant ID [Repo Secret]
             ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure: Service Principal ID [Repo Secret]
-            ARM_SUBSCRIPTION_ID_IAC: ${{ secrets.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for all IaC Backends [Repo Secret].
+            ARM_SUBSCRIPTION_ID_IAC: ${{ vars.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for all IaC Backends [Repo Secret].
             ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }} # Azure: Subscription for target deployment [Env Variable].
 
             # Determine which steps should run (based on input and pull request triggers). ONLY manual apply, pull_request triggers plan only. 
@@ -62,12 +62,12 @@ jobs: # List jobs to execute.
             - name: Checkout Repository # Pull down the repo to local filesystem on workflow runner instance.
               uses: actions/checkout@v4
 
-            - name: Azure login with OIDC
-              uses: azure/login@v2
-              with:
-                tenant-id: ${{ secrets.ARM_TENANT_ID }}
-                client-id: ${{ secrets.ARM_CLIENT_ID }}
-                subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID_IAC }}
+            # - name: Azure login with OIDC
+            #   uses: azure/login@v2
+            #   with:
+            #     tenant-id: ${{ vars.ARM_TENANT_ID }}
+            #     client-id: ${{ secrets.ARM_CLIENT_ID }}
+            #     subscription-id: ${{ vars.ARM_SUBSCRIPTION_ID_IAC }}
 
             - name: Setup Terraform # Configure Terraform on the runner instance.
               uses: hashicorp/setup-terraform@v3
