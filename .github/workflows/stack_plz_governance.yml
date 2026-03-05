@@ -41,6 +41,7 @@ jobs: # List jobs to execute.
             TF_BACKEND_SA: ${{ vars.TF_BACKEND_SA }} # Backend: Storage Account [Repo Variable]
             TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }} # Backend: Blob Container [Env Variable]
             TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Backend: State file name [Env Variable]
+            TF_GLOBAL_OUTPUTS_NAME: ${{ vars.GLOBAL_OUTPUTS_NAME }} # Name of the global outputs resource.
             TF_VARS_DIR: "../../variables" # Location of variable files in relation to working directory.
             TF_VARS_FILE: "plz-governance.tfvars" # Variables file for the target stack.
 
@@ -86,9 +87,10 @@ jobs: # List jobs to execute.
               timeout-minutes: 5 # This step will fail if it runs longer than 'x' minutes.
               run: |
                   terraform plan -out=terraform.plan \
-                  -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
                   -var-file="$TF_VARS_DIR/global.tfvars" \
-                  -var-file="$TF_VARS_DIR/$TF_VARS_FILE"
+                  -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
+                  -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
+                  -var="global_outputs_name=$TF_GLOBAL_OUTPUTS_NAME"
 
             - name: "Terraform: Apply"
               if: env.RUN_APPLY == 'true'
@@ -101,6 +103,7 @@ jobs: # List jobs to execute.
               timeout-minutes: 30 # Fail if it runs longer than 'x' minutes.
               run: |
                   terraform destroy --auto-approve \
-                  -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
                   -var-file="$TF_VARS_DIR/global.tfvars" \
-                  -var-file="$TF_VARS_DIR/$TF_VARS_FILE"
+                  -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
+                  -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
+                  -var="global_outputs_name=$TF_GLOBAL_OUTPUTS_NAME"

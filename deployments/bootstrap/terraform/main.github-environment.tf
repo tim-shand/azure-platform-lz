@@ -50,7 +50,7 @@ resource "github_actions_variable" "iac_sa" {
 # GitHub: Repo [VARIABLE] - Global Output: App Config (Name)
 resource "github_actions_variable" "iac_cfg" {
   repository    = data.github_repository.repo.name
-  variable_name = "GLOBAL_OUTPUT_NAME"
+  variable_name = "GLOBAL_OUTPUTS_NAME"
   value         = azurerm_app_configuration.iac.name
 }
 
