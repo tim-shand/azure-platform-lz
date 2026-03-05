@@ -36,5 +36,3 @@ resource "azuread_group" "grp_usr" {
   security_enabled        = true # At least one of security_enabled or mail_enabled must be specified.  
   prevent_duplicate_names = true # Return an error if an existing group is found with the same name. 
 }
-
-# ------------------------------------------------------------- #
