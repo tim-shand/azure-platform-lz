@@ -1,23 +1,23 @@
 # Azure: Platform Landing Zone (Governance Stack)
 
-This stack deploys the Governance layer for a custom, light-weight, CAF-aligned platform landing zone in Azure. 
+This stack deploys the Governance layer for a custom, light-weight, CAF-aligned platform landing zone in Azure.
 
 ## 🌟 Features
 
 ### Management Groups
 
-- Create top-level (core) Management Group representing the organisation. 
-- Deploy semi-opinionated Management Group structure defined within the `plz-governance.tfvars` file, allowing for expansion. 
-- Management Groups are assigned to a "Level", determining the layer of depth at which each Management Group sits (parent/child). 
-- Levels 2 and below are assigned to a parent Management Groups from Level 1 based on provided Management Group name. 
-- Automated subscription assignments using name value identifiers. 
+- Create top-level (core) Management Group representing the organisation.
+- Deploy semi-opinionated Management Group structure defined within the `plz-governance.tfvars` file, allowing for expansion.
+- Management Groups are assigned to a "Level", determining the layer of depth at which each Management Group sits (parent/child).
+- Levels 2 and below are assigned to a parent Management Groups from Level 1 based on provided Management Group name.
+- Automated subscription assignments using name value identifiers.
 
 ### Policy Definitions and Initiatives
 
-- Policy Definitions are defined in JSON files within the `policy_definitions` directory. 
+- Policy Definitions are defined in JSON files within the `policy_definitions` directory.
 - Policy Initiatives are defined in JSON files within the `policy_initiatives` directory.  
-- Policy Initiative Assignments are mapped to Management Groups using the `policy_initiatives` field in the Management Group structure. 
-- Built-in Policy Initiatives are resolved by ID and assigned to target Management Groups in the `policy_initiatives_builtin` variable. 
+- Policy Initiative Assignments are mapped to Management Groups using the `policy_initiatives` field in the Management Group structure.
+- Built-in Policy Initiatives are resolved by ID and assigned to target Management Groups in the `policy_initiatives_builtin` variable.
 
 ## 📁 Example Structure
 
@@ -47,10 +47,10 @@ management_groups_level1 = {
 
 ## ▶️ Usage
 
-1. Review and populate variables defined in the `./variables/plz-governance.tfvars` file. 
-2. Update Management Group naming if required. **DO NOT** edit the key structure as this is opinionated and will break deployments. 
-3. Ensure that desired parameters for policy assignments are configured in `policy_param_*` variables. 
-4. Run the stack workflow from within GitHub Actions. 
+1. Review and populate variables defined in the `./variables/plz-governance.tfvars` file.
+2. Update Management Group naming if required. **DO NOT** edit the key structure as this is opinionated and will break deployments.
+3. Ensure that desired parameters for policy assignments are configured in `policy_param_*` variables.
+4. Run the stack workflow from within GitHub Actions.
 
 ---
 
@@ -58,7 +58,7 @@ management_groups_level1 = {
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_azuread"></a> [azuread](#provider\_azuread) | 3.7.0 |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.57.0 |
 | <a name="provider_azurerm.iac"></a> [azurerm.iac](#provider\_azurerm.iac) | 4.57.0 |
@@ -72,7 +72,7 @@ management_groups_level1 = {
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [azurerm_app_configuration_key.mg_core_id](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_configuration_key) | resource |
 | [azurerm_app_configuration_key.mg_core_name](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_configuration_key) | resource |
 | [azurerm_management_group.core](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group) | resource |
@@ -85,7 +85,7 @@ management_groups_level1 = {
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | -------- |
 | <a name="input_global"></a> [global](#input\_global) | Map of global variables used across multiple deployment stacks. | `map(map(string))` | `{}` | no |
 | <a name="input_global_outputs"></a> [global\_outputs](#input\_global\_outputs) | Map of Shared Service key names, used to get IDs and names in data calls. | `map(string)` | n/a | yes |
 | <a name="input_global_outputs_name"></a> [global\_outputs\_name](#input\_global\_outputs\_name) | Name of global outputs shared service App Configuration created during bootstrap. | `string` | n/a | yes |
