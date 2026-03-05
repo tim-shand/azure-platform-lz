@@ -1,7 +1,7 @@
 # CONNECTIVITY: General
 # ------------------------------------------------------------- #
 
-output "hub_subnets_enabled" {
-  description = "List of enabled subnets in hub VNet."
-  value       = local.hub_subnets_enabled
+output "hub_services_enabled" {
+  description = "Map of enabled hub services."
+  value       = local.hub_services_enabled
 }
