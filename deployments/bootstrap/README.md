@@ -126,7 +126,7 @@ platform_stacks = {
 - **Blob Containers:**
   - Created per deployment stack (plz-governance, plz-management, etc) under each parent category Storage Account to hold the remote Terraform state files.
 
-#### Azure App Config
+#### Azure App Config (Global Outputs)
 
 - Used to store key/value pairs for shared services resource IDs and names (Hub VNet, Log Analytics Workspace etc).
 - This allows the Service Principal to resolve these resources by ID/name during data calls in other stacks running in **separate workflows**.
@@ -209,14 +209,14 @@ az account set --subscription mysubscription
 
 ```shell
 # Deploy Bootstrap resources (will perform update on subsequent runs).
-powershell -file ./bootstrap/bootstrap-azure-github.ps1
+powershell -file .deployments/bootstrap/bootstrap-azure-github.ps1
 ```
 
 5. \[OPTIONAL\]: Remove all Bootstrap resources (if required).
 
 ```shell
 # Remove Bootstrap resources.
-powershell -file ./bootstrap/bootstrap-azure-github.ps1 -Remove
+powershell -file .deployments/bootstrap/bootstrap-azure-github.ps1 -Remove
 ```
 
 ---
