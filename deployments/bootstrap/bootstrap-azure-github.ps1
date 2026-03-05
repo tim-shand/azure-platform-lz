@@ -191,7 +191,7 @@ if (!($Remove)) {
     Write-Host ""
     Write-Host -ForegroundColor $HD1 "[*] Initializing Terraform configuration..."
     Try {
-        terraform -chdir="$dir_tf" init -upgrade > $null 2>&1
+        terraform -chdir="$dir_tf" init -upgrade
         if ($LASTEXITCODE -eq 0) {
             Write-Host -ForegroundColor $PASS "[+] PASS: Terraform is initialized."
         }

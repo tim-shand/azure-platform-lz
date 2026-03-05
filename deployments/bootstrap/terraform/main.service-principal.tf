@@ -26,9 +26,13 @@ resource "azuread_application" "iac_sp" {
       id   = "1bfefb4e-e0b5-418b-a88f-73c46d2cc8e9" # Application.ReadWrite.All
       type = "Role"                                 # Required to allow SP to modify itself and other apps. 
     }
+    # resource_access {
+    #   id   = "7ab1d382-f21e-4acd-a863-ba3e13f7da61" # Directory.Read.All
+    #   type = "Role"                                 # Required to allow SP to read other applications and groups. 
+    # } 19dbc75e-c2e2-444c-a770-ec69d8559fc7
     resource_access {
-      id   = "7ab1d382-f21e-4acd-a863-ba3e13f7da61" # Directory.Read.All
-      type = "Role"                                 # Required to allow SP to read other applications and groups. 
+      id   = "19dbc75e-c2e2-444c-a770-ec69d8559fc7" # Directory.ReadWrite.All
+      type = "Role"                                 # Required to allow SP to create diagnostic settings for tenant. 
     }
     resource_access {
       id   = "62a82d76-70ea-41e2-9197-370581804d09" # Group.ReadWrite.All
