@@ -91,7 +91,7 @@ jobs: # List jobs to execute.
                   -var-file="$TF_VARS_DIR/global.tfvars" \
                   -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
                   -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-                  -var="global_outputs_name=$TF_GLOBAL_OUTPUTS_NAME"
+                  -var="global_outputs_name=$TF_GLOBAL_OUTPUTS_NAME" \
                   -var="global_outputs_rg=$TF_BACKEND_RG"
 
             - name: "Terraform: Apply"
@@ -108,5 +108,5 @@ jobs: # List jobs to execute.
                   -var-file="$TF_VARS_DIR/global.tfvars" \
                   -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
                   -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-                  -var="global_outputs_name=$TF_GLOBAL_OUTPUTS_NAME"
+                  -var="global_outputs_name=$TF_GLOBAL_OUTPUTS_NAME" \
                   -var="global_outputs_rg=$TF_BACKEND_RG"
