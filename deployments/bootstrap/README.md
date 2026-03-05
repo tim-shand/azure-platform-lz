@@ -153,7 +153,7 @@ Resources are grouped by categories and their child stacks.
 - **Categories:**
   - Bootstrap
   - Platform
-  - Workloads
+  - Workload
 - **Stacks:**
   - Platform --> Governance (plz-governance)
   - Platform --> Management (plz-management)
@@ -161,12 +161,12 @@ Resources are grouped by categories and their child stacks.
   - Platform --> Identity (plz-identity)
 
 ```text
-org-bootstrap-iac-rg
-└── orgbootstrapiacsa12345
+org-iac-bootstrap-rg
+└── orgiacbootstrapsa12345
     └── tfstate-iac-bootstrap
 
 org-platform-iac-rg
-└── orgplatformiacsa12345
+└── orgiacplatformsa12345
     ├── tfstate-plz-governance
     ├── tfstate-plz-management
     ├── tfstate-plz-connectivity
@@ -175,11 +175,11 @@ org-platform-iac-rg
 
 | Object                  | Created Per  | Example Name             | Purpose                                                      |
 | ----------------------- | ------------ | ------------------------ | ------------------------------------------------------------ |
-| Resource Group          | **Category** | org-bootstrap-iac-rg     | Resource group containing bootstrap and global resources.    |
-| Resource Group          | **Category** | org-platform-iac-rg      | Resource group containing components for platform LZ.        |
-| Storage Account         | **Category** | orgbootstrapiacsa12345   | Holds blob container for bootstrap and global resources.     |
-| Storage Account         | **Category** | orgplatformiacsa12345    | Holds blob containers per platform deployment stack.         |
-| App Configuration       | **Category** | org-platform-iac-cfg     | Stores key/value pairs of shared service resources names/IDs.|
+| Resource Group          | **Category** | org-iac-bootstrap-rg     | Resource group containing bootstrap and global resources.    |
+| Resource Group          | **Category** | org-iac-platform-rg      | Resource group containing components for platform LZ.        |
+| Storage Account         | **Category** | orgiacbootstrapsa12345   | Holds blob container for bootstrap and global resources.     |
+| Storage Account         | **Category** | orgiacplatformsa12345    | Holds blob containers per platform deployment stack.         |
+| App Configuration       | **Category** | org-iac-platform-cfg     | Stores key/value pairs of shared service resources names/IDs.|
 | Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow.    |
 | Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow.    |
 | Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow.    |
