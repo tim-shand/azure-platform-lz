@@ -2,9 +2,9 @@
 
 This repository contains a customised Azure platform landing zone (PLZ), providing an environment _based_ on enterprise-scale architecture and CAF guidelines.  
 
-Designed to be light-weight and cost efficient, utilizing free or low-cost options where possible, while maintaining a minimalistic footprint. 
+Designed to be light-weight and cost efficient, utilizing free or low-cost options where possible, while maintaining a minimalistic footprint.
 
-Deployed and managed using infrastructure as Code (IaC), this platform landing zone is deployed in stages (stacks), providing governance through Azure Policy, configuring shared services for monitoring and observability, and centralized connectivty through a hub-spoke network architecture. 
+Deployed and managed using infrastructure as Code (IaC), this platform landing zone is deployed in stages (stacks), providing governance through Azure Policy, configuring shared services for monitoring and observability, and centralized connectivty through a hub-spoke network architecture.
 
 ---
 
@@ -18,71 +18,71 @@ TBC
 
 ### 👢 [Bootstrapping](./bootstrap)
 
-- Provides the initial setup process to configure Azure and GitHub for automation and IaC. 
-- Powershell script to perform initial checks and execute Terraform, triggering post-deployment state migration to Azure backend. 
+- Provides the initial setup process to configure Azure and GitHub for automation and IaC.
+- Powershell script to perform initial checks and execute Terraform, triggering post-deployment state migration to Azure backend.
 - Creates Entra ID Service Principal:
   - Secured with Federated Credentials (OIDC) for GitHub repository and environments. 
-  - Details added as repository variables and referenced by workflows. 
+  - Details added as repository variables and referenced by workflows.
 - Deploys backend resources **per stack** into a dedicated IaC subscription:
-  - Maintaining isolation and independence per stack. 
-  - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads). 
-  - One state file per stack (governance, connectivity, management, identity). 
-  - Azure App Configuration used to store **shared service global outputs** (IDs and names) to be accessed by other stacks. 
+  - Maintaining isolation and independence per stack.
+  - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads).
+  - One state file per stack (governance, connectivity, management, identity).
+  - Azure App Configuration used to store **shared service global outputs** (IDs and names) to be accessed by other stacks.
 
 ### 👤 [Identity](./deployments/plz-identity)
 
-- Create base admin and user groups within Entra ID, to be used with future RBAC assignments. 
-- Owners are resolved dynamically using employee IDs. 
-- Group names follow enterprise prefix conventions. 
-- Groups are security-enabled and duplicate names are prevented. 
+- Create base admin and user groups within Entra ID, to be used with future RBAC assignments.
+- Owners are resolved dynamically using employee IDs.
+- Group names follow enterprise prefix conventions.
+- Groups are security-enabled and duplicate names are prevented.
 
 ### 📑 [Management](./deployments/plz-management)
 
-- Centralized Log Analytics workspace for monitoring and observability. 
-- Diagnostic settings applied to resources via Azure Policy. 
-- Microsoft Defender for Cloud (Foundational CSPM) providing base level security and recommendations. 
+- Centralized Log Analytics workspace for monitoring and observability.
+- Diagnostic settings applied to resources via Azure Policy.
+- Microsoft Defender for Cloud (Foundational CSPM) providing base level security and recommendations.
 
 ### 🏢 [Governance](./deployments/plz-governance)
 
-- Management Groups providing Azure Policy assignment hierarchy. 
-- Automated mapping of subscriptions to target management groups using a subscription identifier value, keeping IDs out of code base. 
-- Custom policy definitions and initiatives, defined in JSON and generated using Terraform. 
+- Management Groups providing Azure Policy assignment hierarchy.
+- Automated mapping of subscriptions to target management groups using a subscription identifier value, keeping IDs out of code base.
+- Custom policy definitions and initiatives, defined in JSON and generated using Terraform.
 
 ### 🌐 [Connectivity](./deployments/plz-connectivity)
 
-- Hub-Spoke architecture, providing centralized network management and flow control. 
-- Workload VNets to be peered with the hub VNet as spokes, utilizing User-Defined-Routes (UDR) to direct traffic via Azure Firewall. 
+- Hub-Spoke architecture, providing centralized network management and flow control.
+- Workload VNets to be peered with the hub VNet as spokes, utilizing User-Defined-Routes (UDR) to direct traffic via Azure Firewall.
 
 ---
 
 ## 🛠️ Tooling & Platforms
 
-- **Terraform:** 
-  - Cloud-agnostic Infra-as-Code tool for deploying and managing resources in Azure and GitHub. 
-  - Flexible with a wide range of publicly available modules and providers. 
-- **Powershell:** 
-  - Automating the bootstrapping tasks, and misc utility scripts. 
+- **Terraform:**
+  - Cloud-agnostic Infra-as-Code tool for deploying and managing resources in Azure and GitHub.
+  - Flexible with a wide range of publicly available modules and providers.
+- **Powershell:**
+  - Automating the bootstrapping tasks, and misc utility scripts.
   - High readability with extensive user base, cross platform.  
-- **GitHub + Actions:** 
-  - Providing code repository (VCS) and CI/CD workflows for automating deployment of stacks. 
-  - Combination of repository and automation in a single platform. 
+- **GitHub + Actions:**
+  - Providing code repository (VCS) and CI/CD workflows for automating deployment of stacks.
+  - Combination of repository and automation in a single platform.
 
 ---
 
 ## ▶️ Deployment Process
 
-1. **Bootstrap:** Execute [bootstrap script](./bootstrap) to begin deployment process. 
-2. **Identity:** Deploy core Entra ID groups and application service principals (if required). 
-3. **Management:** Create monitoring/observability resources, to be referenced by policies in Governance stack. 
-4. **Governance:** Assign policies at defined management group and subscription structure. 
-5. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized flow control. 
+1. **Bootstrap:** Execute [bootstrap script](./bootstrap) to begin deployment process.
+2. **Identity:** Deploy core Entra ID groups and application service principals (if required).
+3. **Governance:** Assign base policies at defined management group and subscription structure.
+4. **Management:** Create monitoring and observability resources, policy assignments using initiatives from Governance stack.
+5. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized flow control.
 
 ---
 
 ## 📕 Naming Conventions
 
 This project uses a semi-opinionated naming format for resources to ensure consistency, readability, and CAF alignment.  
-Resource names are provided using a custom [naming module](./modules/global-resource-naming/) that produces multiple naming outputs. 
+Resource names are provided using a custom [naming module](./modules/global-resource-naming/) that produces multiple naming outputs.
 
 **Template:** `<prefix>-<workload>-<stack_or_env>-<category>-<resource_type>-<instance>`  
 
@@ -115,7 +115,7 @@ Resource names are provided using a custom [naming module](./modules/global-reso
 | SQL Database | `abc-mywebapp-prd-sql-01` | Environment identifies lifecycle |
 | API Function | `abc-mywebapp-prd-api-01` | Category omitted, optional       |
 
-### Abbreviation Reference: Categories 
+### Abbreviation Reference: Categories
 
 | Abbreviation | Meaning                   |
 | ------------ | ------------------------- |
@@ -125,7 +125,7 @@ Resource names are provided using a custom [naming module](./modules/global-reso
 | fwl          | Firewall / Azure Firewall |
 | mgt          | Management subnet         |
 
-### Abbreviation Reference: Resource Types 
+### Abbreviation Reference: Resource Types
 
 | Abbreviation | Meaning               |
 | ------------ | --------------------- |
@@ -138,19 +138,9 @@ Resource names are provided using a custom [naming module](./modules/global-reso
 
 ---
 
-## ➕ To Do / Future Updates
-
-- [ ] Docs: Platform architecture diagram
-- [ ] Stack: Governance
-- [ ] Stack: Management
-- [ ] Stack: Connectivity
-- [ ] Stack: Identity
-
----
-
 ## 📚 Reference Materials
 
-A list of references, material and content that contributed to, or influnenced this project. 
+A list of references, material and content that contributed to, or influnenced this project.
 
 - [Azure Landing Zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
 - [Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/overview)
