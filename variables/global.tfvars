@@ -1,4 +1,5 @@
 # Global: Map of global variables used across multiple deployment stacks. 
+terraform_version = "1.14.0" # Version of Terraform to use in workflows. 
 global = {
   naming = {                 # Map of name related variables (merge with "stack.naming"). 
     org_prefix       = "tjs" # Organisation abbreviated name. Example: "abc" (Azure Balloon Company).

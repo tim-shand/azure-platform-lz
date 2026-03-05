@@ -191,8 +191,7 @@ if (!($Remove)) {
     Write-Host ""
     Write-Host -ForegroundColor $HD1 "[*] Initializing Terraform configuration..."
     Try {
-        #terraform -chdir="$dir_tf" init -upgrade > $null 2>&1
-        terraform -chdir="$dir_tf" init -upgrade
+        terraform -chdir="$dir_tf" init -upgrade > $null 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Host -ForegroundColor $PASS "[+] PASS: Terraform is initialized."
         }
@@ -205,8 +204,6 @@ if (!($Remove)) {
         Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform initialization failed. Please check configuration and try again. $_"
         exit 1
     }
-
-    # Skip plan and apply is removal is triggeed. 
 
     # Terraform: Plan
     Write-Host ""
@@ -297,7 +294,6 @@ if (Test-Path -Path "$dir_tf/backend.tf") {
             Rename-Item -Path "$dir_tf/backend.tf" -NewName "$dir_tf/backend.tf.bak"
 
             # Reconfigure Terraform to use local state file.
-            #terraform -chdir="$dir_tf" init -input=false -reconfigure #> $null 2>&1
             terraform -chdir="$dir_tf" init -migrate-state -input=false > $null 2>&1
             if ($LASTEXITCODE -eq 0) {
                 Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state successfully copied locally."
