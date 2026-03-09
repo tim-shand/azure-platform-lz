@@ -23,7 +23,10 @@ resource "azurerm_app_configuration" "iac" {
   public_network_access    = "Enabled"
   purge_protection_enabled = false
   tags                     = local.tags_merged
-  depends_on               = [azuread_application.iac_sp] # Requires RBAC to be assigned first. 
+  depends_on = [
+    azuread_application.iac_sp,         # Requires SP to be created first.
+    azurerm_role_assignment.rbac_cu_cfg # Requires RBAC to be created and assigned first.
+  ]
 }
 
 # Global Output: Service Principal AppID
