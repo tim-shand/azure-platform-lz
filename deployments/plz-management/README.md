@@ -63,6 +63,11 @@ Dynamic action groups are created based on TFVARS configuration.
 2. Deploy the stack using the related workflow in GitHub Actions.
 3. Validate outputs match desired state.
 
+## Notes
+
+The Storage Account for log archiving created in the Management stack is configured with `shared_access_key_enabled = true`.  
+This allows key-based authentication to the Storage Account due to a limitation of AzureRM API requiring key-based access for data plane actions.  
+
 ---
 
 <!-- BEGIN_TF_DOCS -->

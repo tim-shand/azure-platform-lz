@@ -26,10 +26,10 @@ resource "azurerm_storage_account" "mgt_logs" {
   account_kind                    = "StorageV2" # BlobStorage, BlockBlobStorage, FileStorage, StorageV2
   https_traffic_only_enabled      = true        # Enforce secure file transfer. 
   allow_nested_items_to_be_public = false       # Prevent anonymous/public access to Storage Accounts. 
-  shared_access_key_enabled       = true
+  shared_access_key_enabled       = true        # Limitation of AzureRM API requires key based access for data plane actions. 
   lifecycle {
     precondition {
-      condition     = length(azurerm_resource_group.mgt_logs.name) <= 24
+      condition     = length(azurerm_storage_account.mgt_logs.name) <= 24
       error_message = "Storage Account names must be equal to, or less than 24 characters total."
     }
   }
