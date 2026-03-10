@@ -16,9 +16,6 @@ data "azurerm_app_configuration" "iac" {
 # MANAGEMENT: General
 # ------------------------------------------------------------- #
 
-# Subscriptions: Collect all available subscriptions, for MDfC security logging.  
-data "azurerm_subscriptions" "all" {}
-
 # Management Group: Core MG ID - used for Managed Identity RBAC scope. 
 data "azurerm_app_configuration_key" "mg_core_id" {
   configuration_store_id = data.azurerm_app_configuration.iac.id
