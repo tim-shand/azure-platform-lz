@@ -29,7 +29,7 @@ resource "azurerm_storage_account" "mgt_logs" {
   shared_access_key_enabled       = true        # Limitation of AzureRM API requires key based access for data plane actions. 
   lifecycle {
     precondition {
-      condition     = length(azurerm_storage_account.mgt_logs.name) <= 24
+      condition     = length(module.naming_mgt_logs.storage_account_name) <= 24
       error_message = "Storage Account names must be equal to, or less than 24 characters total."
     }
   }
