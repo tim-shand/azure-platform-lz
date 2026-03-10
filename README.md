@@ -53,11 +53,11 @@ TBC
 - GitHub account with a existing repository for the Azure platform landing zone project.
   - **Roles:** Read/Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.
 - Existing Azure tenant with required roles assigned to a _dedicated_ IaC subscription (can also be used with a single platform subscription).
-- **Built-in Roles:** Bootstrap process requires:
-  - `Global Administrator`: Required to approve MSGraph application API permissions assigned to the Service Principal.
-  - `Contributor`: Required to deploy initial resources.
-  - `User Access Administrator`: Required to assign RBAC roles.
-  - `App Configuration Data Owner`: Required to access data plane (read/write) for shared services data.
+  - **Built-in Roles:** Bootstrap process requires:
+    - `Global Administrator`: Required to approve MSGraph application API permissions assigned to the Service Principal.
+    - `Contributor`: Required to deploy initial resources.
+    - `User Access Administrator`: Required to assign RBAC roles.
+    - `App Configuration Data Owner`: Required to access data plane (read/write) for shared services data.
 - Applications installed locally (during bootstrap process):
   - **[Terraform](https://developer.hashicorp.com/terraform/install):**
     - Cloud-agnostic Infra-as-Code tool for deploying and managing resources in Azure and GitHub.
@@ -73,11 +73,11 @@ TBC
 
 ---
 
-## 🛠️ [Bootstrapping](./bootstrap)
+## 🛠️ [Bootstrapping](./deployments/bootstrap)
 
 Automates the **initial bootstrapping** process, preparing both Azure and GitHub for platform landing zone deployments.
 
-- Locally executed Powershell script performs the initial setup process, configuring Azure and GitHub for automation.
+- Locally executed [Powershell script](./deployments/bootstrap) performs the initial setup process, configuring Azure and GitHub for automation.
   - Performs pre-flight checks, validates authentication and intentions.
 - Executes pre-defined Terraform module to deploy base resources (core management group, service principal, RBAC assignments).
 - Creates Entra ID Service Principal:
