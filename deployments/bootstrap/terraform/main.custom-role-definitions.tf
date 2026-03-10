@@ -15,6 +15,9 @@ resource "azurerm_role_definition" "custom_role_iac_deploy" {
       # General resource control
       "Microsoft.Resources/*",
       "Microsoft.Resources/deployments/*",
+      # App Configuration
+      "Microsoft.AppConfiguration/*",
+      "Microsoft.AppConfiguration/configurationStores/*",
       # Resource Groups
       "Microsoft.Resources/subscriptions/resourceGroups/*",
       # Management Groups
@@ -29,7 +32,9 @@ resource "azurerm_role_definition" "custom_role_iac_deploy" {
       # Locks
       "Microsoft.Authorization/locks/*",
       # Monitoring
-      "Microsoft.Insights/*"
+      "Microsoft.Insights/*",
+      # Managed Identities
+      "Microsoft.ManagedIdentity/*"
     ]
     not_actions = [
       "Microsoft.Authorization/elevateAccess/Action",
