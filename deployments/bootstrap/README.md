@@ -23,7 +23,7 @@ _See the [Resources](#-resources) section for additional details._
 
 - **Azure:**
   - Existing Azure account with required roles assigned to a _dedicated_ IaC subscription.
-  - **Roles:** `Contributor`, `User Access Administrator`, `[optional] Global Admin`.
+  - **Roles:** `Contributor`, `User Access Administrator`, `App Configuration Data Owner`.
 - **GitHub:**
   - GitHub account with a existing repository for the Azure platform landing zone project.
   - **Roles:** Read/Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.

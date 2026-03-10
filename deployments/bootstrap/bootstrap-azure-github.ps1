@@ -211,7 +211,7 @@ if (!($Remove)) {
     Try {
         terraform -chdir="$dir_tf" plan --out=bootstrap.plan `
             -var-file="$dir_ps_vars/$($var_files[0])" -var-file="$dir_ps_vars/$($var_files[1])" `
-            -var="subscription_id=$($azSession.id)" > $null 2>&1
+            -var="subscription_id=$($azSession.id)" #> $null 2>&1
         if ($LASTEXITCODE -eq 0) {
             if (Test-Path -Path "$dir_tf/bootstrap.plan") {
                 Write-Host -ForegroundColor $PASS "[+] PASS: Terraform plan created."

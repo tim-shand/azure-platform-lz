@@ -9,16 +9,27 @@
 resource "azurerm_role_definition" "custom_role_iac_deploy" {
   name        = "Custom-IaC-Deploy"
   description = "Custom role for executing automation deployments using IaC service principal."
-  scope       = azurerm_management_group.core.id
+  scope       = azurerm_management_group.core.id # Assign at core management group level. 
   permissions {
     actions = [
-      # General Contributor
-      "*",
-      "Microsoft.Insights/alertRules/*",
+      # General resource control
+      "Microsoft.Resources/*",
       "Microsoft.Resources/deployments/*",
+      # Resource Groups
       "Microsoft.Resources/subscriptions/resourceGroups/*",
-      # User Access Administrator
-      "Microsoft.Authorization/*"
+      # Management Groups
+      "Microsoft.Management/managementGroups/*",
+      # Policy
+      "Microsoft.Authorization/policyAssignments/*",
+      "Microsoft.Authorization/policyDefinitions/*",
+      "Microsoft.Authorization/policySetDefinitions/*",
+      # RBAC
+      "Microsoft.Authorization/roleAssignments/*",
+      "Microsoft.Authorization/roleDefinitions/read",
+      # Locks
+      "Microsoft.Authorization/locks/*",
+      # Monitoring
+      "Microsoft.Insights/*"
     ]
     not_actions = [
       "Microsoft.Authorization/elevateAccess/Action",
@@ -28,10 +39,7 @@ resource "azurerm_role_definition" "custom_role_iac_deploy" {
     ]
     data_actions = [
       # App Configuration
-      "Microsoft.AppConfiguration/configurationStores/*/read",
-      "Microsoft.AppConfiguration/configurationStores/*/write",
-      "Microsoft.AppConfiguration/configurationStores/*/delete",
-      "Microsoft.AppConfiguration/configurationStores/*/action",
+      "Microsoft.AppConfiguration/configurationStores/*",
       # Key Vault
       "Microsoft.KeyVault/vaults/*",
       "Microsoft.KeyVault/vaults/secrets/*",
