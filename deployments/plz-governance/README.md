@@ -2,7 +2,7 @@
 
 This stack deploys the Governance layer for a custom, light-weight, CAF-aligned platform landing zone in Azure.
 
-## 🌟 Features
+## ✨ Features
 
 ### Management Groups
 
@@ -47,8 +47,11 @@ management_groups_level1 = {
 
 ## ▶️ Usage
 
+> [!WARNING]
+> Changing the key structure will break deployments as this is opinionated format.
+
 1. Review and populate variables defined in the `./variables/plz-governance.tfvars` file.
-2. Update Management Group naming if required. **DO NOT** edit the key structure as this is opinionated and will break deployments.
+2. Update Management Group naming if required.
 3. Ensure that desired parameters for policy assignments are configured in `policy_param_*` variables.
 4. Run the stack workflow from within GitHub Actions.
 

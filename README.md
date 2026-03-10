@@ -1,10 +1,44 @@
 # Azure Platform Landing Zone
 
-This repository contains a customised Azure platform landing zone (PLZ), providing an environment _based_ on enterprise-scale architecture and CAF guidelines.  
+This repo contains a customised Azure platform landing zone (PLZ), providing an environment _based_ on enterprise-scale architecture and CAF guidelines.  
 
 Designed to be light-weight and cost efficient, utilizing free or low-cost options where possible, while maintaining a minimalistic footprint.
 
 Deployed and managed using infrastructure as Code (IaC), this platform landing zone is deployed in stages (stacks), providing governance through Azure Policy, configuring shared services for monitoring and observability, and centralized connectivty through a hub-spoke network architecture.
+
+**Use Case:** Personal tenant or small organization, light production or development/training purposes.
+
+---
+
+## 🚀 Deployment Stacks
+
+### 👤 [Identity](./deployments/plz-identity)
+
+- Create base admin and user groups within Entra ID, to be used with future RBAC assignments.
+- Owners are resolved dynamically using employee IDs.
+- Group names follow enterprise-tyle standard prefix conventions.
+- Groups are security-enabled and duplicate names are prevented.
+
+### 🏢 [Governance](./deployments/plz-governance)
+
+- Multi-level Management Groups providing Azure Policy assignment and subscription hierarchy.
+- Automated mapping of subscriptions to target management groups using a subscription identifier value.
+- Custom policy definitions and initiatives, defined in JSON and deployed using Terraform.
+
+### 📑 [Management](./deployments/plz-management)
+
+- Centralized Log Analytics workspace for monitoring and observability.
+- Diagnostic settings applied to resources via Azure Policy assignment.
+- Activity and Health alerting, with category-based action groups (Platform, Security, Support).
+- Severity-based notification routing, targeting required support team.
+
+### 🌐 [Connectivity](./deployments/plz-connectivity)
+
+- Implements a hub-and-spoke network architecture for centralized network management and secure traffic flow.
+- Spoke VNets connect to the hub VNet using VNet peering, with optional User-Defined Routes (UDRs) directing traffic through Azure Firewall.
+- Azure Firewall provides optional centralized network security and traffic inspection for hub and spoke workloads.
+- Azure Bastion enables secure RDP/SSH access to VMs in peered VNets without exposing public endpoints or requiring public IPs.
+- Network Security Groups (NSGs) enforce fine-grained, rule-based traffic controls at the subnet level.
 
 ---
 
@@ -14,64 +48,59 @@ TBC
 
 ---
 
-## 🚀 Deployments / Stacks
+## 📦 Requirements
 
-### 👢 [Bootstrapping](./bootstrap)
+- GitHub account with a existing repository for the Azure platform landing zone project.
+  - **Roles:** Read/Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.
+- Existing Azure tenant with required roles assigned to a _dedicated_ IaC subscription (can also be used with a single platform subscription).
+- **Built-in Roles:** Bootstrap process requires:
+  - `Global Administrator`: Required to approve MSGraph application API permissions assigned to the Service Principal.
+  - `Contributor`: Required to deploy initial resources.
+  - `User Access Administrator`: Required to assign RBAC roles.
+  - `App Configuration Data Owner`: Required to access data plane (read/write) for shared services data.
+- Applications installed locally (during bootstrap process):
+  - **[Terraform](https://developer.hashicorp.com/terraform/install):**
+    - Cloud-agnostic Infra-as-Code tool for deploying and managing resources in Azure and GitHub.
+    - Flexible with a wide range of publicly available modules and providers.
+  - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):**
+    - CLI tool required by Terraform provider (`AzureRM`) to interact with Azure API.
+  - **[GitHub CLI](https://cli.github.com/):**
+    - CLI tool used to interact with GitHub, connected and authenticated to the target GitHub organisation.
+    - Providing code repository and CI/CD workflows (GitHub Actions) for automating deployment of stacks.
+  - **[PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/install-powershell):**
+    - Used to execute the bootstrap automation script locally.
+    - High readability with extensive user base, cross platform.
 
-- Provides the initial setup process to configure Azure and GitHub for automation and IaC.
-- Powershell script to perform initial checks and execute Terraform, triggering post-deployment state migration to Azure backend.
+---
+
+## 🛠️ [Bootstrapping](./bootstrap)
+
+Automates the **initial bootstrapping** process, preparing both Azure and GitHub for platform landing zone deployments.
+
+- Locally executed Powershell script performs the initial setup process, configuring Azure and GitHub for automation.
+  - Performs pre-flight checks, validates authentication and intentions.
+- Executes pre-defined Terraform module to deploy base resources (core management group, service principal, RBAC assignments).
 - Creates Entra ID Service Principal:
-  - Secured with Federated Credentials (OIDC) for GitHub repository and environments. 
+  - Secured with Federated Credentials (OIDC) for GitHub repository and environments.
   - Details added as repository variables and referenced by workflows.
+  - Custom RBAC role assigned at core management group level.
 - Deploys backend resources **per stack** into a dedicated IaC subscription:
   - Maintaining isolation and independence per stack.
   - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads).
   - One state file per stack (governance, connectivity, management, identity).
-  - Azure App Configuration used to store **shared service global outputs** (IDs and names) to be accessed by other stacks.
-
-### 👤 [Identity](./deployments/plz-identity)
-
-- Create base admin and user groups within Entra ID, to be used with future RBAC assignments.
-- Owners are resolved dynamically using employee IDs.
-- Group names follow enterprise prefix conventions.
-- Groups are security-enabled and duplicate names are prevented.
-
-### 📑 [Management](./deployments/plz-management)
-
-- Centralized Log Analytics workspace for monitoring and observability.
-- Diagnostic settings applied to resources via Azure Policy.
-- Microsoft Defender for Cloud (Foundational CSPM) providing base level security and recommendations.
-
-### 🏢 [Governance](./deployments/plz-governance)
-
-- Management Groups providing Azure Policy assignment hierarchy.
-- Automated mapping of subscriptions to target management groups using a subscription identifier value, keeping IDs out of code base.
-- Custom policy definitions and initiatives, defined in JSON and generated using Terraform.
-
-### 🌐 [Connectivity](./deployments/plz-connectivity)
-
-- Hub-Spoke architecture, providing centralized network management and flow control.
-- Workload VNets to be peered with the hub VNet as spokes, utilizing User-Defined-Routes (UDR) to direct traffic via Azure Firewall.
+  - Azure App Configuration used to store **shared service/global outputs** to be accessed by other stacks.
+- Adds stack environments, variables and secrets into the provided GitHub repository.
+- Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 
 ---
 
-## 🛠️ Tooling & Platforms
+## ▶️ Deployment
 
-- **Terraform:**
-  - Cloud-agnostic Infra-as-Code tool for deploying and managing resources in Azure and GitHub.
-  - Flexible with a wide range of publicly available modules and providers.
-- **Powershell:**
-  - Automating the bootstrapping tasks, and misc utility scripts.
-  - High readability with extensive user base, cross platform.  
-- **GitHub + Actions:**
-  - Providing code repository (VCS) and CI/CD workflows for automating deployment of stacks.
-  - Combination of repository and automation in a single platform.
+Stacks are deployed using GitHub Actions workflows located in `.github/workflows`.  
+Workflows are designed to be ruin in the order provided below for the **inital deployment** only.  
+Once the full stack list has been deployed, changes can be made, with individual workflows executed as and when required.
 
----
-
-## ▶️ Deployment Process
-
-1. **Bootstrap:** Execute [bootstrap script](./bootstrap) to begin deployment process.
+1. **Bootstrap:** Execute [bootstrap script](./deployments/bootstrap) to begin deployment process.
 2. **Identity:** Deploy core Entra ID groups and application service principals (if required).
 3. **Governance:** Assign base policies at defined management group and subscription structure.
 4. **Management:** Create monitoring and observability resources, policy assignments using initiatives from Governance stack.

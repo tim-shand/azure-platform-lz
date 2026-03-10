@@ -4,7 +4,7 @@ The Management stack deploys and configures the core shared operational services
 This stack provides centralized logging, monitoring, alerting, and policy-driven diagnostic configuration for all platform subscriptions.
 It is designed to be environment-agnostic, reusable, and aligned with enterprise Azure landing zone best practices.
 
-## 🌟 Features
+## ✨ Features
 
 - Centralized logging infrastructure (Log Analytics).
 - Platform-wide diagnostic configuration (via Azure Policy).
@@ -14,18 +14,13 @@ It is designed to be environment-agnostic, reusable, and aligned with enterprise
 
 ### 🔍 Centralized Monitoring
 
-**Provides a single location for:**
-
 - Entra ID logging (category logs defined/enabled within TFVARS).
-- Platform and resource activity logs.
-- Resource diagnostics and metrics.
-- Security auditing.
+- Platform and resource activity logs to central Log Analytics Workspace.
+- Resource diagnostics and metrics to central Log Analytics Workspace.
 
 ### 📜 Policy-Driven Diagnostics
 
 This stack assigns a pre-created policy initiative that automatically deploys logging and diagnostic settings across platform resources.
-
-**The policy:**
 
 - Uses a managed identity (defined in the governance stack).
   - Used to deploy diagnostic settings to resources.
@@ -35,25 +30,19 @@ This stack assigns a pre-created policy initiative that automatically deploys lo
   - All current resources are monitored.
   - Future resources automatically become compliant.
 
-### ⚠️ Alerting
-
-**Implements standardized alert routing:**
+### ⚠️ Alerting & Action Groups
 
 - Subscription Activity Log Alerts.
-  - Administrative operations.
-  - Service Health issues.
-  - Resource Health changes.
-  - Security related events.
+  - `Administrative` operations.
+  - `Service Health` issues.
+  - `Resource Health` changes.
+  - `Security` related events.
 - Category-based action groups (Platform, Security, Support).
 - Dynamic notification configuration, based on desired support team.
-
-### 📨 Action Groups
-
-Dynamic action groups are created based on TFVARS configuration.
-
-- Severity-based notification routing.
-- Multiple email recipients.
-- Standardized alert schema.
+- Action groups are created based on TFVARS configuration.
+  - Severity-based notification routing.
+  - Multiple email recipients.
+  - Standardized alert schema.
 
 ---
 
@@ -62,6 +51,14 @@ Dynamic action groups are created based on TFVARS configuration.
 1. Update stack TFVARS file with required action group recipients.
 2. Deploy the stack using the related workflow in GitHub Actions.
 3. Validate outputs match desired state.
+
+---
+
+## 📚 Notes
+
+> [!IMPORTANT]
+> The Storage Account for log archiving created in the Management stack is configured with `shared_access_key_enabled = true`.  
+> This allows key-based authentication to the Storage Account due to a limitation of AzureRM API requiring key-based access for data plane actions.  
 
 ---
 

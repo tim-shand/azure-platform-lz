@@ -1,10 +1,9 @@
 # Azure: Platform Landing Zone (Identity Stack)
 
-The Identity stack is responsible for managing Entra ID groups used across your Azure landing zone. This stack centralises the creation of administrator and user groups, ensuring consistent naming, ownership, and active status management.
+The Identity stack is responsible for managing Entra ID groups used across your Azure landing zone.  
+This stack centralises the creation of administrator and user groups, ensuring consistent naming, ownership, and active status management.
 
-⚠️ **NOTE:** This stack does not create service principals, assign RBAC roles, or manage subscription/resource level access. Those tasks belong in the Management or Governance stacks.
-
-## 🌟 Features
+## ✨ Features
 
 The Identity Stack manages Entra ID resources required for the platform. This includes:
 
@@ -16,7 +15,7 @@ The Identity Stack manages Entra ID resources required for the platform. This in
 
 ---
 
-## 🏦 Architecture
+## 🏦 Design Layout
 
 - **Entra ID Groups:**
   - GRP_ADM_* = Privileged administrator roles.

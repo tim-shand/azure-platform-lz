@@ -191,7 +191,7 @@ if (!($Remove)) {
     Write-Host ""
     Write-Host -ForegroundColor $HD1 "[*] Initializing Terraform configuration..."
     Try {
-        terraform -chdir="$dir_tf" init -upgrade > $null 2>&1
+        terraform -chdir="$dir_tf" init -upgrade
         if ($LASTEXITCODE -eq 0) {
             Write-Host -ForegroundColor $PASS "[+] PASS: Terraform is initialized."
         }
@@ -211,7 +211,7 @@ if (!($Remove)) {
     Try {
         terraform -chdir="$dir_tf" plan --out=bootstrap.plan `
             -var-file="$dir_ps_vars/$($var_files[0])" -var-file="$dir_ps_vars/$($var_files[1])" `
-            -var="subscription_id=$($azSession.id)" > $null 2>&1
+            -var="subscription_id=$($azSession.id)" #> $null 2>&1
         if ($LASTEXITCODE -eq 0) {
             if (Test-Path -Path "$dir_tf/bootstrap.plan") {
                 Write-Host -ForegroundColor $PASS "[+] PASS: Terraform plan created."
@@ -425,6 +425,9 @@ if ($Remove) {
 #================================================#
 # MAIN: Stage 7 - Clean Up
 #================================================#
+Remove-Item -Path "$dir_tf/.terraform" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$dir_tf/.terraform.*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$dir_tf/*.plan" -Force -ErrorAction SilentlyContinue
 Write-Host ""
 if (!($Remove)) {
     Write-Host -ForegroundColor $WRN "NOTE: Manual approval may be required for pending API permissions assigned to the Service Principal."
