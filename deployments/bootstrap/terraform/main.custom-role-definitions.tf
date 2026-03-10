@@ -34,7 +34,9 @@ resource "azurerm_role_definition" "custom_role_iac_deploy" {
       # Monitoring
       "Microsoft.Insights/*",
       # Managed Identities
-      "Microsoft.ManagedIdentity/*"
+      "Microsoft.ManagedIdentity/*",
+      # Entra ID
+      "Microsoft.AADIAM/diagnosticSettings/*"
     ]
     not_actions = [
       "Microsoft.Authorization/elevateAccess/Action",

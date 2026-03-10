@@ -6,7 +6,8 @@
 
 # Enable logging to Log Analytics. 
 resource "azurerm_security_center_workspace" "mdfc" {
-  scope        = data.azurerm_app_configuration_key.mg_core_id.value
+  for_each     = data.azurerm_subscription.platform_subs # Set for platform subscriptions. 
+  scope        = each.value.id
   workspace_id = azurerm_log_analytics_workspace.mgt_logs.id
 }
 
