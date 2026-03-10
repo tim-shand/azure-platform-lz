@@ -32,7 +32,9 @@ resource "azurerm_role_definition" "custom_role_iac_deploy" {
       # Locks
       "Microsoft.Authorization/locks/*",
       # Monitoring
-      "Microsoft.Insights/*"
+      "Microsoft.Insights/*",
+      # Managed Identities
+      "Microsoft.ManagedIdentity/*"
     ]
     not_actions = [
       "Microsoft.Authorization/elevateAccess/Action",
