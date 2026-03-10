@@ -195,8 +195,9 @@ org-platform-iac-rg
 ## ▶️ Usage
 
 1. Review and populate the Terraform variable files (TFVARS) in the `./variables` directory.
-2. Check the required CLI applications are installed **and** authenticated.
-3. Confirm that Azure CLI is authenticated and set to use the target IaC subscription.
+2. Check the required CLI applications are installed **and** authenticated (Azure CLI + GiHub CLI).
+3. Execute the PowerShell Bootstrap script to deploy Bootstrap resources and perform remote state migration.
+4. \[OPTIONAL\]: Remove all Bootstrap resources (if required).
 
 ```shell
 # Use Azure CLI to check the ID and Name fields for the current subscription. 
@@ -204,21 +205,15 @@ az account show
 
 # [OPTIONAL] Set the correct sunscription (if required). 
 az account set --subscription mysubscription
-```
 
-4. Execute the PowerShell Bootstrap script to deploy Bootstrap resources and perform remote state migration.
-
-```shell
 # Deploy Bootstrap resources (will perform update on subsequent runs).
 powershell -file ./deployments/bootstrap/bootstrap-azure-github.ps1
-```
 
-5. \[OPTIONAL\]: Remove all Bootstrap resources (if required).
-
-```shell
-# Remove Bootstrap resources.
+# [REMOVAL] Remove Bootstrap resources.
 powershell -file ./deployments/bootstrap/bootstrap-azure-github.ps1 -Remove
 ```
+
+![Bootstrap deployment prompt.](../docs/images/bootstrap_prompt_01.png)
 
 ---
 
