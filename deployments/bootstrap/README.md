@@ -1,11 +1,11 @@
 # Bootstrap: Azure & GitHub for Terraform IaC
 
-This project automates the **initial bootstrapping** process of both Azure and GitHub, in preparation for executing platform landing zone deployment workflows.
+Automates the **initial bootstrapping** process of both Azure and GitHub, in preparation for executing platform landing zone deployment workflows.
 
-- Locally executed PowerShell script that creates bootstrap and deployment stack resources.
-- Generates repository environments, secrets and variables used by deployment stack workflows.
-- Creates Azure App Configuration to store shared/global resource IDs and names as key value pairs.
-- Automates the migration process of the local bootstrap state file to Azure (remote state).
+- Locally executed PowerShell script that leverages Terraform to create bootstrap and deployment stack resources.
+- Generates environments, secrets and variables in provided GitHub repository to be used by deployment stack workflows.
+- Creates an Azure App Configuration resource to store shared/global resource IDs and names as key value pairs.
+- Automates the migration process of the local bootstrap state file to Azure blob storage providing remote state.
 
 ---
 
@@ -23,7 +23,8 @@ _See the [Resources](#-resources) section for additional details._
 
 - **Azure:**
   - Existing Azure account with required roles assigned to a _dedicated_ IaC subscription.
-  - **Roles:** `Contributor`, `User Access Administrator`, `App Configuration Data Owner`.
+  - **Built-in Roles:** `Contributor`, `User Access Administrator`, `App Configuration Data Owner`.
+  - `Global Administrator` is required to approve MSGraph application API permissions assigned to the Service Principal.
 - **GitHub:**
   - GitHub account with a existing repository for the Azure platform landing zone project.
   - **Roles:** Read/Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.

@@ -425,6 +425,9 @@ if ($Remove) {
 #================================================#
 # MAIN: Stage 7 - Clean Up
 #================================================#
+Remove-Item -Path "$dir_tf/.terraform" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$dir_tf/.terraform.*" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$dir_tf/*.plan" -Force -ErrorAction SilentlyContinue
 Write-Host ""
 if (!($Remove)) {
     Write-Host -ForegroundColor $WRN "NOTE: Manual approval may be required for pending API permissions assigned to the Service Principal."
