@@ -36,17 +36,17 @@ TBC
 - Group names follow enterprise prefix conventions.
 - Groups are security-enabled and duplicate names are prevented.
 
+### 🏢 [Governance](./deployments/plz-governance)
+
+- Management Groups providing Azure Policy assignment and subscription hierarchy.
+- Automated mapping of subscriptions to target management groups using a subscription identifier value.
+- Custom policy definitions and initiatives, defined in JSON and deployed using Terraform.
+
 ### 📑 [Management](./deployments/plz-management)
 
 - Centralized Log Analytics workspace for monitoring and observability.
-- Diagnostic settings applied to resources via Azure Policy.
+- Diagnostic settings applied to resources via Azure Policy assignment.
 - Microsoft Defender for Cloud (Foundational CSPM) providing base level security and recommendations.
-
-### 🏢 [Governance](./deployments/plz-governance)
-
-- Management Groups providing Azure Policy assignment hierarchy.
-- Automated mapping of subscriptions to target management groups using a subscription identifier value, keeping IDs out of code base.
-- Custom policy definitions and initiatives, defined in JSON and generated using Terraform.
 
 ### 🌐 [Connectivity](./deployments/plz-connectivity)
 
