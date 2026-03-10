@@ -32,4 +32,14 @@ locals {
       github_environment      = try(github_repository_environment.env[key].environment, "N/A")
     }
   }
+
+  # Mapping Backend_Category to RBAC_Builtin_Role matrix. 
+  rbac_assignments_builtin = [
+    for combo in setproduct(keys(azurerm_resource_group.backend), var.rbac_roles_builtin) : { # setproduct(A, B) --> all pairs of elements from A and B.
+      rg_key = combo[0]                                                                       # Each element combo is a tuple [rg_key, role].
+      role   = combo[1]
+      rg_id  = azurerm_resource_group.backend[combo[0]].id # Add rg_id for the Terraform resource reference.
+    }
+  ]
+
 }

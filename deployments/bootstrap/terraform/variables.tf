@@ -48,3 +48,13 @@ variable "platform_stacks" {
     create_environment      = bool   # Enable to create related environment in GitHub for stack.  
   }))
 }
+
+variable "rbac_roles_builtin" {
+  description = "List of RBAC role names to assign to Service Principal (used at data plane level)."
+  type        = list(string)
+  default = [
+    "App Configuration Data Owner",
+    "Key Vault Secrets Officer",
+    "Storage Blob Data Contributor"
+  ]
+}
