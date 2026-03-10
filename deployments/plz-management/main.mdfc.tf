@@ -6,7 +6,7 @@
 
 # Enable logging to Log Analytics. 
 resource "azurerm_security_center_workspace" "mdfc" {
-  for_each     = data.azurerm_subscriptions.all # Set for all subscriptions. 
+  for_each     = data.azurerm_subscriptions.all.subscriptions # Set for all subscriptions. 
   scope        = each.value.subscription_id
   workspace_id = azurerm_log_analytics_workspace.mgt_logs.id
 }
