@@ -1,6 +1,11 @@
 locals {
   tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
 
+  subscriptions_by_name = {
+    for sub in data.azurerm_subscriptions.all.subscriptions : # Loop each sub in data call. 
+    lower(sub.display_name) => sub.subscription_id            # Key:"plz-connectivity-prod", Value:"00000000-0000-0000-0000-000000000000". 
+  }
+
   # Map deployment stacks to relevant subscriptions, by data call using 'key' as identifier. 
   platform_stack_subscriptions = {
     for key, stack in var.platform_stacks :
