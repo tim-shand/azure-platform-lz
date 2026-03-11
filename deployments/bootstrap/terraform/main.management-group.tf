@@ -17,6 +17,7 @@ resource "azurerm_management_group" "core" {
   name         = module.naming_mg.full_name             # Use naming module to produce MG name format. 
   display_name = var.management_group_core.display_name # Diplay name of the core Management Group.
   subscription_ids = [
-    for k, v in local.platform_stack_subscriptions : v.subscription_id # Extract subscription IDs. 
+    #for k, v in local.platform_stack_subscriptions : v.subscription_id # Extract subscription IDs. 
+    for k, v in local.subscriptions_by_name : v
   ]
 }
