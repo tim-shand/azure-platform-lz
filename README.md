@@ -2,9 +2,9 @@
 
 This repo contains a customised Azure platform landing zone (PLZ), providing an environment _based_ on enterprise-scale architecture and CAF guidelines.  
 
-Designed to be light-weight and cost efficient, utilizing free or low-cost options where possible, while maintaining a minimalistic footprint.
+Designed to be light-weight and cost efficient, utilizing free or low-cost options where possible, while maintaining a minimalist footprint.
 
-Deployed and managed using infrastructure as Code (IaC), this platform landing zone is deployed in stages (stacks), providing governance through Azure Policy, configuring shared services for monitoring and observability, and centralized connectivty through a hub-spoke network architecture.
+Deployed and managed using infrastructure as Code (IaC), this platform landing zone is deployed in stages (stacks), providing governance through Azure Policy, configuring shared services for monitoring and observability, and centralized connectivity through a hub-spoke network architecture.
 
 **Use Case:** Personal tenant or small organization, light production or development/training purposes.
 
