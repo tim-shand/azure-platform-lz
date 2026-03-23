@@ -27,27 +27,6 @@ hub_firewall = {
 hub_gateway = {
   enabled = true
   subnet  = ["10.50.1.0/24"]
+  type    = "Vpn" # ExpressRoute
+  sku     = "Basic"
 }
-
-
-# hub_services = {
-#   "firewall" = {
-#     enabled = true
-#     subnet  = ["10.50.0.0/24"]
-#   }
-#   "gateway" = {
-#     enabled = true
-#     subnet  = ["10.50.1.0/24"]
-#   }
-#   "bastion" = {
-#     enabled                = true
-#     subnet                 = ["10.50.2.0/24"]
-#     sku                    = "Basic" # Standard required for 'Native client support'. 
-#     copy_paste_enabled     = true    # Basic, Standard
-#     file_copy_enabled      = false   # REQUIRES: Standard
-#     tunneling_enabled      = false   # REQUIRES: Standard
-#     shareable_link_enabled = false   # REQUIRES: Standard
-#     kerberos_enabled       = false   # REQUIRES: Standard
-#     ip_connect_enabled     = false   # REQUIRES: Standard
-#   }
-# }

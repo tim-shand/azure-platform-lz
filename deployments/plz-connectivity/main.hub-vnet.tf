@@ -2,10 +2,9 @@
 # Connectivity: Hub VNet
 # Description: 
 # - Create VNet for centralized hub connectivity.
-# - Create subnets for firewall, bastion, gateway and management. 
 #====================================================================================#
 
-# Hub: VNet
+# VNet: Hub
 resource "azurerm_virtual_network" "hub" {
   name                = "${module.naming_con.full_name}-vnet"
   resource_group_name = azurerm_resource_group.con.name

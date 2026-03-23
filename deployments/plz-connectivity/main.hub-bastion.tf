@@ -7,7 +7,7 @@
 
 # Bastion: Public IP
 resource "azurerm_public_ip" "bastion" {
-  count               = var.hub_services.bastion.enabled ? 1 : 0 # If Bastion enabled, create, else do not.
+  count               = var.hub_bastion.enabled ? 1 : 0 # If Bastion enabled, create, else do not.
   name                = "${module.naming_con.full_name}-bas-pip"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
@@ -22,20 +22,20 @@ resource "azurerm_subnet" "bastion" {
   name                            = lower("hub-subnet-bastion")
   resource_group_name             = azurerm_virtual_network.hub.resource_group_name
   virtual_network_name            = azurerm_virtual_network.hub.name
-  address_prefixes                = each.value.subnet
+  address_prefixes                = var.hub_bastion.subnet
   default_outbound_access_enabled = true # Required for Bastion services to operate correctly. # Disable to prevent outbound Internet via subnet (force gateway).
 }
 
 # Bastion: Bastion Host
 resource "azurerm_bastion_host" "hub" {
-  count               = var.hub_services.bastion.enabled ? 1 : 0 # If Bastion enabled, create, else do not.
+  count               = var.hub_bastion.enabled ? 1 : 0 # If Bastion enabled, create, else do not.
   name                = "${module.naming_con.full_name}-bas"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
-  sku                 = var.hub_services.bastion.sku # Standard required for 'Native client support'.
+  sku                 = var.hub_bastion.sku # Standard required for 'Native client support'.
   ip_configuration {
-    name                 = "ip-config-bastion"
+    name                 = "ipconfig-hub-bastion"
     subnet_id            = azurerm_subnet.bastion[0].id
     public_ip_address_id = azurerm_public_ip.bastion[0].ip_address
   }

@@ -66,9 +66,15 @@ variable "hub_firewall" {
 }
 
 variable "hub_gateway" {
-  description = "Object describing the Gateway configuration."
+  description = "Object describing the VPN Gateway configuration."
   type = object({
     enabled = bool
     subnet  = list(string)
+    type    = string
+    sku     = string
   })
+  validation {
+    condition     = contains(["Vpn", "ExpressRoute"], var.hub_gateway.type)
+    error_message = "One of 'Vpn' or 'ExpressRoute' must be provided."
+  }
 }
