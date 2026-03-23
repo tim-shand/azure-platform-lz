@@ -1,7 +1,7 @@
 #====================================================================================#
 # Connectivity: Hub VNet
 # Description: 
-# - Create VNet for centralized hub connecitivity.
+# - Create VNet for centralized hub connectivity.
 # - Create subnets for firewall, bastion, gateway and management. 
 #====================================================================================#
 
