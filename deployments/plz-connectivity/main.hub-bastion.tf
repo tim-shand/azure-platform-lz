@@ -16,23 +16,33 @@ resource "azurerm_public_ip" "bastion" {
   sku                 = "Standard"
 }
 
+# Hub: Subnet - Bastion
+resource "azurerm_subnet" "bastion" {
+  count                           = var.hub_bastion.enabled ? 1 : 0 # Only create if enabled.
+  name                            = lower("hub-subnet-bastion")
+  resource_group_name             = azurerm_virtual_network.hub.resource_group_name
+  virtual_network_name            = azurerm_virtual_network.hub.name
+  address_prefixes                = each.value.subnet
+  default_outbound_access_enabled = true # Required for Bastion services to operate correctly. # Disable to prevent outbound Internet via subnet (force gateway).
+}
+
 # Bastion: Bastion Host
-resource "azurerm_bastion_host" "bastion" {
+resource "azurerm_bastion_host" "hub" {
   count               = var.hub_services.bastion.enabled ? 1 : 0 # If Bastion enabled, create, else do not.
   name                = "${module.naming_con.full_name}-bas"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
-  sku                 = var.hub_services.bastion.sku # Standard required for 'Native client support'. 
+  sku                 = var.hub_services.bastion.sku # Standard required for 'Native client support'.
   ip_configuration {
-    name                 = "ip-config-bas"
-    subnet_id            = azurerm_subnet.hub["bastion"].id #var.hub_services.bastion.subnet
+    name                 = "ip-config-bastion"
+    subnet_id            = azurerm_subnet.bastion[0].id
     public_ip_address_id = azurerm_public_ip.bastion[0].ip_address
   }
-  copy_paste_enabled     = var.hub_services.bastion.copy_paste_enabled                                                       # Basic, Standard
-  file_copy_enabled      = var.hub_services.bastion.sku == "Basic" ? false : var.hub_services.bastion.file_copy_enabled      # REQUIRES: Standard
-  tunneling_enabled      = var.hub_services.bastion.sku == "Basic" ? false : var.hub_services.bastion.tunneling_enabled      # REQUIRES: Standard
-  shareable_link_enabled = var.hub_services.bastion.sku == "Basic" ? false : var.hub_services.bastion.shareable_link_enabled # REQUIRES: Standard
-  kerberos_enabled       = var.hub_services.bastion.sku == "Basic" ? false : var.hub_services.bastion.kerberos_enabled       # REQUIRES: Standard
-  ip_connect_enabled     = var.hub_services.bastion.sku == "Basic" ? false : var.hub_services.bastion.ip_connect_enabled     # REQUIRES: Standard
+  copy_paste_enabled     = var.hub_bastion.copy_paste_enabled            # Basic, Standard
+  file_copy_enabled      = var.hub_bastion.sku == "Basic" ? false : true # REQUIRES: Standard SKU
+  tunneling_enabled      = var.hub_bastion.sku == "Basic" ? false : true # REQUIRES: Standard SKU
+  shareable_link_enabled = var.hub_bastion.sku == "Basic" ? false : true # REQUIRES: Standard SKU
+  kerberos_enabled       = var.hub_bastion.sku == "Basic" ? false : true # REQUIRES: Standard SKU
+  ip_connect_enabled     = var.hub_bastion.sku == "Basic" ? false : true # REQUIRES: Standard SKU
 }

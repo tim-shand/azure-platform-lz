@@ -15,24 +15,39 @@ stack = {
 vnet_hub_cidr = ["10.50.0.0/22"] # /22 = 4x /24
 
 # Connectivity Services
-hub_services = {
-  "firewall" = {
-    enabled = true
-    subnet  = ["10.50.0.0/24"]
-  }
-  "gateway" = {
-    enabled = true
-    subnet  = ["10.50.1.0/24"]
-  }
-  "bastion" = {
-    enabled                = true
-    subnet                 = ["10.50.2.0/24"]
-    sku                    = "Basic" # Standard required for 'Native client support'. 
-    copy_paste_enabled     = true    # Basic, Standard
-    file_copy_enabled      = true    # REQUIRES: Standard
-    tunneling_enabled      = true    # REQUIRES: Standard
-    shareable_link_enabled = true    # REQUIRES: Standard
-    kerberos_enabled       = true    # REQUIRES: Standard
-    ip_connect_enabled     = true    # REQUIRES: Standard
-  }
+hub_bastion = {
+  enabled = true
+  subnet  = ["10.50.2.0/24"]
+  sku     = "Basic" # Standard required for 'Native client support'.
 }
+hub_firewall = {
+  enabled = true
+  subnet  = ["10.50.0.0/24"]
+}
+hub_gateway = {
+  enabled = true
+  subnet  = ["10.50.1.0/24"]
+}
+
+
+# hub_services = {
+#   "firewall" = {
+#     enabled = true
+#     subnet  = ["10.50.0.0/24"]
+#   }
+#   "gateway" = {
+#     enabled = true
+#     subnet  = ["10.50.1.0/24"]
+#   }
+#   "bastion" = {
+#     enabled                = true
+#     subnet                 = ["10.50.2.0/24"]
+#     sku                    = "Basic" # Standard required for 'Native client support'. 
+#     copy_paste_enabled     = true    # Basic, Standard
+#     file_copy_enabled      = false   # REQUIRES: Standard
+#     tunneling_enabled      = false   # REQUIRES: Standard
+#     shareable_link_enabled = false   # REQUIRES: Standard
+#     kerberos_enabled       = false   # REQUIRES: Standard
+#     ip_connect_enabled     = false   # REQUIRES: Standard
+#   }
+# }
