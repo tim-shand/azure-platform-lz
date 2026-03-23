@@ -18,7 +18,7 @@ resource "azurerm_public_ip" "gw" {
 # Subnet: Gateway
 resource "azurerm_subnet" "gw" {
   count                           = var.hub_gateway.enabled ? 1 : 0 # Only create if enabled.
-  name                            = lower("hub-subnet-gateway")
+  name                            = "GatewaySubnet"                 # Mandatory naming for this type of subnet.
   resource_group_name             = azurerm_virtual_network.hub.resource_group_name
   virtual_network_name            = azurerm_virtual_network.hub.name
   address_prefixes                = var.hub_gateway.subnet

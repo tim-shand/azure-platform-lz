@@ -19,7 +19,7 @@ resource "azurerm_public_ip" "bastion" {
 # Hub: Subnet - Bastion
 resource "azurerm_subnet" "bastion" {
   count                           = var.hub_bastion.enabled ? 1 : 0 # Only create if enabled.
-  name                            = lower("hub-subnet-bastion")
+  name                            = "AzureBastionSubnet"            # Mandatory naming for this type of subnet.
   resource_group_name             = azurerm_virtual_network.hub.resource_group_name
   virtual_network_name            = azurerm_virtual_network.hub.name
   address_prefixes                = var.hub_bastion.subnet
