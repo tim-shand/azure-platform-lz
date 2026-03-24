@@ -6,6 +6,7 @@
 
 # Firewall Policy
 resource "azurerm_firewall_policy" "hub" {
+  count               = var.hub_firewall.enabled ? 1 : 0 # Only create if enabled.
   name                = "${module.naming_con.full_name}-fwl-policy"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
@@ -15,6 +16,7 @@ resource "azurerm_firewall_policy" "hub" {
 
 # Firewall Policy Rule Collection
 resource "azurerm_firewall_policy_rule_collection_group" "default" {
+  count              = var.hub_firewall.enabled ? 1 : 0 # Only create if enabled.
   name               = "plz-default-rcg"
   firewall_policy_id = azurerm_firewall_policy.hub.id
   priority           = 100

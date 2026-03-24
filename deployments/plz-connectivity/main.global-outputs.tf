@@ -22,3 +22,23 @@ resource "azurerm_app_configuration_key" "hub_vnet_rg" {
   value                  = azurerm_virtual_network.hub.resource_group_name
   label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
 }
+
+# Hub Firewall: Firewall Name
+resource "azurerm_app_configuration_key" "hub_fwl_name" {
+  count                  = var.hub_firewall.enabled ? 1 : 0
+  provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.connectivity.firewall_name # Refer to variable in globals.
+  value                  = azurerm_firewall.hub.name
+  label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
+}
+
+# Hub Firewall: Firewall Resource Group Name
+resource "azurerm_app_configuration_key" "hub_fwl_name" {
+  count                  = var.hub_firewall.enabled ? 1 : 0
+  provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.connectivity.firewall_resource_group # Refer to variable in globals.
+  value                  = azurerm_firewall.hub.resource_group_name
+  label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
+}

@@ -4,6 +4,25 @@
 # - VPN Gateway service for on-prem to cloud connectivity. 
 #====================================================================================#
 
+# Gateway: VNet Gateway
+resource "azurerm_virtual_network_gateway" "gw" {
+  count               = var.hub_gateway.enabled ? 1 : 0
+  name                = "${module.naming_con.full_name}-vgw"
+  resource_group_name = azurerm_resource_group.con.name
+  location            = azurerm_resource_group.con.location
+  tags                = local.tags_merged
+  type                = var.hub_gateway.type
+  sku                 = var.hub_gateway.sku
+  vpn_type            = "RouteBased"
+  active_active       = false # Requires a HighPerformance or an UltraPerformance SKU.
+  ip_configuration {
+    name                          = "ipconfig-hub-gateway"
+    public_ip_address_id          = azurerm_public_ip.gw[0].ip_address
+    private_ip_address_allocation = "Dynamic" # The only valid value is Dynamic (Static is not supported by the service yet).
+    subnet_id                     = azurerm_subnet.gw[0].id
+  }
+}
+
 # Public IP: Gateway
 resource "azurerm_public_ip" "gw" {
   count               = var.hub_gateway.enabled ? 1 : 0
@@ -25,21 +44,23 @@ resource "azurerm_subnet" "gw" {
   default_outbound_access_enabled = true # Required for Bastion services to operate correctly. # Disable to prevent outbound Internet via subnet (force gateway).
 }
 
-# Gateway: VNet Gateway
-resource "azurerm_virtual_network_gateway" "gw" {
+# Gateway: NSG
+resource "azurerm_network_security_group" "vgw" {
   count               = var.hub_gateway.enabled ? 1 : 0
-  name                = "${module.naming_con.full_name}-vgw"
+  name                = "${module.naming_con.full_name}-vgw-nsg"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
-  type                = var.hub_gateway.type
-  sku                 = var.hub_gateway.sku
-  vpn_type            = "RouteBased"
-  active_active       = false # Requires a HighPerformance or an UltraPerformance SKU.
-  ip_configuration {
-    name                          = "ipconfig-hub-gateway"
-    public_ip_address_id          = azurerm_public_ip.gw[0].ip_address
-    private_ip_address_allocation = "Dynamic" # The only valid value is Dynamic (Static is not supported by the service yet).
-    subnet_id                     = azurerm_subnet.gw[0].id
-  }
+  # Define rules for NSG.
+  #   security_rule {
+  #     name                       = "test123"
+  #     priority                   = 100
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "*"
+  #     source_address_prefix      = "*"
+  #     destination_address_prefix = "VirtualNetwork" # VirtualNetwork, AzureLoadBalancer, Internet.
+  #   }
 }

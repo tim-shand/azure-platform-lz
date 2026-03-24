@@ -86,40 +86,6 @@ variable "hub_gateway" {
 # CONNECTIVITY: Firewall Rules
 # ------------------------------------------------------------- #
 
-# variable "firewall_rules_default_application" {
-#   description = "Map of objects containing firewall rules (application)."
-#   type = map(object({
-#     source_addresses = list(string)
-#     target_fqdns     = list(string)
-#     protocol = object({
-#       port = string
-#       type = string
-#     })
-#     })
-#   )
-# }
-
-# variable "firewall_rules_default_network" {
-#   description = "Map of objects containing firewall rules (network))."
-#   type = map(object({
-#     source_addresses      = list(string)
-#     destination_ports     = list(string)
-#     destination_addresses = optional(list(string)) # Either 'addresses' or 'fqdns' only. 
-#     destination_fqdns     = optional(list(string))
-#     protocols             = list(string)
-#   }))
-#   validation {
-#     condition = alltrue([
-#       for rule in values(var.firewall_rules_default_network) :
-#       (
-#         (try(rule.destination_addresses, null) != null ? 1 : 0) +
-#         (try(rule.destination_fqdns, null) != null ? 1 : 0)
-#       ) == 1
-#     ])
-#     error_message = "Each network firewall rule must define exactly one of destination_addresses or destination_fqdns."
-#   }
-# }
-
 variable "firewall_policy_rule_collections" {
   description = "Firewall policy rule collections grouped by collection type."
   type = object({
