@@ -38,8 +38,8 @@ resource "azurerm_virtual_network_gateway" "gw" {
   active_active       = false # Requires a HighPerformance or an UltraPerformance SKU.
   ip_configuration {
     name                          = "ipconfig-hub-gateway"
-    public_ip_address_id          = azurerm_public_ip.gw.ip_address
+    public_ip_address_id          = azurerm_public_ip.gw[0].ip_address
     private_ip_address_allocation = "Dynamic" # The only valid value is Dynamic (Static is not supported by the service yet).
-    subnet_id                     = azurerm_subnet.gw.id
+    subnet_id                     = azurerm_subnet.gw[0].id
   }
 }
