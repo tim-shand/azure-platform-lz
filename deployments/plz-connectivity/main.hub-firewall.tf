@@ -14,7 +14,7 @@ resource "azurerm_firewall" "hub" {
   tags                = local.tags_merged
   sku_name            = var.hub_firewall.sku_name
   sku_tier            = var.hub_firewall.sku_tier
-  firewall_policy_id  = azurerm_firewall_policy.hub.id # Assign firewall policy.
+  firewall_policy_id  = azurerm_firewall_policy.hub[0].id # Assign firewall policy.
   ip_configuration {
     name                 = "ipconfig-hub-firewall"
     subnet_id            = azurerm_subnet.fw[0].id
