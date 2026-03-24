@@ -59,8 +59,9 @@ global_outputs = {
     label                   = "connectivity"
     hub_vnet_name           = "con-hub-vnet-name" # Hub VNet name. 
     hub_vnet_resource_group = "con-hub-vnet-rg"   # Hub VNet resource group. 
-    firewall_id             = "con-hub-afw-id"    # Azure Firewall ID. 
-    firewall_name           = "con-hub-afw-name"  # Azure Firewall name. 
-    firewall_resource_group = "con-hub-afw-rg"    # Azure Firewall resource group.
+    firewall_name           = "con-hub-fwl-name"  # Azure Firewall name. 
+    firewall_resource_group = "con-hub-fwl-rg"    # Azure Firewall resource group.
+    gateway_name            = "con-hub-vgw-name"  # Virtual Network Gateway name. 
+    gateway_resource_group  = "con-hub-vgw-rg"    # Virtual Network Gateway group.
   }
 }

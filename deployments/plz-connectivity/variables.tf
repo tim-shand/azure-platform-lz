@@ -65,6 +65,7 @@ variable "hub_firewall" {
     subnet_mgt = list(string)
     sku_name   = string
     sku_tier   = string
+    policy_sku = string
   })
 }
 
@@ -79,5 +80,69 @@ variable "hub_gateway" {
   validation {
     condition     = contains(["Vpn", "ExpressRoute"], var.hub_gateway.type)
     error_message = "One of 'Vpn' or 'ExpressRoute' must be provided."
+  }
+}
+
+# CONNECTIVITY: Firewall Rules
+# ------------------------------------------------------------- #
+
+variable "firewall_policy_rule_collections" {
+  description = "Firewall policy rule collections grouped by collection type."
+  type = object({
+    application = optional(map(object({
+      priority = number
+      action   = string
+      rules = map(object({
+        source_addresses  = list(string)
+        destination_fqdns = list(string)
+        protocols = list(object({
+          type = string
+          port = number
+        }))
+      }))
+    })), {})
+
+    network = optional(map(object({
+      priority = number
+      action   = string
+      rules = map(object({
+        source_addresses      = list(string)
+        destination_ports     = list(string)
+        protocols             = list(string)
+        destination_addresses = optional(list(string))
+        destination_fqdns     = optional(list(string))
+      }))
+    })), {})
+  })
+
+  validation {
+    condition = alltrue(flatten([
+      for collection in values(var.firewall_policy_rule_collections.network) : [
+        for rule in values(collection.rules) :
+        (
+          (try(rule.destination_addresses, null) != null ? 1 : 0) +
+          (try(rule.destination_fqdns, null) != null ? 1 : 0)
+        ) == 1
+      ]
+    ]))
+    error_message = "Each network rule must define exactly one of destination_addresses or destination_fqdns."
+  }
+
+  validation {
+    condition = alltrue(flatten([
+      for collection in values(var.firewall_policy_rule_collections.application) : [
+        contains(["Allow", "Deny"], collection.action)
+      ]
+    ]))
+    error_message = "Application rule collection action must be Allow or Deny."
+  }
+
+  validation {
+    condition = alltrue(flatten([
+      for collection in values(var.firewall_policy_rule_collections.network) : [
+        contains(["Allow", "Deny"], collection.action)
+      ]
+    ]))
+    error_message = "Network rule collection action must be Allow or Deny."
   }
 }
