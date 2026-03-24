@@ -23,7 +23,7 @@ resource "azurerm_app_configuration_key" "hub_vnet_rg" {
   label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
 }
 
-# Hub Firewall: Firewall Name
+# Hub Firewall: Name
 resource "azurerm_app_configuration_key" "hub_fwl_name" {
   count                  = var.hub_firewall.enabled ? 1 : 0
   provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
@@ -33,12 +33,32 @@ resource "azurerm_app_configuration_key" "hub_fwl_name" {
   label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
 }
 
-# Hub Firewall: Firewall Resource Group Name
-resource "azurerm_app_configuration_key" "hub_fwl_name" {
+# Hub Firewall: Resource Group Name
+resource "azurerm_app_configuration_key" "hub_fwl_rg" {
   count                  = var.hub_firewall.enabled ? 1 : 0
   provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
   configuration_store_id = data.azurerm_app_configuration.iac.id
   key                    = var.global_outputs.connectivity.firewall_resource_group # Refer to variable in globals.
   value                  = azurerm_firewall.hub.resource_group_name
+  label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
+}
+
+# Hub Gateway: Name
+resource "azurerm_app_configuration_key" "hub_vgw_name" {
+  count                  = var.hub_gateway.enabled ? 1 : 0
+  provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.connectivity.gateway_name # Refer to variable in globals.
+  value                  = azurerm_virtual_network_gateway.vgw.name
+  label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
+}
+
+# Hub Gateway: Resource Group Name
+resource "azurerm_app_configuration_key" "hub_vgw_rg" {
+  count                  = var.hub_gateway.enabled ? 1 : 0
+  provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
+  configuration_store_id = data.azurerm_app_configuration.iac.id
+  key                    = var.global_outputs.connectivity.gateway_resource_group # Refer to variable in globals.
+  value                  = azurerm_virtual_network_gateway.vgw.resource_group_name
   label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
 }
