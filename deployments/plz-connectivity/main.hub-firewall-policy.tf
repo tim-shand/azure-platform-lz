@@ -33,7 +33,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "default" {
         content {
           name              = rule.key
           source_addresses  = rule.value.source_addresses
-          destination_fqdns = rule.value.target_fqdns
+          destination_fqdns = rule.value.destination_fqdns
 
           dynamic "protocols" {
             for_each = rule.value.protocols

@@ -127,8 +127,8 @@ variable "firewall_policy_rule_collections" {
       priority = number
       action   = string
       rules = map(object({
-        source_addresses = list(string)
-        target_fqdns     = list(string)
+        source_addresses  = list(string)
+        destination_fqdns = list(string)
         protocols = list(object({
           type = string
           port = number
