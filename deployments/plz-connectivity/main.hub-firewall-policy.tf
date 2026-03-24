@@ -18,7 +18,7 @@ resource "azurerm_firewall_policy" "hub" {
 resource "azurerm_firewall_policy_rule_collection_group" "default" {
   count              = var.hub_firewall.enabled ? 1 : 0 # Only create if enabled.
   name               = "plz-default-rcg"
-  firewall_policy_id = azurerm_firewall_policy.hub.id
+  firewall_policy_id = azurerm_firewall_policy.hub[0].id
   priority           = 100
   # Loop each rule in TFVARS file, looping each child object (rule, protocols).
 

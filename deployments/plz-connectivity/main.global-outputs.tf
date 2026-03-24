@@ -49,7 +49,7 @@ resource "azurerm_app_configuration_key" "hub_vgw_name" {
   provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
   configuration_store_id = data.azurerm_app_configuration.iac.id
   key                    = var.global_outputs.connectivity.gateway_name # Refer to variable in globals.
-  value                  = azurerm_virtual_network_gateway[0].vgw.name
+  value                  = azurerm_virtual_network_gateway.vgw[0].name
   label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
 }
 
@@ -59,6 +59,6 @@ resource "azurerm_app_configuration_key" "hub_vgw_rg" {
   provider               = azurerm.iac # Use aliased provider to access IaC subscription. 
   configuration_store_id = data.azurerm_app_configuration.iac.id
   key                    = var.global_outputs.connectivity.gateway_resource_group # Refer to variable in globals.
-  value                  = azurerm_virtual_network_gateway[0].vgw.resource_group_name
+  value                  = azurerm_virtual_network_gateway.vgw[0].resource_group_name
   label                  = var.global_outputs.connectivity.label # Related label used to identify entries. 
 }
