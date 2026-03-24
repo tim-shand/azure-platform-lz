@@ -48,27 +48,33 @@ variable "vnet_hub_cidr" {
   nullable    = false
 }
 
-variable "hub_services" {
-  description = "Map of objects defining the connectivity services."
+variable "hub_bastion" {
+  description = "Object describing the Bastion configuration."
   type = object({
-    bastion = optional(object({
-      enabled                = bool
-      subnet                 = list(string)
-      sku                    = string # Standard required for 'Native client support'. 
-      copy_paste_enabled     = bool   # Basic, Standard
-      file_copy_enabled      = bool   # REQUIRES: Standard
-      tunneling_enabled      = bool   # REQUIRES: Standard
-      shareable_link_enabled = bool   # REQUIRES: Standard
-      kerberos_enabled       = bool   # REQUIRES: Standard
-      ip_connect_enabled     = bool   # REQUIRES: Standard
-    })),
-    firewall = optional(object({
-      enabled = bool
-      subnet  = list(string)
-    })),
-    gateway = optional(object({
-      enabled = bool
-      subnet  = list(string)
-    }))
+    enabled = bool
+    subnet  = list(string)
+    sku     = string # Standard required for 'Native client support'. 
   })
+}
+
+variable "hub_firewall" {
+  description = "Object describing the Firewall configuration."
+  type = object({
+    enabled = bool
+    subnet  = list(string)
+  })
+}
+
+variable "hub_gateway" {
+  description = "Object describing the VPN Gateway configuration."
+  type = object({
+    enabled = bool
+    subnet  = list(string)
+    type    = string
+    sku     = string
+  })
+  validation {
+    condition     = contains(["Vpn", "ExpressRoute"], var.hub_gateway.type)
+    error_message = "One of 'Vpn' or 'ExpressRoute' must be provided."
+  }
 }
