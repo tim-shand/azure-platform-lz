@@ -21,6 +21,7 @@ hub_firewall = {
   subnet_mgt = ["10.50.1.0/24"]
   sku_name   = "AZFW_VNet" # AZFW_Hub
   sku_tier   = "Basic"     # Standard, Premium
+  policy_sku = "Basic"     # Standard, Premium
 }
 
 hub_bastion = {
@@ -34,4 +35,32 @@ hub_gateway = {
   subnet  = ["10.50.3.0/24"]
   sku     = "Basic"
   type    = "Vpn" # ExpressRoute
+}
+
+# Firewall Policy Rules (default) : APPLICATION
+firewall_rules_default_application = {
+  "global-allowed-urls" = {
+    source_addresses = ["*"] # Add multiple values for source address.
+    target_fqdns     = ["*.google.com", "*.cloudflare.com", "*.microsoft.com", "pool.ntp.org"]
+    protocol = {
+      port = "443"
+      type = "Https"
+    }
+  }
+}
+
+# Firewall Policy Rules (default) : NETWORK
+firewall_rules_default_network = {
+  "global-allowed-network-dns" = {
+    source_addresses      = ["*"]
+    destination_ports     = ["53"]
+    destination_addresses = ["8.8.8.8", "8.8.4.4", "1.1.1.1"]
+    protocols             = ["TCP", "UDP"]
+  }
+  "global-allowed-network-ntp" = {
+    source_addresses  = ["*"]
+    destination_ports = ["123"]
+    destination_fqdns = ["pool.ntp.org", "time.cloudflare.com", "time.google.com"]
+    protocols         = ["UDP"]
+  }
 }

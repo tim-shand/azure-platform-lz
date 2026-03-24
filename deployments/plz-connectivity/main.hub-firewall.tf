@@ -8,7 +8,7 @@
 # Firewall: Public IP
 resource "azurerm_public_ip" "fw" {
   count               = var.hub_firewall.enabled ? 1 : 0
-  name                = "${module.naming_con.full_name}-afw-pip"
+  name                = "${module.naming_con.full_name}-fwl-pip"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
@@ -18,7 +18,7 @@ resource "azurerm_public_ip" "fw" {
 # Firewall: Public IP (Management)
 resource "azurerm_public_ip" "fw_mgt" {
   count               = var.hub_firewall.enabled ? 1 : 0
-  name                = "${module.naming_con.full_name}-afw-mgt-pip"
+  name                = "${module.naming_con.full_name}-fwl-mgt-pip"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
@@ -48,7 +48,7 @@ resource "azurerm_subnet" "fw_mgt" {
 
 # Firewall
 resource "azurerm_firewall" "hub" {
-  name                = "${module.naming_con.full_name}-afw"
+  name                = "${module.naming_con.full_name}-fwl"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged

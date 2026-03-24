@@ -65,6 +65,7 @@ variable "hub_firewall" {
     subnet_mgt = list(string)
     sku_name   = string
     sku_tier   = string
+    policy_sku = string
   })
 }
 
@@ -80,4 +81,30 @@ variable "hub_gateway" {
     condition     = contains(["Vpn", "ExpressRoute"], var.hub_gateway.type)
     error_message = "One of 'Vpn' or 'ExpressRoute' must be provided."
   }
+}
+
+# CONNECTIVITY: Firewall Rules
+# ------------------------------------------------------------- #
+
+variable "firewall_rules_default_application" {
+  description = "Map of objects containing firewall rules (application)."
+  type = map(object({
+    source_addresses = list(string)
+    target_fqdns     = list(string)
+    protocol = object({
+      port = string
+      type = string
+    })
+    })
+  )
+}
+
+variable "firewall_rules_default_network" {
+  description = "Map of objects containing firewall rules (network))."
+  type = map(object({
+    source_addresses      = list(string)
+    destination_ports     = list(string)
+    destination_addresses = list(string)
+    protocols             = list(string)
+  }))
 }
