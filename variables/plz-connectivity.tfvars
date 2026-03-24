@@ -15,18 +15,23 @@ stack = {
 vnet_hub_cidr = ["10.50.0.0/22"] # /22 = 4x /24
 
 # Connectivity Services
+hub_firewall = {
+  enabled    = true
+  subnet     = ["10.50.0.0/24"]
+  subnet_mgt = ["10.50.1.0/24"]
+  sku_name   = "AZFW_VNet" # AZFW_Hub
+  sku_tier   = "Basic"     # Standard, Premium
+}
+
 hub_bastion = {
   enabled = true
   subnet  = ["10.50.2.0/24"]
   sku     = "Basic" # Standard required for 'Native client support'.
 }
-hub_firewall = {
-  enabled = true
-  subnet  = ["10.50.0.0/24"]
-}
+
 hub_gateway = {
   enabled = true
-  subnet  = ["10.50.1.0/24"]
-  type    = "Vpn" # ExpressRoute
+  subnet  = ["10.50.3.0/24"]
   sku     = "Basic"
+  type    = "Vpn" # ExpressRoute
 }
