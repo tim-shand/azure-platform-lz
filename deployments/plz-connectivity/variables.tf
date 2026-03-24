@@ -60,8 +60,11 @@ variable "hub_bastion" {
 variable "hub_firewall" {
   description = "Object describing the Firewall configuration."
   type = object({
-    enabled = bool
-    subnet  = list(string)
+    enabled    = bool
+    subnet     = list(string)
+    subnet_mgt = list(string)
+    sku_name   = string
+    sku_tier   = string
   })
 }
 
