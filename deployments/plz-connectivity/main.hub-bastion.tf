@@ -39,7 +39,7 @@ resource "azurerm_bastion_host" "hub" {
     subnet_id            = azurerm_subnet.bastion[0].id
     public_ip_address_id = azurerm_public_ip.bastion[0].ip_address
   }
-  copy_paste_enabled     = var.hub_bastion.copy_paste_enabled            # Basic, Standard
+  copy_paste_enabled     = true                                          # Basic, Standard
   file_copy_enabled      = var.hub_bastion.sku == "Basic" ? false : true # REQUIRES: Standard SKU
   tunneling_enabled      = var.hub_bastion.sku == "Basic" ? false : true # REQUIRES: Standard SKU
   shareable_link_enabled = var.hub_bastion.sku == "Basic" ? false : true # REQUIRES: Standard SKU
