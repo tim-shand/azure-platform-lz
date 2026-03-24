@@ -13,31 +13,59 @@ resource "azurerm_firewall_policy" "hub" {
   sku                 = var.hub_firewall.policy_sku
 }
 
-# Application Rules
-resource "azurerm_firewall_application_rule_collection" "default" {
-  name                = "plz-default-application"
-  azure_firewall_name = azurerm_firewall.hub.name
-  resource_group_name = azurerm_resource_group.con.name
-  priority            = 100
-  action              = "Allow"
+# Firewall Policy Rule Collection
+resource "azurerm_firewall_policy_rule_collection_group" "default" {
+  name               = "plz-default-rcg"
+  firewall_policy_id = azurerm_firewall_policy.hub.id
+  priority           = 100
+  # Loop each rule in TFVARS file, looping each child object (rule, protocols).
 
-  dynamic "rule" {
-    for_each = var.firewall_rules_default_application
+  # Application Rules
+  dynamic "application_rule_collection" {
+    for_each = var.firewall_policy_rule_collections.application
     content {
-      name = each.name
+      name     = application_rule_collection.key
+      priority = application_rule_collection.value.priority
+      action   = application_rule_collection.value.action
+
+      dynamic "rule" {
+        for_each = application_rule_collection.value.rules
+        content {
+          name              = rule.key
+          source_addresses  = rule.value.source_addresses
+          destination_fqdns = rule.value.target_fqdns
+
+          dynamic "protocols" {
+            for_each = rule.value.protocols
+            content {
+              type = protocols.value.type
+              port = protocols.value.port
+            }
+          }
+        }
+      }
     }
   }
-  #   rule {
-  #     name = "testrule"
-  #     source_addresses = [
-  #       "10.0.0.0/16",
-  #     ]
-  #     target_fqdns = [
-  #       "*.google.com",
-  #     ]
-  #     protocol {
-  #       port = "443"
-  #       type = "Https"
-  #     }
-  #   }
+
+  # Network Rules
+  dynamic "network_rule_collection" {
+    for_each = var.firewall_policy_rule_collections.network
+    content {
+      name     = network_rule_collection.key
+      priority = network_rule_collection.value.priority
+      action   = network_rule_collection.value.action
+
+      dynamic "rule" {
+        for_each = network_rule_collection.value.rules
+        content {
+          name                  = rule.key
+          source_addresses      = rule.value.source_addresses
+          destination_ports     = rule.value.destination_ports
+          protocols             = rule.value.protocols
+          destination_addresses = try(rule.value.destination_addresses, null) # Ignore if not present.
+          destination_fqdns     = try(rule.value.destination_fqdns, null)     # Ignore if not present.
+        }
+      }
+    }
+  }
 }
