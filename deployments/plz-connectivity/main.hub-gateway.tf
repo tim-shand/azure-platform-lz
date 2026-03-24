@@ -35,6 +35,7 @@ resource "azurerm_virtual_network_gateway" "gw" {
   type                = var.hub_gateway.type
   sku                 = var.hub_gateway.sku
   vpn_type            = "RouteBased"
+  active_active       = false # Requires a HighPerformance or an UltraPerformance SKU.
   ip_configuration {
     name                          = "ipconfig-hub-gateway"
     public_ip_address_id          = azurerm_public_ip.gw.ip_address
