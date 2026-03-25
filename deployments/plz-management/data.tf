@@ -75,3 +75,11 @@ data "azurerm_subscription" "platform_subs" {
   for_each        = data.azurerm_app_configuration_key.platform_subs
   subscription_id = each.value.value
 }
+
+# ENTRA ID: Groups
+# ------------------------------------------------------------- #
+
+data "azuread_user" "group_owners_adm" {
+  for_each    = var.entra_groups_admins
+  employee_id = each.value.owner_employee_id
+}

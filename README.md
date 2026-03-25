@@ -12,13 +12,6 @@ Deployed and managed using infrastructure as Code (IaC), this platform landing z
 
 ## 🚀 Deployment Stacks
 
-### 👤 [Identity](./deployments/plz-identity)
-
-- Create base admin and user groups within Entra ID, to be used with future RBAC assignments.
-- Owners are resolved dynamically using employee IDs.
-- Group names follow enterprise-tyle standard prefix conventions.
-- Groups are security-enabled and duplicate names are prevented.
-
 ### 🏢 [Governance](./deployments/plz-governance)
 
 - Multi-level Management Groups providing Azure Policy assignment and subscription hierarchy.
@@ -30,7 +23,9 @@ Deployed and managed using infrastructure as Code (IaC), this platform landing z
 - Centralized Log Analytics workspace for monitoring and observability.
 - Diagnostic settings applied to resources via Azure Policy assignment.
 - Activity and Health alerting, with category-based action groups (Platform, Security, Support).
-- Severity-based notification routing, targeting required support team.
+  - Severity-based notification routing, targeting required support team.
+- Create base admin groups in Entra ID, to be used with future RBAC assignments.
+  - Owners are resolved dynamically using employee ID lookups.
 
 ### 🌐 [Connectivity](./deployments/plz-connectivity)
 
@@ -87,7 +82,7 @@ Automates the **initial bootstrapping** process, preparing both Azure and GitHub
 - Deploys backend resources **per stack** into a dedicated IaC subscription:
   - Maintaining isolation and independence per stack.
   - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads).
-  - One state file per stack (governance, connectivity, management, identity).
+  - One state file per stack (governance, connectivity, management).
   - Azure App Configuration used to store **shared service/global outputs** to be accessed by other stacks.
 - Adds stack environments, variables and secrets into the provided GitHub repository.
 - Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
@@ -101,10 +96,9 @@ Workflows are designed to be ruin in the order provided below for the **inital d
 Once the full stack list has been deployed, changes can be made, with individual workflows executed as and when required.
 
 1. **Bootstrap:** Execute [bootstrap script](./deployments/bootstrap) to begin deployment process.
-2. **Identity:** Deploy core Entra ID groups and application service principals (if required).
-3. **Governance:** Assign base policies at defined management group and subscription structure.
-4. **Management:** Create monitoring and observability resources, policy assignments using initiatives from Governance stack.
-5. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized flow control.
+2. **Governance:** Assign base policies at defined management group and subscription structure.
+3. **Management:** Create monitoring and observability resources, policy assignments using initiatives from Governance stack.
+4. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized flow control.
 
 ---
 

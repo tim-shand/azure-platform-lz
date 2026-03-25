@@ -94,10 +94,33 @@ variable "activity_log_alerts" {
   type        = any
 }
 
-# MANAGEMENT: Entra ID Logging
+# MANAGEMENT: Entra ID
 # ------------------------------------------------------------- #
 
 variable "entraid_log_types" {
   description = "Map of Entra ID logging categories, boolean value to enable/disable."
   type        = map(bool)
 }
+
+variable "entra_groups_admins_prefix" {
+  description = "Prefix value to append to administrator group naming format."
+  type        = string
+  default     = "GRP_ADM_"
+}
+
+variable "entra_groups_users_prefix" {
+  description = "Prefix value to append to user access group naming format."
+  type        = string
+  default     = "GRP_USR_"
+}
+
+variable "entra_groups_admins" {
+  description = "Map of objects defining the base groups for privilaged administrator roles."
+  type = map(object({
+    description       = string
+    active            = bool
+    owner_employee_id = string
+  }))
+}
+
+# ------------------------------------------------------------- #

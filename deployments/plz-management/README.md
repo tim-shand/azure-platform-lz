@@ -44,6 +44,19 @@ This stack assigns a pre-created policy initiative that automatically deploys lo
   - Multiple email recipients.
   - Standardized alert schema.
 
+- Admin and User groups created from TFVARS definitions.
+- Only groups marked as active are created.
+- Owners are resolved dynamically using employee IDs.
+- Group names follow enterprise prefix conventions.
+- Groups are security-enabled and duplicate names are prevented.
+
+---
+
+### 🏦 Entra ID Admin Groups
+
+- Naming Prefix `GRP_ADM_*`: Privileged administrator roles per role categroy (Security, Networking, Platform).
+- Owners assigned to each group via employee ID lookup.
+
 ---
 
 ## ▶️ Usage
