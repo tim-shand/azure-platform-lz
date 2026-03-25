@@ -69,27 +69,6 @@ resource "azurerm_subnet" "fw_mgt" {
   default_outbound_access_enabled = false # Disable to prevent outbound Internet via subnet.
 }
 
-# Firewall: NSG
-resource "azurerm_network_security_group" "fw" {
-  count               = var.hub_firewall.enabled ? 1 : 0 # Only create if enabled.
-  name                = "${module.naming_con.full_name}-fwl-nsg"
-  resource_group_name = azurerm_resource_group.con.name
-  location            = azurerm_resource_group.con.location
-  tags                = local.tags_merged
-  # Define rules for NSG.
-  #   security_rule {
-  #     name                       = "test123"
-  #     priority                   = 100
-  #     direction                  = "Inbound"
-  #     access                     = "Allow"
-  #     protocol                   = "Tcp"
-  #     source_port_range          = "*"
-  #     destination_port_range     = "*"
-  #     source_address_prefix      = "*"
-  #     destination_address_prefix = "VirtualNetwork" # VirtualNetwork, AzureLoadBalancer, Internet.
-  #   }
-}
-
 # Firewall: NSG MGT
 resource "azurerm_network_security_group" "fw_mgt" {
   count               = var.hub_firewall.enabled ? 1 : 0 # Only create if enabled.
