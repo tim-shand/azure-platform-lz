@@ -92,12 +92,6 @@ platform_stacks = {
     backend_category        = "platform"         # Backend Category [backend_categories]: bootstrap, platform, workload.  
     subscription_identifier = "platform-mgt-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
     create_environment      = true               # Enable to create related environment in GitHub for stack. 
-  },
-  "identity" = {
-    stack_name              = "plz-identity"     # Name of stack directory and GitHub environment.  
-    backend_category        = "platform"         # Backend Category [backend_categories]: bootstrap, platform, workload. 
-    subscription_identifier = "platform-plz-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
-    create_environment      = true               # Enable to create related environment in GitHub for stack. 
   }
 }
 ```
@@ -164,7 +158,6 @@ Resources are grouped by categories and their child stacks.
   - Platform --> Governance (plz-governance)
   - Platform --> Management (plz-management)
   - Platform --> Connectivity (plz-connectivity)
-  - Platform --> Identity (plz-identity)
 
 ```text
 org-iac-bootstrap-rg
@@ -175,8 +168,7 @@ org-platform-iac-rg
 └── orgiacplatformsa12345
     ├── tfstate-plz-governance
     ├── tfstate-plz-management
-    ├── tfstate-plz-connectivity
-    └── tfstate-plz-identity
+    └── tfstate-plz-connectivity
 ```
 
 | Object                  | Created Per  | Example Name             | Purpose                                                      |

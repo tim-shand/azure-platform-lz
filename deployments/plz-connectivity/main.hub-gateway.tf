@@ -43,24 +43,3 @@ resource "azurerm_subnet" "vgw" {
   address_prefixes                = var.hub_gateway.subnet
   default_outbound_access_enabled = true
 }
-
-# Gateway: NSG
-resource "azurerm_network_security_group" "vgw" {
-  count               = var.hub_gateway.enabled ? 1 : 0
-  name                = "${module.naming_con.full_name}-vgw-nsg"
-  resource_group_name = azurerm_resource_group.con.name
-  location            = azurerm_resource_group.con.location
-  tags                = local.tags_merged
-  # Define rules for NSG.
-  #   security_rule {
-  #     name                       = "test123"
-  #     priority                   = 100
-  #     direction                  = "Inbound"
-  #     access                     = "Allow"
-  #     protocol                   = "Tcp"
-  #     source_port_range          = "*"
-  #     destination_port_range     = "*"
-  #     source_address_prefix      = "*"
-  #     destination_address_prefix = "VirtualNetwork" # VirtualNetwork, AzureLoadBalancer, Internet.
-  #   }
-}

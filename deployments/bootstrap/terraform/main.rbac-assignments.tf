@@ -7,7 +7,7 @@
 
 # RBAC: [Service Principal] - Assign Custom role for Service Principal.  
 resource "azurerm_role_assignment" "rbac_sp_custom" {
-  scope              = azurerm_management_group.core.id # Assign at core management group. 
+  scope              = data.azurerm_management_group.tenant_root.id # Assign at core management group. 
   role_definition_id = azurerm_role_definition.custom_role_iac_deploy.role_definition_resource_id
   principal_id       = azuread_service_principal.iac_sp.object_id # Service Principal object ID.
   principal_type     = "ServicePrincipal"                         # Avoids Azure RBAC graph lookup delays that sometimes break CI/CD pipelines.

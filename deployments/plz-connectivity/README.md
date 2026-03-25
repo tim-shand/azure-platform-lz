@@ -6,9 +6,10 @@ This stack deploys the Connectivity resources for a custom, light-weight, CAF-al
 
 - Implements a hub-and-spoke network architecture for centralized network management and secure traffic flow.
 - Spoke VNets connect to the hub VNet using VNet peering, with optional User-Defined Routes (UDRs) directing traffic through Azure Firewall.
-- Azure Firewall provides optional centralized network security and traffic inspection for hub and spoke workloads.
-- Azure Bastion enables secure RDP/SSH access to VMs in peered VNets without exposing public endpoints or requiring public IPs.
-- Network Security Groups (NSGs) enforce fine-grained, rule-based traffic controls at the subnet level.
+- Azure Firewall provides centralized network security and traffic inspection for hub and spoke workloads.
+- Network Security Groups (NSGs) enforce rule-based traffic controls at the subnet levels.
+- Management subnet, NIC and public IP.
+  - Allowing for forced tunneling of operational traffic to the internet while keeping data plane traffic separate.
 
 ---
 
@@ -27,6 +28,3 @@ az feature register --namespace Microsoft.Network --name DisableNetworkWatcherAu
 3. Run the stack workflow from within GitHub Actions.
 
 ---
-
-<!-- BEGIN_TF_DOCS -->
-<!-- END_TF_DOCS -->
