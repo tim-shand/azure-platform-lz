@@ -61,6 +61,3 @@ This stack assigns a pre-created policy initiative that automatically deploys lo
 > This allows key-based authentication to the Storage Account due to a limitation of AzureRM API requiring key-based access for data plane actions.  
 
 ---
-
-<!-- BEGIN_TF_DOCS -->
-<!-- END_TF_DOCS -->

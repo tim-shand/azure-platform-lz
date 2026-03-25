@@ -38,7 +38,7 @@ Deployed and managed using infrastructure as Code (IaC), this platform landing z
 - Spoke VNets connect to the hub VNet using VNet peering, with optional User-Defined Routes (UDRs) directing traffic through Azure Firewall.
 - Azure Firewall provides optional centralized network security and traffic inspection for hub and spoke workloads.
 - Azure Bastion enables secure RDP/SSH access to VMs in peered VNets without exposing public endpoints or requiring public IPs.
-- Network Security Groups (NSGs) enforce fine-grained, rule-based traffic controls at the subnet level.
+- Network Security Groups (NSGs) enforce fine-grained, rule-based traffic controls at the subnet levels.
 
 ---
 
