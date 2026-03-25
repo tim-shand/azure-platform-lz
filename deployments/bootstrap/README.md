@@ -19,9 +19,9 @@ Automates the **initial bootstrapping** process of both Azure and GitHub, in pre
 
 ---
 
-## Architecure
+## Architecture
 
-![Bootstrap resource architecture diagram.](../docs/images/diagram-bootstrap.png)
+![Bootstrap resource architecture diagram.](../../docs/images/diagram-bootstrap.png)
 
 ---
 
