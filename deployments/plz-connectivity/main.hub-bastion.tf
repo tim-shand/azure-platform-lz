@@ -55,26 +55,41 @@ resource "azurerm_network_security_group" "bastion" {
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
   # Define rules for NSG.
+
+  # Inbound --------------------------------------- #
   security_rule {
     name                       = "Allow-Inbound-InternetToBastion"
     priority                   = 110
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
+    source_address_prefix      = "*"
     source_port_range          = "*"
     destination_port_range     = "443"
-    source_address_prefix      = "*"
     destination_address_prefix = "Internet" # VirtualNetwork, AzureLoadBalancer, Internet.
   }
   security_rule {
     name                       = "Allow-Inbound-GatewayToBastion"
-    priority                   = 120
+    priority                   = 111
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
+    source_address_prefix      = "*"
     source_port_range          = "*"
     destination_port_range     = "443"
-    source_address_prefix      = "*"
     destination_address_prefix = "GatewayManager" # VirtualNetwork, AzureLoadBalancer, Internet.
+  }
+
+  # Outbound --------------------------------------- #
+  security_rule {
+    name                       = "Allow-Outbound-BastionToVMs"
+    priority                   = 110
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    source_port_range          = "*"
+    destination_port_ranges    = ["3389", "22"]
+    destination_address_prefix = "VirtualNetwork" # VirtualNetwork, AzureLoadBalancer, Internet.
   }
 }

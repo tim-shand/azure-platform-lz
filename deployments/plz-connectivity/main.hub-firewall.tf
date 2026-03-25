@@ -77,15 +77,52 @@ resource "azurerm_network_security_group" "fw_mgt" {
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
   # Define rules for NSG.
-  #   security_rule {
-  #     name                       = "test123"
-  #     priority                   = 100
-  #     direction                  = "Inbound"
-  #     access                     = "Allow"
-  #     protocol                   = "Tcp"
-  #     source_port_range          = "*"
-  #     destination_port_range     = "*"
-  #     source_address_prefix      = "*"
-  #     destination_address_prefix = "VirtualNetwork" # VirtualNetwork, AzureLoadBalancer, Internet.
-  #   }
+
+  # Inbound --------------------------------------- #
+  security_rule {
+    name                       = "Allow-Inbound-FirewallManagement"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "AzureFirewallManagement"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    destination_address_prefix = "*" # VirtualNetwork, AzureLoadBalancer, Internet.
+  }
+  security_rule {
+    name                       = "Allow-Inbound-HealthProbes"
+    priority                   = 111
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "AzureLoadBalancer"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    destination_address_prefix = "*" # VirtualNetwork, AzureLoadBalancer, Internet.
+  }
+
+  # Outbound --------------------------------------- #
+  security_rule {
+    name                       = "Allow-Outbound-AzureCloud"
+    priority                   = 110
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    source_port_range          = "*"
+    destination_port_ranges    = ["443", "80"]
+    destination_address_prefix = "AzureCloud" # VirtualNetwork, AzureCloud, AzureLoadBalancer, Internet.
+  }
+  security_rule {
+    name                       = "Allow-Outbound-AzureCloud"
+    priority                   = 110
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    source_port_range          = "*"
+    destination_port_ranges    = ["443", "80"]
+    destination_address_prefix = "AzureMonitor" # VirtualNetwork, AzureCloud, AzureLoadBalancer, Internet.
+  }
 }
