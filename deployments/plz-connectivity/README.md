@@ -8,6 +8,8 @@ This stack deploys the Connectivity resources for a custom, light-weight, CAF-al
 - Spoke VNets connect to the hub VNet using VNet peering, with optional User-Defined Routes (UDRs) directing traffic through Azure Firewall.
 - Azure Firewall provides centralized network security and traffic inspection for hub and spoke workloads.
 - Network Security Groups (NSGs) enforce rule-based traffic controls at the subnet levels.
+- Management subnet, NIC and public IP.
+  - Allowing for forced tunneling of operational traffic to the internet while keeping data plane traffic separate.
 
 ---
 
