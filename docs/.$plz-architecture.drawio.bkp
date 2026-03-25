@@ -94,11 +94,17 @@
         <mxCell id="yOAqEdhP0AWzsatKcKqN-35" parent="1" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#E6E6E6;strokeWidth=2;" value="" vertex="1">
           <mxGeometry height="520" width="830" x="920" y="200" as="geometry" />
         </mxCell>
-        <mxCell id="yOAqEdhP0AWzsatKcKqN-36" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Subscriptions.svg;labelBackgroundColor=default;labelPosition=center;verticalLabelPosition=top;verticalAlign=bottom;" value="&lt;b&gt;Subscription&lt;/b&gt;&lt;br&gt;Management" vertex="1">
-          <mxGeometry height="71" width="44" x="1313" y="169" as="geometry" />
-        </mxCell>
         <mxCell id="yOAqEdhP0AWzsatKcKqN-37" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Resource_Groups.svg;" value="&lt;b&gt;Resource Group&lt;/b&gt;&lt;br&gt;Connectivity" vertex="1">
           <mxGeometry height="64" width="68" x="150" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="yOAqEdhP0AWzsatKcKqN-39" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="480" width="790" x="940" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="yOAqEdhP0AWzsatKcKqN-40" parent="1" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=12;image=img/lib/azure2/general/Resource_Groups.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;" value="&lt;b&gt;Resource Group&lt;/b&gt;&lt;br&gt;Management" vertex="1">
+          <mxGeometry height="64" width="68" x="950" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="yOAqEdhP0AWzsatKcKqN-36" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Subscriptions.svg;labelBackgroundColor=default;labelPosition=center;verticalLabelPosition=top;verticalAlign=bottom;" value="&lt;b&gt;Subscription&lt;/b&gt;&lt;br&gt;Management" vertex="1">
+          <mxGeometry height="71" width="44" x="1313" y="169" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
