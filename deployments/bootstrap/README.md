@@ -181,11 +181,9 @@ org-platform-iac-rg
 | Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow.    |
 | Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow.    |
 | Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow.    |
-| Blob Container          | **Stack**    | tfstate-plz-identity     | Contains remote state file, referenced by stack workflow.    |
 | Repository Environment  | **Stack**    | plz-governance           | Repository environment, contains stack related variables.    |
 | Repository Environment  | **Stack**    | plz-management           | Repository environment, contains stack related variables.    |
 | Repository Environment  | **Stack**    | plz-connectivity         | Repository environment, contains stack related variables.    |
-| Repository Environment  | **Stack**    | plz-identity             | Repository environment, contains stack related variables.    |
 
 ---
 
