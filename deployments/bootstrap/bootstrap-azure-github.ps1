@@ -186,25 +186,25 @@ if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?")) {
 # MAIN: Stage 3 - Execute Terraform
 #================================================#
 
-if (!($Remove)) {
-    # Terraform: Initialize
-    Write-Host ""
-    Write-Host -ForegroundColor $HD1 "[*] Initializing Terraform configuration..."
-    Try {
-        terraform -chdir="$dir_tf" init -upgrade
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host -ForegroundColor $PASS "[+] PASS: Terraform is initialized."
-        }
-        else {
-            Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform initialization failed. Please check configuration and try again."
-            exit 1
-        }
+# Terraform: Initialize
+Write-Host ""
+Write-Host -ForegroundColor $HD1 "[*] Initializing Terraform configuration..."
+Try {
+    terraform -chdir="$dir_tf" init -upgrade
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host -ForegroundColor $PASS "[+] PASS: Terraform is initialized."
     }
-    Catch {
-        Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform initialization failed. Please check configuration and try again. $_"
+    else {
+        Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform initialization failed. Please check configuration and try again."
         exit 1
     }
+}
+Catch {
+    Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform initialization failed. Please check configuration and try again. $_"
+    exit 1
+}
 
+if (!($Remove)) {
     # Terraform: Plan
     Write-Host ""
     Write-Host -ForegroundColor $HD1 "[*] Generating Terraform plan..."
