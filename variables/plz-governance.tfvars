@@ -20,10 +20,10 @@ management_groups_level1 = {
     policy_initiatives       = []                                       # Assign Policy Initiatives directly to MGs. 
   }
   "workload" = {
-    display_name             = "Workload"        # Contains the landing zone child management groups for workloads. 
-    parent_mg_name           = "core"            # Key ID of the parent Management Group. 
-    subscription_identifiers = []                # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
-    policy_initiatives       = ["cost_controls"] # Assign Policy Initiatives directly to MGs. 
+    display_name             = "Workload"            # Contains the landing zone child management groups for workloads. 
+    parent_mg_name           = "core"                # Key ID of the parent Management Group. 
+    subscription_identifiers = ["tshandcom-prd-sub"] # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
+    policy_initiatives       = ["cost_controls"]     # Assign Policy Initiatives directly to MGs. 
   }
   "sandbox" = {
     display_name             = "Sandbox"                # Contains subscriptions for testing. Isolated from corporate and online landing zones. Less restrictive set of policies assigned. 
@@ -41,18 +41,18 @@ management_groups_level1 = {
 
 # Management Groups: Second level nested under level 1 manangement groups.
 management_groups_level2 = {
-  "online" = {
-    display_name             = "Online"              # Workloads requiring direct internet inbound or outbound connectivity, or may not require a virtual network.
-    parent_mg_name           = "workload"            # Key ID of the parent Management Group. 
-    subscription_identifiers = ["tshandcom-prd-sub"] # List of subscription prefixes (first 3 segments). Maps MG to sub associations keeping full sub out of code.
-    policy_initiatives       = []                    # Assign Policy Initiatives directly to MGs. 
-  }
-  "corporate" = {
-    display_name             = "Corporate" # Workloads that require connectivity with the corporate/on-prem network via the hub in the connectivity subscription. 
-    parent_mg_name           = "workload"  # Key ID of the parent Management Group. 
-    subscription_identifiers = []          # List of subscription prefixes (first 3 segments). Maps MG to sub associations keeping full sub out of code.
-    policy_initiatives       = []          # Assign Policy Initiatives directly to MGs. 
-  }
+  # "online" = {
+  #   display_name             = "Online"              # Workloads requiring direct internet inbound or outbound connectivity, or may not require a virtual network.
+  #   parent_mg_name           = "workload"            # Key ID of the parent Management Group. 
+  #   subscription_identifiers = [] # List of subscription prefixes (first 3 segments). Maps MG to sub associations keeping full sub out of code.
+  #   policy_initiatives       = []                    # Assign Policy Initiatives directly to MGs. 
+  # }
+  # "corporate" = {
+  #   display_name             = "Corporate" # Workloads that require connectivity with the corporate/on-prem network via the hub in the connectivity subscription. 
+  #   parent_mg_name           = "workload"  # Key ID of the parent Management Group. 
+  #   subscription_identifiers = []          # List of subscription prefixes (first 3 segments). Maps MG to sub associations keeping full sub out of code.
+  #   policy_initiatives       = []          # Assign Policy Initiatives directly to MGs. 
+  # }
 }
 
 # Management Groups: Third level nested under level 2 manangement groups.
