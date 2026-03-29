@@ -26,12 +26,12 @@ resource "github_actions_secret" "client_id" {
   plaintext_value = azuread_application.iac_sp.client_id # Service Principal ID.
 }
 
-# # GitHub: Repo [VARIABLE] - Azure Subscription (IaC): Stored remote state files.
-# resource "github_actions_variable" "sub_iac" {
-#   repository    = data.github_repository.repo.name
-#   variable_name = "ARM_SUBSCRIPTION_ID_IAC"
-#   value         = data.azurerm_subscription.current.subscription_id # Current in use IaC subscription. 
-# }
+# GitHub: Repo [VARIABLE] - Service Principal Name
+resource "github_actions_secret" "client_name" {
+  repository      = data.github_repository.repo.name
+  secret_name     = "ARM_CLIENT_NAME"
+  plaintext_value = azuread_application.iac_sp.display_name # Service Principal name.
+}
 
 #----------------------------------------------------------------#
 
