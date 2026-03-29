@@ -6,20 +6,20 @@
 #====================================================================================#
 
 # Log Analytics Workspace
-resource "azurerm_log_analytics_workspace" "mgt_logs" {
-  name                = "${module.naming_mgt_logs.full_name}-law"
-  resource_group_name = azurerm_resource_group.mgt_logs.name
-  location            = azurerm_resource_group.mgt_logs.location
+resource "azurerm_log_analytics_workspace" "mgt" {
+  name                = "${module.naming_mgt.full_name}-law"
+  resource_group_name = azurerm_resource_group.mgt.name
+  location            = azurerm_resource_group.mgt.location
   tags                = local.tags_merged
   sku                 = "PerGB2018"
   retention_in_days   = var.law_retenion_days
 }
 
 # Storage Account: Retain archived logs from Log Analytics. 
-resource "azurerm_storage_account" "mgt_logs" {
-  name                            = module.naming_mgt_logs.storage_account_name
-  resource_group_name             = azurerm_resource_group.mgt_logs.name
-  location                        = azurerm_resource_group.mgt_logs.location
+resource "azurerm_storage_account" "mgt" {
+  name                            = module.naming_mgt.storage_account_name
+  resource_group_name             = azurerm_resource_group.mgt.name
+  location                        = azurerm_resource_group.mgt.location
   tags                            = local.tags_merged
   account_tier                    = "Standard"  # Standard, Premium
   account_replication_type        = "LRS"       # LRS, GRS, RAGRS, ZRS, GZRS, RAGZRS
@@ -29,18 +29,18 @@ resource "azurerm_storage_account" "mgt_logs" {
   shared_access_key_enabled       = true        # Limitation of AzureRM API requires key based access for data plane actions. 
   lifecycle {
     precondition {
-      condition     = length(module.naming_mgt_logs.storage_account_name) <= 24
+      condition     = length(module.naming_mgt.storage_account_name) <= 24
       error_message = "Storage Account names must be equal to, or less than 24 characters total."
     }
   }
 }
 
 # Data Export: Archive LAW logs to Storage Account. 
-resource "azurerm_log_analytics_data_export_rule" "mgt_logs" {
-  name                    = "${module.naming_mgt_logs.full_name}-der" # Data Export Rule
-  resource_group_name     = azurerm_resource_group.mgt_logs.name
-  workspace_resource_id   = azurerm_log_analytics_workspace.mgt_logs.id
-  destination_resource_id = azurerm_storage_account.mgt_logs.id
+resource "azurerm_log_analytics_data_export_rule" "mgt" {
+  name                    = "${module.naming_mgt.full_name}-der" # Data Export Rule
+  resource_group_name     = azurerm_resource_group.mgt.name
+  workspace_resource_id   = azurerm_log_analytics_workspace.mgt.id
+  destination_resource_id = azurerm_storage_account.mgt.id
   table_names             = var.law_export_log_tables # List of table names to export to Storage Account. 
   enabled                 = var.law_archive_logs      # True/False
 }

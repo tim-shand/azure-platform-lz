@@ -1,14 +1,27 @@
 <#======= Bootstrap: Azure & GitHub for Terraform =======#
 # DESCRIPTION:
-Bootstrap script to prepare Azure tenant for management via Terraform and GitHub Actions.
+Bootstrap script to prepare Azure tenant and GitHub repository for platform landing zone.
 - Checks for required local applications (see variable `$requiredApps`).
 - Validates Azure and GitHub CLI authentication, obtains information from current sessions.
-- Deploys Azure and GitHub resources as defined in Terraform bootstrap module. 
+- Deploys Azure and GitHub resources required for bootstrapping environments. 
 
-# REQUIRED:
-- Install: Azure CLI, GitHub CLI.
-- Existing Azure subscription dedicated to IaC purposes (or platform general). 
-- Existing GitHub repository for project secrets and variables. 
+# ACTIONS:
+- Check for required CLI applications.
+- Confirm authentication to Azure and GitHub, get current session details.
+- Create Azure resources:
+  - App Registration + Service Principal.
+  - Federated (OIDC) credentials for GitHub repository and `main` branch, with environments.
+  - Custom role and RBAC assignments at tenant scope.
+  - Resource Group, Storage Account, Blob Container per deployment stack.
+- Create GitHub resources:
+  - Separate per-stack GitHub repository environments.
+  - Secrets and variables (outputs from Azure resources).
+
+# REQUIREMENTS:
+- `Global Administrator` role assigned to user executing script.
+- Applications installed: Azure CLI, GitHub CLI.
+- Existing Azure subscription dedicated to IaC purposes (or use platform subscription).
+- Existing GitHub repository for project secrets and variables.
 
 # USAGE:
 ./bootstrap/bootstrap-azure-github.ps1
@@ -21,6 +34,13 @@ param(
     [switch]$Remove # Add switch parameter for removal option.
 )
 
+# Terminal Colours.
+$PASS = "Green"
+$WRN = "Yellow"
+$ERR = "Red"
+$HD1 = "Cyan"
+$HD2 = "Magenta"
+
 # Required applications and validation commands.
 $requiredApps = @(
     [PSCustomObject]@{Name = "Azure CLI"; Command = "az"; AuthCheck = "az account show --only-show-errors | ConvertFrom-JSON"; }
@@ -31,15 +51,7 @@ $requiredApps = @(
 # Directories, Files and Misc.
 $dir_tf = "$PSScriptRoot/terraform" # Location of Terraform files. 
 $dir_ps_vars = "$PSScriptRoot/../../variables" # Location of Terraform variable files (in relation project root).
-$tf_backend_state_key = "azure-iac-bootstrap.tfstate" # Terraform state file name.
 $var_files = @("global.tfvars", "iac-bootstrap.tfvars") # Array of required variable files for bootstrap process. 
-
-# Terminal Colours.
-$PASS = "Green"
-$WRN = "Yellow"
-$ERR = "Red"
-$HD1 = "Cyan"
-$HD2 = "Magenta"
 
 # Set action attributes. 
 if ($Remove) {
@@ -76,7 +88,7 @@ function Get-UserConfirm ($prompt) {
     }
 }
 
-# Function: Get repository details from TFVARS file.
+# Function: Get repository details from 'global.tfvars' file.
 function Get-RepoConfig {
     param([string]$FilePath)
     $lines = (Get-Content -Raw $FilePath) -split "`n" | ForEach-Object { $_.Trim() }
@@ -103,36 +115,57 @@ function Get-RepoConfig {
     return $repoConfig
 }
 
-#=============================================#
-# MAIN: Stage 1 - Validations & Pre-Checks
-#=============================================#
+# MAIN ======================================================== #
+
 Clear-Host
 Write-Host -ForegroundColor $HD1 "======================================================"
 Write-Host -ForegroundColor $HD2 "     Bootstrap Script: Azure | GitHub | Terraform     "
-Write-Host -ForegroundColor $HD1 "======================================================`r`n"
+Write-Host -ForegroundColor $HD1 "======================================================"
+Write-Host
+
+#=============================================#
+# MAIN: Stage 1 - Validations & Pre-Checks
+#=============================================#
 
 # Validation: Confirm required variable files are present. 
-Write-Host -ForegroundColor $HD1 "[*] Performing variable file checks..."
+Write-Host -ForegroundColor $HD1 "[*] Performing variable file checks... " -NoNewLine
 Try {
     ForEach ($file in $var_files) {
         if (!(Test-Path -Path "$dir_ps_vars/$file")) {
-            Write-Host -ForegroundColor $ERR "[x] FAIL: Variable file '$file' not found! Please ensure file exists and try again."
+            Write-Host -ForegroundColor $ERR "FAIL"
+            Write-Host -ForegroundColor $ERR "[x] ERROR: Variable file '$file' not found! Please ensure file exists and try again."
+            exit 1
+        }
+    }  
+    Try {
+        $repoConfig = Get-RepoConfig "$dir_ps_vars/global.tfvars"
+        if ($repoConfig.repo) {
+            Write-Host -ForegroundColor $PASS "PASS"
+        }
+        else {
+            Write-Host -ForegroundColor $ERR "FAIL"
+            Write-Host -ForegroundColor $ERR "[x] ERROR: Unable to extract repository details from variables file. Abort."
             exit 1
         }
     }
-    Write-Host -ForegroundColor $PASS "[+] PASS: Variable files are present."
-    $repoConfig = Get-RepoConfig "$dir_ps_vars/global.tfvars"
+    Catch {
+        Write-Host -ForegroundColor $ERR "FAIL"
+        Write-Host -ForegroundColor $ERR "[x] ERROR: Unable to extract repository details from variables file. Abort. $_"
+        exit 1
+    }
 }
 Catch {
-    Write-Host -ForegroundColor $ERR "[x] FAIL: Error occurred during variable file check. $_"
+    Write-Host -ForegroundColor $ERR "FAIL"
+    Write-Host -ForegroundColor $ERR "[x] ERROR: Failure occurred during variable file check. $_"
     exit 1  
 }
 
 # Validation: Required Applications and Authentication.
-Write-Host -ForegroundColor $HD1 "[*] Validating required applications..."
+Write-Host -ForegroundColor $HD1 "[*] Validating required applications... " -NoNewLine
 ForEach ($app in $requiredApps) {
     if (!(Get-Command $app.Command -ErrorAction SilentlyContinue)) {
-        Write-Host -ForegroundColor $ERR "[x] FAIL: Required application '$($app.Name)' is missing."
+        Write-Host -ForegroundColor $ERR "FAIL"
+        Write-Host -ForegroundColor $ERR "[x] ERROR: Required application '$($app.Name)' is missing. Please install and try again."
         exit 1
     }
     # Authentication checks. 
@@ -140,43 +173,47 @@ ForEach ($app in $requiredApps) {
         Try {
             $session = (Invoke-Expression $app.AuthCheck -ErrorAction SilentlyContinue 2>&1)
             New-Variable -Name "$($app.Command)Session" -Value $session -Force # Add app session details to variable.
-
         }
         Catch {
-            Write-Host -ForegroundColor $WRN "[!] WARN: '$($app.Name)' is not authenticated. Please authenticate and try again."
+            Write-Host -ForegroundColor $ERR "FAIL"
+            Write-Host -ForegroundColor $WRN "[!] WARNING: '$($app.Name)' is not authenticated. Please authenticate and try again. $_"
             exit 1
         }
     }
 }
+Write-Host -ForegroundColor $PASS "PASS"
+# Enables Azure CLI to automatically install missing extensions whenever a command requires them, without asking for confirmation.
 Invoke-Expression "az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors" >$null 2>&1
-Write-Host -ForegroundColor $PASS "[+] PASS: All required applications are installed and authenticated."
+# Disable auto-creation of Network Watcher. 
+Invoke-Expression "az feature register --namespace Microsoft.Network --name DisableNetworkWatcherAutocreation" >$null 2>&1
 
 #================================================#
 # MAIN: Stage 2 - Display Config / Actions
 #================================================#
 
 Write-Host ""
-Write-Host -ForegroundColor $HD1 "Azure --------------------------------------------"
-Write-Host "- Tenant ID: $($azSession.tenantId)"
-Write-Host "- Tenant Name: $($azSession.tenantDisplayName)"
-Write-Host "- Subscription ID: $($azSession.id)"
-Write-Host "- Subscription Name: $($azSession.name)"
+Write-Host -ForegroundColor $HD2 "==========================================================================================="
+Write-Host -ForegroundColor $HD1 "Azure"
+Write-Host "- Tenant:       $($azSession.tenantId) ($($azSession.tenantDisplayName))"
+Write-Host "- Subscription: $($azSession.id) ($($azSession.name))"
 Write-Host "- Current User: $($azSession.user.name)"
 Write-Host ""
-Write-Host -ForegroundColor $HD1 "Repository ---------------------------------------"
-Write-Host "- Organisation: $($repoConfig.org)"
-Write-Host "- Repository: $($repoConfig.repo)"
+Write-Host -ForegroundColor $HD1 "Repository"
+Write-Host "- Organization: $($repoConfig.org)"
+Write-Host "- Repository:   $($repoConfig.repo)"
 Write-Host "- Current User: $($ghSession.login)"
+Write-Host ""
+Write-Host -ForegroundColor $HD1 "Terraform"
+Write-Host "- Terraform Directory: $dir_tf"
+Write-Host "- Variables Directory: $dir_ps_vars"
 Write-Host ""
 Write-Host -ForegroundColor $HD1 "Action: " -NoNewLine; 
 Write-Host -ForegroundColor $sys_action.colour "$($sys_action.name) [$($sys_action.symbol)]"
 Write-Host ""
 Write-Host -ForegroundColor $WRN "NOTE: Please ensure the above details are correct before proceeding."
-Write-Host -ForegroundColor $WRN "If details above are incorrect, exit this script and make changes within CLI tools before re-running this script."
-Write-Host ""
-Write-Host "Terraform Directory: $dir_tf"
-Write-Host "Variables Directory: $dir_ps_vars"
-Write-Host ""
+Write-Host -ForegroundColor $WRN "If details above are incorrect, exit this script `
+and make changes in related CLI tools before running this script again."
+Write-Host -ForegroundColor $HD2 "==========================================================================================="
 if (!(Get-UserConfirm -prompt "Do you wish to proceed [Y/N]?")) {
     Write-Host -ForegroundColor $WRN "[!] WARN: User declined to proceed. Exit."
     exit 1
@@ -267,13 +304,11 @@ if (Test-Path -Path "$dir_tf/backend.tf") {
     # Already migrated (remote). Backend configuration already exists. 
     if ($Remove) {
         Try {
-
             # Pull from remote --> local
             terraform -chdir="$dir_tf" state pull > "$dir_tf/terraform.tfstate"
             if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state successfully copied locally."
                 if (Test-Path "$dir_tf/terraform.tfstate") {
-                    Write-Host -ForegroundColor $PASS "[+] PASS: Local Terraform state file present."
+                    Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state copied locally from remote."
                 }
                 else {
                     Write-Host -ForegroundColor $ERR "[x] FAIL: Local Terraform state is not present! Remote to local migration may have failed."
@@ -282,7 +317,7 @@ if (Test-Path -Path "$dir_tf/backend.tf") {
                 }
             }
             else {
-                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed during remote to local migration. [284]"
+                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed during remote to local migration."
                 Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
                 exit 1
             }
@@ -296,30 +331,22 @@ if (Test-Path -Path "$dir_tf/backend.tf") {
             # Reconfigure Terraform to use local state file.
             terraform -chdir="$dir_tf" init -migrate-state -input=false > $null 2>&1
             if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state successfully copied locally."
-                if (Test-Path "$dir_tf/terraform.tfstate") {
-                    Write-Host -ForegroundColor $PASS "[+] PASS: Local Terraform state file present."
-                }
-                else {
-                    Write-Host -ForegroundColor $ERR "[x] FAIL: Local Terraform state is not present! Remote to local migration may have failed."
-                    Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
-                    exit 1
-                }
+                Write-Host -ForegroundColor $PASS "[+] PASS: Terraform configured to use local state."
             }
             else {
-                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed during remote to local migration. [309]"
+                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed to configure local state. Abort"
                 Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
                 exit 1
             }
         }
         Catch {
-            Write-Host -ForegroundColor $ERR "[x] FAIL: An error occurred during Terraform remote to local migration. [315] $_"
+            Write-Host -ForegroundColor $ERR "[x] FAIL: An error occurred during Terraform remote to local state migration. $_"
             Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" # Rename file back to avoid issues when re-running. 
             exit 1
         }
     } 
     else {
-        Write-Host -ForegroundColor $HD1 "[*] Existing backend configuration detected. Skipping migration..."
+        Write-Host -ForegroundColor $HD1 "[*] Existing backend configuration file detected. Skipping migration..."
     }
 }
 elseif (Test-Path -Path "$dir_tf/terraform.tfstate") {
@@ -330,13 +357,14 @@ elseif (Test-Path -Path "$dir_tf/terraform.tfstate") {
         Try {
             $tfOutputs = terraform -chdir="$dir_tf" output -json | ConvertFrom-Json
             if ($LASTEXITCODE -eq 0) {
-                $deployments = $tfOutputs.deployments.value
-                $tf_backend_resource_group = $deployments.bootstrap.backend_resource_group
-                $tf_backend_storage_account = $deployments.bootstrap.backend_storage_account
-                $tf_backend_container = $deployments.bootstrap.backend_blob_container
+                $bootstrap_output = $tfOutputs.bootstrap_backend.value
+                $tf_backend_resource_group = $bootstrap_output.resource_group
+                $tf_backend_storage_account = $bootstrap_output.storage_account
+                $tf_backend_blob_container = $bootstrap_output.blob_container
+                $tf_backend_state_key = $bootstrap_output.state_key
                 Write-Host "- Resource Group: $tf_backend_resource_group"
                 Write-Host "- Storage Account: $tf_backend_storage_account"
-                Write-Host "- Blob Continer: $tf_backend_container"
+                Write-Host "- Blob Container: $tf_backend_blob_container"
                 Write-Host "- State File: $tf_backend_state_key"
                 Write-Host -ForegroundColor $PASS "[+] PASS: Terraform outputs retrieved successfully."
 
@@ -345,7 +373,7 @@ terraform {
   backend "azurerm" {
     resource_group_name  = "$($tf_backend_resource_group)"
     storage_account_name = "$($tf_backend_storage_account)"
-    container_name       = "$($tf_backend_container)"
+    container_name       = "$($tf_backend_blob_container)"
     key                  = "$($tf_backend_state_key)"
     use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
   }

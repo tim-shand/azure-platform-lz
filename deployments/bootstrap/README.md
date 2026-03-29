@@ -3,18 +3,15 @@
 Automates the **initial bootstrapping** process of both Azure and GitHub, in preparation for executing platform landing zone deployment workflows.
 
 - Locally executed Powershell script performs the initial setup process, configuring Azure and GitHub for automation.
-  - Performs pre-flight checks, validates authentication and intentions.
-- Executes pre-defined Terraform module to deploy base resources (core management group, service principal, RBAC assignments).
+  - Performs pre-flight checks, validates authentication and confirms intentions.
+- Executes pre-defined Terraform module to deploy base resources.
 - Creates Entra ID Service Principal:
   - Secured with Federated Credentials (OIDC) for GitHub repository and environments.
-  - Details added as repository variables and referenced by workflows.
   - Custom RBAC role assigned at core management group level.
 - Deploys backend resources **per stack** into a dedicated IaC subscription:
-  - Maintaining isolation and independence per stack.
-  - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads).
-  - One state file per stack (governance, connectivity, management, identity).
-  - Azure App Configuration used to store **shared service/global outputs** to be accessed by other stacks.
-- Adds stack environments, variables and secrets into the provided GitHub repository.
+  - Resource Groups and Storage Accounts per category (platform, workloads).
+  - Maintaining isolation and independence, using separate tate files per stack (governance, connectivity, management).
+- Adds stack variables and secrets into the provided GitHub repository.
 - Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 
 ---
@@ -31,10 +28,9 @@ Automates the **initial bootstrapping** process of both Azure and GitHub, in pre
   - **Roles:** Read/Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.
 - Existing Azure tenant with required roles assigned to a _dedicated_ IaC subscription (can also be used with a single platform subscription).
 - **Built-in Roles:** Bootstrap process requires:
-  - `Global Administrator`: Required to approve MSGraph application API permissions assigned to the Service Principal.
+  - `Global Administrator` (preferred): Required to approve MSGraph application API permissions assigned to the Service Principal.
   - `Contributor`: Required to deploy initial resources.
   - `User Access Administrator`: Required to assign RBAC roles.
-  - `App Configuration Data Owner`: Required to access data plane (read/write) for shared services data.
 - Applications installed locally (during bootstrap process):
   - **[Terraform](https://developer.hashicorp.com/terraform/install):** IaC tool used to deploy resources into the target Azure and GitHub tenancies.
   - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):** CLI tool required by Terraform provider (`AzureRM`) to connect to Azure.
@@ -43,55 +39,35 @@ Automates the **initial bootstrapping** process of both Azure and GitHub, in pre
 
 ## 🔑 Subscriptions
 
-This design is intended to be used with a **dedicated IaC subscription**, containing and isolating all backend resources from workload subscriptions to reduce the blast radius caused by unwanted subscription changes.
+This design is intended to be used with a **dedicated IaC subscription**, containing and isolating all backend resources from workload subscriptions to reduce the blast radius caused by potentially undesirable subscription changes.
 
 - Requires at least **one existing** subscription to be used as the **IaC** (Infrastructure-as-Code) subscription.
 - The subscription provided will be used to contain **all** backend resources for all the platform landing zone.
-- Separate subscriptions can be used per deployment stack if required; however, using the same subscription is also accepted.
-
-### Naming Method
-
-- Subscriptions should be named in a way that makes them uniquely identifiable.
-- This enables the subscription IDs to be resolved by a Terraform data call, using a **keyword-based** lookup method.
-- Although not technically sensitive, this ensures subscription IDs are kept out of variable files, being a public repo.
+- Separate subscriptions can be used per deployment stack if required; however, using the same subscription is also possible.
 
 ### Example
 
-Notice that both the `governance` and `identity` stack configurations below are using the **same value** for the `subscription_identifier` field.
+Notice that both the `governance` and `management` stack configurations below are using the **same value** for the `subscription_identifier` field.
 
-Using the same value of `platform-plz-sub` will result in the **same subscription ID** being resolved and used for both stacks.  
-The subscription ID is resolved when a data call is made using the value provided by the `display_name_contains` parameter.
+Using the same value will result in the **same subscription ID** being used for both stacks.  
+The subscription ID is resolved when by a data call made using the value provided by the `subscription_identifier` parameter.
 
 ```hcl
-data "azurerm_subscriptions" "platform" {
-  for_each              = var.platform_stacks                 # Loop for each object in "platform_stacks". 
-  display_name_contains = each.value.subscription_identifier  # Read in each "subscription_identifier" per stack iteration. 
-}
-
 platform_stacks = {
-  "bootstrap" = {
-    stack_name              = "iac-bootstrap"    # Name of stack directory and GitHub environment. 
-    backend_category        = "bootstrap"        # Backend Category [backend_categories]: bootstrap, platform, workload. 
-    subscription_identifier = "platform-iac-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
-    create_environment      = false              # Enable to create related environment in GitHub for stack.  
-  },
   "connectivity" = {
-    stack_name              = "plz-connectivity" # Name of stack directory and GitHub environment. 
-    backend_category        = "platform"         # Backend Category [backend_categories]: bootstrap, platform, workload. 
-    subscription_identifier = "platform-con-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
-    create_environment      = true               # Enable to create related environment in GitHub for stack.  
+    stack_name              = "plz-connectivity"  # Name of stack directory and GitHub environment.
+    stack_code              = "con"               # Short code for the stack name.
+    subscription_identifier = "12345678-0000-000" # Subscription ID snippet, resolved to full ID in data call.
   },
   "governance" = {
-    stack_name              = "plz-governance"   # Name of stack directory and GitHub environment. 
-    backend_category        = "platform"         # Backend Category [backend_categories]: bootstrap, platform, workload. 
-    subscription_identifier = "platform-plz-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.
-    create_environment      = true               # Enable to create related environment in GitHub for stack. 
+    stack_name              = "plz-governance"
+    stack_code              = "gov"
+    subscription_identifier = "12345678-0000-000"
   },
   "management" = {
-    stack_name              = "plz-management"   # Name of stack directory and GitHub environment. 
-    backend_category        = "platform"         # Backend Category [backend_categories]: bootstrap, platform, workload.  
-    subscription_identifier = "platform-mgt-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
-    create_environment      = true               # Enable to create related environment in GitHub for stack. 
+    stack_name              = "plz-management"
+    stack_code              = "mgt"
+    subscription_identifier = "12345678-0000-000"
   }
 }
 ```
@@ -110,39 +86,26 @@ platform_stacks = {
 
 #### Management Group
 
-- A top-level "core" Management Group is created under the default tenant root group.
-- This "core" Management Group represents the organisation in the current hierarchy, while accommodating for future changes or migration in the future.
+- A top-level "core" Management Group is created under the default tenant root group, representing the current organisation hierarchy.
 - All existing subscriptions accessible by the user running the bootstrap, will be **moved** under this new Management Group.
-  - **NOTE:** The governance stack is resonsible for deploying additional Management Groups and subscription assignments.
 - **RBAC** roles assigned at the "core" Management Group level are then inherited by child subscriptions.
 - This allows the Service Principal to provision resources, make further changes to Management Group structure, and perform subscription assignments.
 
 #### Remote Backend Resources
 
 - **Resource Groups:**
-  - Created per deployment category (global, platform, workloads) to group related child resources for easy management and separation of purpose.  
+  - Created per deployment category (platform, workloads) to group related child resources for easy management and separation of purpose.  
 - **Storage Accounts:**
   - Similar to Resource Groups, created per deployment category to hold the Blob Containers used by each deployment stack.
 - **Blob Containers:**
-  - Created per deployment stack (plz-governance, plz-management, etc) under each parent category Storage Account to hold the remote Terraform state files.
-
-#### Azure App Config (Global Outputs)
-
-- Used to store key/value pairs for shared services resource IDs and names (Hub VNet, Log Analytics Workspace etc).
-- This allows the Service Principal to resolve these resources by ID/name during data calls in other stacks running in **separate workflows**.
+  - Created per deployment stack to hold the remote Terraform state files per stack.
 
 ### 👜 GitHub
 
-#### Environments
-
-- Creates individual environments within the defined repository, **per deployment stack**.
-- This enables separation of concerns/duties, and allows deployments to execute independently (post bootstrap).
-
-#### Secrets & Variables
-
-- Entra ID Service Principal details added at the repository level (globals).
-- Azure remote backend resources, added per deployment stack for each environment.
-- These allow workflows to utilise the `environment` parameter to pass environment specific variables, or override globals (repo level) using the same name.
+- Code repository, version control and automation workflows.
+- Entra ID Service Principal details added as repository secrets.
+- Azure remote backend resources and subscription details added per deployment stack as secrets and variables.
+- Workflows to read individual stack variables/secrets and pass securely to Terraform at workflow run-time.
 
 ---
 
@@ -151,7 +114,6 @@ platform_stacks = {
 Resources are grouped by categories and their child stacks.
 
 - **Categories:**
-  - Bootstrap
   - Platform
   - Workload
 - **Stacks:**
@@ -160,12 +122,9 @@ Resources are grouped by categories and their child stacks.
   - Platform --> Connectivity (plz-connectivity)
 
 ```text
-org-iac-bootstrap-rg
-└── orgiacbootstrapsa12345
-    └── tfstate-iac-bootstrap
-
 org-platform-iac-rg
 └── orgiacplatformsa12345
+    ├── tfstate-iac-bootstrap
     ├── tfstate-plz-governance
     ├── tfstate-plz-management
     └── tfstate-plz-connectivity
@@ -173,17 +132,14 @@ org-platform-iac-rg
 
 | Object                  | Created Per  | Example Name             | Purpose                                                      |
 | ----------------------- | ------------ | ------------------------ | ------------------------------------------------------------ |
-| Resource Group          | **Category** | org-iac-bootstrap-rg     | Resource group containing bootstrap and global resources.    |
 | Resource Group          | **Category** | org-iac-platform-rg      | Resource group containing components for platform LZ.        |
-| Storage Account         | **Category** | orgiacbootstrapsa12345   | Holds blob container for bootstrap and global resources.     |
+| Resource Group          | **Category** | org-iac-workload-rg      | Resource group containing future workload remote states.     |
 | Storage Account         | **Category** | orgiacplatformsa12345    | Holds blob containers per platform deployment stack.         |
-| App Configuration       | **Category** | org-iac-platform-cfg     | Stores key/value pairs of shared service resources names/IDs.|
+| Storage Account         | **Category** | orgiacworkloadsa12345    | Holds blob container for bootstrap and global resources.     |
+| Blob Container          | **Stack**    | tfstate-iac-bootstrap    | Contains remote state file, created during initial setup.    |
 | Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow.    |
 | Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow.    |
 | Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow.    |
-| Repository Environment  | **Stack**    | plz-governance           | Repository environment, contains stack related variables.    |
-| Repository Environment  | **Stack**    | plz-management           | Repository environment, contains stack related variables.    |
-| Repository Environment  | **Stack**    | plz-connectivity         | Repository environment, contains stack related variables.    |
 
 ---
 
@@ -198,7 +154,7 @@ org-platform-iac-rg
 # Use Azure CLI to check the ID and Name fields for the current subscription. 
 az account show
 
-# [OPTIONAL] Set the correct sunscription (if required). 
+# [OPTIONAL] Set the correct subscription (if required). 
 az account set --subscription mysubscription
 
 # Deploy Bootstrap resources (will perform update on subsequent runs).
@@ -214,7 +170,7 @@ powershell -file ./deployments/bootstrap/bootstrap-azure-github.ps1 -Remove
 
 ## 📚 Reference Materials
 
-A list of references, material and content that contributed to, or influnenced this project.
+A list of references, material and content that contributed to, or influenced this project.
 
 - [Azure Landing Zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
 - [Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/overview)

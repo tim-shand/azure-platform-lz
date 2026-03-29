@@ -24,37 +24,29 @@ variable "stack" {
   default     = {}
 }
 
-variable "global_outputs" {
-  description = "Map of Shared Service key names, used to get IDs and names in data calls."
-  type        = map(map(string))
-}
-
-variable "global_outputs_name" {
-  description = "Name of global outputs shared service App Configuration created during bootstrap."
-  type        = string
-}
-
-variable "global_outputs_rg" {
-  description = "Map of global outputs shared service Resource Group for App Configuration created during bootstrap."
-  type        = string
+variable "remote_state_bootstrap" {
+  description = "Map of remote state values used for accessing the Bootstrap state file."
+  type        = map(string)
 }
 
 # GOVERNANCE: Management Groups
 # ------------------------------------------------------------- #
 
-# variable "management_group_core" {
-#   description = "Map of top-level Management Group object, placed under tenant root."
-#   type = map(object({
-#     display_name       = string
-#     policy_initiatives = optional(list(string)) # Assign Policy Initiatives directly to MGs. 
-#   }))
-#   validation {
-#     condition = alltrue([
-#       for mg, details in var.management_group_core : length(details.display_name) >= 3
-#     ])
-#     error_message = "Display name is required for top-level (core) Management Group."
-#   }
-# }
+variable "management_group_core" {
+  description = "Map of core Manangement Group details."
+  type = map(object({
+    display_name             = string
+    parent_mg_name           = optional(string)       # NOT Required.
+    subscription_identifiers = optional(list(string)) # Optional list of subscription name identifier values. 
+    policy_initiatives       = optional(list(string)) # Assign Policy Initiatives directly to MGs. 
+  }))
+  validation {
+    condition = alltrue([
+      for mg, details in var.management_group_core : length(details.display_name) >= 3
+    ])
+    error_message = "Display name is requried for the core Manangement Group."
+  }
+}
 
 variable "management_groups_level1" {
   description = "Map of first level Management Group objects, nested under the core Manangement Group."

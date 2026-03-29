@@ -7,7 +7,7 @@
 
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_backend" {
-  for_each      = var.backend_categories # Create naming structure for each backend category. 
+  for_each      = local.backend_categories # Create naming structure for each backend category. 
   source        = "../../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
   workload      = var.stack.naming.workload_code
@@ -15,17 +15,17 @@ module "naming_backend" {
   ensure_unique = true
 }
 
-# Resource Groups: Backend
+# Resource Groups: Backend Category
 resource "azurerm_resource_group" "backend" {
-  for_each = var.backend_categories # Create Resource Group for each backend category. 
+  for_each = local.backend_categories # Create Resource Group for each backend category. 
   name     = "${module.naming_backend[each.key].full_name}-rg"
   location = var.global.location.primary
   tags     = local.tags_merged
 }
 
-# Storage Accounts: Backend
+# Storage Accounts: Backend Category
 resource "azurerm_storage_account" "backend" {
-  for_each                        = var.backend_categories # Create Storage Account per backend category. 
+  for_each                        = local.backend_categories # Create Storage Account per backend category. 
   name                            = module.naming_backend[each.key].storage_account_name
   resource_group_name             = azurerm_resource_group.backend[each.key].name
   location                        = azurerm_resource_group.backend[each.key].location
@@ -44,10 +44,10 @@ resource "azurerm_storage_account" "backend" {
   }
 }
 
-# Blob Container: Backend Categories
+# Blob Container: Deployment Stacks
 resource "azurerm_storage_container" "backend" {
-  for_each              = var.platform_stacks # Create Blob Container for each stack in platform_stacks map. 
+  for_each              = local.deployment_stacks # Create Blob Container for each stack in platform_stacks map. 
   name                  = "tfstate-${each.value.stack_name}"
-  storage_account_id    = azurerm_storage_account.backend[each.value.backend_category].id
+  storage_account_id    = azurerm_storage_account.backend["platform"].id
   container_access_type = "private"
 }

@@ -20,3 +20,16 @@ resource "azuread_group" "grp_adm" {
   security_enabled        = true # At least one of security_enabled or mail_enabled must be specified.  
   prevent_duplicate_names = true # Return an error if an existing group is found with the same name. 
 }
+
+# Diagnostic Settings: Entra ID - Logging
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_aad_diagnostic_setting
+resource "azurerm_monitor_aad_diagnostic_setting" "main" {
+  name                       = "mgt-diag-entra-logs"
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.mgt_logs.id
+  dynamic "enabled_log" {
+    for_each = local.entraid_log_types_enabled # Loop dynamic for each enabled category log type. 
+    content {
+      category = enabled_log.key # Must use name of dynamic object as the "each". 
+    }
+  }
+}
