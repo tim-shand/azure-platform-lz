@@ -13,15 +13,7 @@ output "bootstrap_backend" {
   value = {
     resource_group  = azurerm_resource_group.backend["platform"].name
     storage_account = azurerm_storage_account.backend["platform"].name
-    blob_container  = azurerm_storage_container.backend["bootstrap"].name
-  }
-}
-
-output "management_group_core" {
-  description = "Map of details for the core (top level) management group."
-  value = {
-    id           = azurerm_management_group.core.id
-    name         = azurerm_management_group.core.name
-    display_name = azurerm_management_group.core.display_name
+    blob_container  = azurerm_storage_container.bootstrap.name
+    state_key       = "${lower(var.stack.naming.workload_code)}-${lower(var.stack.naming.workload_name)}.tfstate"
   }
 }

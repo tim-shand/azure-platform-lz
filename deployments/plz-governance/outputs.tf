@@ -4,6 +4,15 @@ output "management_groups_all" {
   value       = local.management_groups_all_created
 }
 
+output "management_group_core" {
+  description = "Map of details for the core (top level) management group."
+  value = {
+    id           = azurerm_management_group.core.id
+    name         = azurerm_management_group.core.name
+    display_name = azurerm_management_group.core.display_name
+  }
+}
+
 # GOVERNANCE: Policy Definitions
 output "policy_definitions" {
   description = "Map of custom policy definitions."

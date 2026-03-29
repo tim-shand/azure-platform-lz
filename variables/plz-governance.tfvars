@@ -11,6 +11,12 @@ stack = {
   }
 }
 
+# Management Group CORE: Top level nested under the tenant root. 
+management_group_core = {
+  name         = "core"     # Short name used to make up naming structure. 
+  display_name = "TimShand" # Top-level Management Group representing the organisation.  
+}
+
 # Management Groups: First level nested under the core manangement group. 
 management_groups_level1 = {
   "platform" = {

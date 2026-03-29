@@ -2,28 +2,17 @@
 stack = {
   naming = {                    # Map of name related variables (merge with "global.naming")
     workload_code = "iac"       # Short code for deployment stack. Can be used in naming methods. 
-    workload_name = "bootstrap" # Workload name for deployment stack. Can be used in naming methods. 
+    workload_name = "Bootstrap" # Workload name for deployment stack. Can be used in naming methods. 
   }
-  tags = {                       # Tags to be merged with "global.tags" from "global.tfvars" file. 
-    Owner      = "CloudOpsTeam"  # Name of the team that owns the project. 
-    CostCenter = "Platform"      # Useful for grouping resources for billing/financial accountability.
-    Deployment = "iac-bootstrap" # Workload/project name, used to group and identify related resources.
+  tags = {                          # Tags to be merged with "global.tags" from "global.tfvars" file. 
+    Owner      = "CloudOpsTeam"     # Name of the team that owns the project. 
+    CostCenter = "Platform"         # Useful for grouping resources for billing/financial accountability.
+    Deployment = "plz-connectivity" # Workload/project name, used to group and identify related resources.
   }
-}
-
-# Management Group CORE: Top level nested under the tenant root. 
-management_group_core = {
-  name         = "core"     # Short name used to make up naming structure. 
-  display_name = "TimShand" # Top-level Management Group representing the organisation.  
 }
 
 # Deployment Stacks: Map of objects representing the platform workloads to provision. 
-platform_stacks = {
-  "bootstrap" = {
-    stack_name              = "iac-bootstrap"      # Name of stack directory and GitHub environment.
-    stack_code              = "iac"                # Short code for the stack name.
-    subscription_identifier = "56effccd-9f6c-4b5e" # Subscription ID part, resolved to full ID in data call.
-  },
+deployment_stacks = {
   "connectivity" = {
     stack_name              = "plz-connectivity"   # Name of stack directory and GitHub environment.
     stack_code              = "con"                # Short code for the stack name.

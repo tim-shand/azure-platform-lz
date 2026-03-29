@@ -24,21 +24,6 @@ variable "stack" {
   default     = {}
 }
 
-variable "global_outputs" {
-  description = "Map of Shared Service key names, used to get IDs and names in data calls."
-  type        = map(map(string))
-}
-
-variable "global_outputs_name" {
-  description = "Name of global outputs shared service App Configuration created during bootstrap."
-  type        = string
-}
-
-variable "global_outputs_rg" {
-  description = "Map of global outputs shared service Resource Group for App Configuration created during bootstrap."
-  type        = string
-}
-
 # MANAGEMENT: General
 # ------------------------------------------------------------- #
 
@@ -106,12 +91,6 @@ variable "entra_groups_admins_prefix" {
   description = "Prefix value to append to administrator group naming format."
   type        = string
   default     = "GRP_ADM_"
-}
-
-variable "entra_groups_users_prefix" {
-  description = "Prefix value to append to user access group naming format."
-  type        = string
-  default     = "GRP_USR_"
 }
 
 variable "entra_groups_admins" {

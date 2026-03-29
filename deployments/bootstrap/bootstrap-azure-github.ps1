@@ -51,7 +51,6 @@ $requiredApps = @(
 # Directories, Files and Misc.
 $dir_tf = "$PSScriptRoot/terraform" # Location of Terraform files. 
 $dir_ps_vars = "$PSScriptRoot/../../variables" # Location of Terraform variable files (in relation project root).
-$tf_backend_state_key = "iac-bootstrap.tfstate" # Terraform state file name.
 $var_files = @("global.tfvars", "iac-bootstrap.tfvars") # Array of required variable files for bootstrap process. 
 
 # Set action attributes. 
@@ -362,6 +361,7 @@ elseif (Test-Path -Path "$dir_tf/terraform.tfstate") {
                 $tf_backend_resource_group = $bootstrap_output.resource_group
                 $tf_backend_storage_account = $bootstrap_output.storage_account
                 $tf_backend_blob_container = $bootstrap_output.blob_container
+                $tf_backend_state_key = $bootstrap_output.state_key
                 Write-Host "- Resource Group: $tf_backend_resource_group"
                 Write-Host "- Storage Account: $tf_backend_storage_account"
                 Write-Host "- Blob Container: $tf_backend_blob_container"

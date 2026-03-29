@@ -27,7 +27,6 @@ jobs: # List jobs to execute.
     deploy_stack: # Job
         name: "Deploy Stack"
         runs-on: ubuntu-latest
-        environment: plz-governance # Define the stack environment for the workflow to use.
         timeout-minutes: 45 # The entire job will fail if it runs longer than 'x' minutes.
         defaults:
             run: # Set job defaults for 'run' commands.
@@ -37,12 +36,10 @@ jobs: # List jobs to execute.
             # NOTE: If variable exists at both repo and environment level, the environment value takes priority.
             # Terraform Backend
             TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to use in workflow.
-            TF_BACKEND_RG: ${{ vars.TF_BACKEND_RG }} # Backend: Resource Group [Repo Variable]
-            TF_BACKEND_SA: ${{ vars.TF_BACKEND_SA }} # Backend: Storage Account [Repo Variable]
-            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }} # Backend: Blob Container [Env Variable]
-            TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Backend: State file name [Env Variable]
-            TF_GLOBAL_OUTPUTS_NAME: ${{ vars.GLOBAL_OUTPUTS_NAME }} # Name of the global outputs resource.
-            TF_GLOBAL_OUTPUTS_RG: ${{ vars.TF_BACKEND_RG }} # Name of the global outputs resource.
+            TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Backend: Resource Group [Repo Variable]
+            TF_BACKEND_SA: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }} # Backend: Storage Account [Repo Variable]
+            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER_GOV }} # Backend: Blob Container [Env Variable]
+            TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY_GOV }} # Backend: State file name [Env Variable]
             TF_VARS_DIR: "../../variables" # Location of variable files in relation to working directory.
             TF_VARS_FILE: "plz-governance.tfvars" # Variables file for the target stack.
 
@@ -51,7 +48,7 @@ jobs: # List jobs to execute.
             ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure: Tenant ID [Repo Secret]
             ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure: Service Principal ID [Repo Secret]
             ARM_SUBSCRIPTION_ID_IAC: ${{ vars.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for all IaC Backends [Repo Secret].
-            ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }} # Azure: Subscription for target deployment [Env Variable].
+            ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID_GOV }} # Azure: Subscription for target deployment [Env Variable].
 
             # Determine which steps should run (based on input and pull request triggers). ONLY manual apply, pull_request triggers plan only. 
             RUN_PLAN: ${{ github.event_name == 'pull_request' || github.event.inputs.action == 'Plan' || github.event.inputs.action == 'Apply' }}
@@ -91,9 +88,7 @@ jobs: # List jobs to execute.
                   -var-file="$TF_VARS_DIR/global.tfvars" \
                   -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
                   -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-                  -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC" \
-                  -var="global_outputs_name=$TF_GLOBAL_OUTPUTS_NAME" \
-                  -var="global_outputs_rg=$TF_BACKEND_RG"
+                  -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC"
 
             - name: "Terraform: Apply"
               if: env.RUN_APPLY == 'true'
@@ -109,6 +104,4 @@ jobs: # List jobs to execute.
                   -var-file="$TF_VARS_DIR/global.tfvars" \
                   -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
                   -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-                  -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC" \
-                  -var="global_outputs_name=$TF_GLOBAL_OUTPUTS_NAME" \
-                  -var="global_outputs_rg=$TF_BACKEND_RG"
+                  -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC"

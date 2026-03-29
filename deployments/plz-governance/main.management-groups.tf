@@ -14,6 +14,16 @@ module "naming_mg" {
   stack_or_env = "mg"     # Static suffix for Management Groups. 
 }
 
+# # Management Group: Core
+# resource "azurerm_management_group" "core" {
+#   name         = module.naming_mg.full_name             # Use naming module to produce MG name format. 
+#   display_name = var.management_group_core.display_name # Display name of the core Management Group.
+#   subscription_ids = [
+#     #for k, v in data.azurerm_subscriptions.all : v.subscription_id # Move ALL subscriptions under the new core management group.
+#     for v in data.azurerm_subscriptions.all.subscriptions : v.subscription_id # Move ALL subscriptions under the new core management group.
+#   ]
+# }
+
 # Management Groups: Level 1
 resource "azurerm_management_group" "level1" {
   for_each                   = var.management_groups_level1

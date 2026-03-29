@@ -46,8 +46,15 @@ resource "azurerm_storage_account" "backend" {
 
 # Blob Container: Deployment Stacks
 resource "azurerm_storage_container" "backend" {
-  for_each              = var.platform_stacks # Create Blob Container for each stack in platform_stacks map. 
+  for_each              = var.deployment_stacks # Create Blob Container for each stack in platform_stacks map. 
   name                  = "tfstate-${each.value.stack_name}"
+  storage_account_id    = azurerm_storage_account.backend["platform"].id
+  container_access_type = "private"
+}
+
+# Blob Container: Bootstrap
+resource "azurerm_storage_container" "bootstrap" {
+  name                  = "tfstate-${lower(var.stack.naming.workload_code)}-${lower(var.stack.naming.workload_name)}"
   storage_account_id    = azurerm_storage_account.backend["platform"].id
   container_access_type = "private"
 }

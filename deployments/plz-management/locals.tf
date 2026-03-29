@@ -5,11 +5,11 @@ locals {
 }
 
 # List of platform subscriptions. 
-locals {
-  platform_subs = [
-    for s in data.azurerm_subscription.platform_subs : s.id # s.subscription_id
-  ]
-}
+# locals {
+#   platform_subs = [
+#     for s in data.azurerm_subscription.platform_subs : s.id # s.subscription_id
+#   ]
+# }
 
 # MANAGEMENT: Alerts
 # ------------------------------------------------------------- #

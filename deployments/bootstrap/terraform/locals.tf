@@ -10,8 +10,8 @@ locals {
 
 locals {
   # Map deployment stacks to relevant subscriptions, by data call using 'key' as identifier.
-  platform_stack_subscriptions = {
-    for stack_key, stack in var.platform_stacks :
+  deployment_stack_subscriptions = {
+    for stack_key, stack in var.deployment_stacks :
     stack_key => {
       stack_name = stack.stack_name # Full stack name.
       stack_code = stack.stack_code # Short code for stack.

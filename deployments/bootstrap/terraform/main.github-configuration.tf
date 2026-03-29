@@ -51,7 +51,7 @@ resource "github_actions_variable" "iac_sa" {
 
 # GitHub: Repo [VARIABLE] - Backend: Container
 resource "github_actions_variable" "stack_cn" {
-  for_each      = local.platform_stack_subscriptions
+  for_each      = local.deployment_stack_subscriptions
   repository    = data.github_repository.repo.name
   variable_name = "TF_BACKEND_CONTAINER_${upper(each.value.stack_code)}"
   value         = azurerm_storage_container.backend[each.key].name
@@ -59,7 +59,7 @@ resource "github_actions_variable" "stack_cn" {
 
 # GitHub: Repo [VARIABLE] - Backend: State File Name
 resource "github_actions_variable" "stack_key" {
-  for_each      = local.platform_stack_subscriptions
+  for_each      = local.deployment_stack_subscriptions
   repository    = data.github_repository.repo.name
   variable_name = "TF_BACKEND_KEY_${upper(each.value.stack_code)}"
   value         = "${each.value.stack_name}.tfstate"
@@ -67,7 +67,7 @@ resource "github_actions_variable" "stack_key" {
 
 # GitHub: Repo [VARIABLE] - Stack Subscription ID
 resource "github_actions_variable" "stack_sub" {
-  for_each      = local.platform_stack_subscriptions
+  for_each      = local.deployment_stack_subscriptions
   repository    = data.github_repository.repo.name
   variable_name = "ARM_SUBSCRIPTION_ID_${upper(each.value.stack_code)}"
   value         = each.value.subscription_id
