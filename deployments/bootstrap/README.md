@@ -3,18 +3,15 @@
 Automates the **initial bootstrapping** process of both Azure and GitHub, in preparation for executing platform landing zone deployment workflows.
 
 - Locally executed Powershell script performs the initial setup process, configuring Azure and GitHub for automation.
-  - Performs pre-flight checks, validates authentication and intentions.
-- Executes pre-defined Terraform module to deploy base resources (core management group, service principal, RBAC assignments).
+  - Performs pre-flight checks, validates authentication and confirms intentions.
+- Executes pre-defined Terraform module to deploy base resources.
 - Creates Entra ID Service Principal:
   - Secured with Federated Credentials (OIDC) for GitHub repository and environments.
-  - Details added as repository variables and referenced by workflows.
   - Custom RBAC role assigned at core management group level.
 - Deploys backend resources **per stack** into a dedicated IaC subscription:
-  - Maintaining isolation and independence per stack.
-  - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads).
-  - One state file per stack (governance, connectivity, management, identity).
-  - Azure App Configuration used to store **shared service/global outputs** to be accessed by other stacks.
-- Adds stack environments, variables and secrets into the provided GitHub repository.
+  - Resource Groups and Storage Accounts per category (platform, workloads).
+  - Maintaining isolation and independence, using separate tate files per stack (governance, connectivity, management).
+- Adds stack variables and secrets into the provided GitHub repository.
 - Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 
 ---
