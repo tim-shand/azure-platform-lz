@@ -24,19 +24,9 @@ variable "stack" {
   default     = {}
 }
 
-variable "global_outputs" {
-  description = "Map of Shared Service key names, used to get IDs and names in data calls."
-  type        = map(map(string))
-}
-
-variable "global_outputs_name" {
-  description = "Name of global outputs shared service App Configuration created during bootstrap."
-  type        = string
-}
-
-variable "global_outputs_rg" {
-  description = "Map of global outputs shared service Resource Group for App Configuration created during bootstrap."
-  type        = string
+variable "remote_state_bootstrap" {
+  description = "Map of remote state values used for accessing the Bootstrap state file."
+  type        = map(string)
 }
 
 # GOVERNANCE: Management Groups
