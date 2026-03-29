@@ -5,7 +5,6 @@
 # - Assign subscriptions to Management Groups.  
 #====================================================================================#
 
-# Naming: Generate naming convention, pre-determined values and format. 
 module "naming_mg" {
   for_each     = local.management_groups_all
   source       = "../../modules/global-resource-naming"
@@ -14,23 +13,20 @@ module "naming_mg" {
   stack_or_env = "mg"     # Static suffix for Management Groups. 
 }
 
-# # Management Group: Core
-# resource "azurerm_management_group" "core" {
-#   name         = module.naming_mg.full_name             # Use naming module to produce MG name format. 
-#   display_name = var.management_group_core.display_name # Display name of the core Management Group.
-#   subscription_ids = [
-#     #for k, v in data.azurerm_subscriptions.all : v.subscription_id # Move ALL subscriptions under the new core management group.
-#     for v in data.azurerm_subscriptions.all.subscriptions : v.subscription_id # Move ALL subscriptions under the new core management group.
-#   ]
-# }
+# Management Groups: Core
+resource "azurerm_management_group" "core" {
+  for_each     = var.management_group_core
+  name         = module.naming_mg[each.key].full_name                    # Use naming module to produce MG name format. 
+  display_name = title(var.management_group_core[each.key].display_name) # Use map key for MG display name.   
+}
 
 # Management Groups: Level 1
 resource "azurerm_management_group" "level1" {
   for_each                   = var.management_groups_level1
-  name                       = module.naming_mg[each.key].full_name                                   # Use naming module to produce MG name format. 
-  display_name               = title(var.management_groups_level1[each.key].display_name)             # Use map key for MG display name.   
-  subscription_ids           = lookup(local.management_group_subscriptions_level1, each.key, [])      # Assign mapped subscriptions from locals. 
-  parent_management_group_id = data.terraform_remote_state.bootstrap.outputs.management_group_core.id # Use 'core' MG created during bootstrapping.
+  name                       = module.naming_mg[each.key].full_name                              # Use naming module to produce MG name format. 
+  display_name               = title(var.management_groups_level1[each.key].display_name)        # Use map key for MG display name.   
+  subscription_ids           = lookup(local.management_group_subscriptions_level1, each.key, []) # Assign mapped subscriptions from locals. 
+  parent_management_group_id = azurerm_management_group.core["core"].id                          # Use 'core' MG.
 }
 
 # Management Groups: Level 2

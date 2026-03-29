@@ -1,9 +1,3 @@
-# GOVERNANCE: Management Groups
-output "management_groups_all" {
-  description = "Full details of created Management Groups."
-  value       = local.management_groups_all_created
-}
-
 output "management_group_core" {
   description = "Map of details for the core (top level) management group."
   value = {

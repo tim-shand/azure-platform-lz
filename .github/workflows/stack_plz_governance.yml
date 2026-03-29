@@ -36,19 +36,19 @@ jobs: # List jobs to execute.
             # NOTE: If variable exists at both repo and environment level, the environment value takes priority.
             # Terraform Backend
             TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to use in workflow.
-            TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Backend: Resource Group [Repo Variable]
-            TF_BACKEND_SA: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }} # Backend: Storage Account [Repo Variable]
-            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER_GOV }} # Backend: Blob Container [Env Variable]
-            TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY_GOV }} # Backend: State file name [Env Variable]
+            TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Backend: Resource Group.
+            TF_BACKEND_SA: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }} # Backend: Storage Account.
+            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER_GOV }} # Backend: Blob Container.
+            TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY_GOV }} # Backend: State file name.
             TF_VARS_DIR: "../../variables" # Location of variable files in relation to working directory.
             TF_VARS_FILE: "plz-governance.tfvars" # Variables file for the target stack.
 
             # Azure OIDC Auth
             ARM_USE_OIDC: true # Azure: Force use of OIDC/Federated credentials, configured during bootstrap process.
-            ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure: Tenant ID [Repo Secret]
-            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure: Service Principal ID [Repo Secret]
-            ARM_SUBSCRIPTION_ID_IAC: ${{ vars.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for all IaC Backends [Repo Secret].
-            ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID_GOV }} # Azure: Subscription for target deployment [Env Variable].
+            ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure: Tenant ID.
+            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure: Service Principal ID.
+            ARM_SUBSCRIPTION_ID_IAC: ${{ vars.ARM_SUBSCRIPTION_ID_IAC }} # Azure: Subscription for all IaC Backends.
+            ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID_GOV }} # Azure: Subscription for target deployment.
 
             # Determine which steps should run (based on input and pull request triggers). ONLY manual apply, pull_request triggers plan only. 
             RUN_PLAN: ${{ github.event_name == 'pull_request' || github.event.inputs.action == 'Plan' || github.event.inputs.action == 'Apply' }}
@@ -88,7 +88,13 @@ jobs: # List jobs to execute.
                   -var-file="$TF_VARS_DIR/global.tfvars" \
                   -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
                   -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-                  -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC"
+                  -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC" \
+                  -var='remote_state_bootstrap= { \
+                    "resource_group_name":"$TF_BACKEND_RG", \
+                    "storage_account_name":"$TF_BACKEND_SA", \
+                    "blob_container":"${{ vars.ARM_SUBSCRIPTION_ID_IAC }}", \
+                    "state_key":"${{ vars.TF_BACKEND_KEY_IAC }}" \
+                  }'
 
             - name: "Terraform: Apply"
               if: env.RUN_APPLY == 'true'

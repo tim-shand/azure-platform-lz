@@ -69,14 +69,10 @@ locals {
 
   # Merge the individual lookup maps into a single map (flatten).
   management_groups_all = merge(
+    var.management_group_core,
     var.management_groups_level1,
     var.management_groups_level2,
     var.management_groups_level3
-  )
-  management_groups_all_created = merge(
-    azurerm_management_group.level1,
-    azurerm_management_group.level2,
-    azurerm_management_group.level3
   )
 }
 
@@ -107,19 +103,19 @@ locals {
     }
   })
 
-  # Initiative specific parameters for assignment. 
-  initiative_assignment_parameters = {
-    core_baseline = {
-      allowedLocations = var.policy_param_allowed_locations
-      requiredTags     = var.policy_param_required_tags
-      effect           = var.policy_effect_mode
-    }
-    cost_controls = {
-      allowedVmSkus = var.policy_param_allowed_vm_skus
-      effect        = var.policy_effect_mode
-    }
-    decommissioned = {
-      effect = var.policy_effect_mode
-    }
-  }
+  # # Initiative specific parameters for assignment. 
+  # initiative_assignment_parameters = {
+  #   core_baseline = {
+  #     allowedLocations = var.policy_param_allowed_locations
+  #     requiredTags     = var.policy_param_required_tags
+  #     effect           = var.policy_effect_mode
+  #   }
+  #   cost_controls = {
+  #     allowedVmSkus = var.policy_param_allowed_vm_skus
+  #     effect        = var.policy_effect_mode
+  #   }
+  #   decommissioned = {
+  #     effect = var.policy_effect_mode
+  #   }
+  # }
 }
