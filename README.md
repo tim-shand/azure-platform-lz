@@ -2,7 +2,7 @@
 
 This project contains a custom Azure platform landing zone (PLZ), inspired by enterprise-scale architecture and based on CAF guidelines.  
 Designed to be light-weight and cost-efficient, utilizing free or minimum pricing SKU options where possible.  
-Ideal for a small organization, personal tenant, light production or development/training purposes.  
+Ideal for a small organization, personal tenant, light production or development/training purposes.
 
 - **Infrastructure as Code (IaC) + CI/CD**
   - Git-driven workflow, with a merge or commit to the `main` branch triggering automation pipelines.
