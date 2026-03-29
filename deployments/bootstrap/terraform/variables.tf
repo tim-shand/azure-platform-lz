@@ -37,10 +37,10 @@ variable "stack" {
 #   }
 # }
 
-# variable "management_group_core" {
-#   description = "Map of top-level Management Group object, placed under tenant root."
-#   type        = map(string)
-# }
+variable "management_group_core" {
+  description = "Map of top-level Management Group object, placed under tenant root."
+  type        = map(string)
+}
 
 variable "platform_stacks" {
   description = "Map of deployment objects listing the platform stack details."
