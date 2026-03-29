@@ -27,10 +27,10 @@ resource "github_actions_secret" "client_id" {
 }
 
 # GitHub: Repo [VARIABLE] - Service Principal Name
-resource "github_actions_secret" "client_name" {
-  repository      = data.github_repository.repo.name
-  secret_name     = "ARM_CLIENT_NAME"
-  plaintext_value = azuread_application.iac_sp.display_name # Service Principal name.
+resource "github_actions_variable" "client_name" {
+  repository    = data.github_repository.repo.name
+  variable_name = "ARM_CLIENT_NAME"
+  value         = azuread_application.iac_sp.display_name # Service Principal name.
 }
 
 #----------------------------------------------------------------#
