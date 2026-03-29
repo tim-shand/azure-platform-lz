@@ -19,20 +19,30 @@ Ideal for a small organization, personal tenant, light production or development
 
 ## 🚀 Deployment Stacks
 
-### 🏢 [Governance](./deployments/plz-governance)
+### 📜 [Governance](./deployments/plz-governance)
 
 - Multi-level Management Groups providing Azure Policy assignment and subscription hierarchy.
 - Automated mapping of subscriptions to target management groups using a subscription identifier value.
 - Custom policy definitions and initiatives, defined in JSON and deployed using Terraform.
 
-### 📑 [Management](./deployments/plz-management)
+### 🔍 [Management](./deployments/plz-management)
 
-- Centralized Log Analytics workspace for monitoring and observability.
-- Diagnostic settings applied to resources via Azure Policy assignment.
-- Activity and Health alerting, with category-based action groups (Platform, Security, Support).
-  - Severity-based notification routing, targeting required support team.
-- Create base admin groups in Entra ID, to be used with future RBAC assignments.
-  - Owners are resolved dynamically using employee ID lookups.
+The Management stack deploys and configures the core shared operational services required to run and monitor the Azure Platform Landing Zone.
+This stack provides centralized logging, monitoring, alerting, and policy-driven diagnostic configuration for all platform subscriptions.
+
+- **Centralized Logging:**
+  - Log Analytics workspace for monitoring and observability of platform resources.
+  - Activity, audit and metric logs sent to Log Analytics Workspace for review and retention.
+  - Storage Account for long term log archiving.
+- **Policy-Driven Diagnostics:**
+  - Diagnostic settings applied to resources via Azure Policy assignments.
+  - Remediation tasks enforce policy compliance continuously, ensuring current and future resources are monitored.
+- **Alerting & Action Groups:**
+  - Activity, Service and Health alerting, with category-based action groups.
+  - Severity-based notification routing using Action Groups, targeting required support teams.
+- **Entra ID Administrative Groups:**
+  - Create base administrative groups in Entra ID, to be used with RBAC assignments.
+  - Group owners are assigned and resolved dynamically using employee ID lookups.
 
 ### 🌐 [Connectivity](./deployments/plz-connectivity)
 
