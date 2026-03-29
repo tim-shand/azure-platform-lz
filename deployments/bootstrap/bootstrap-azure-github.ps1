@@ -51,7 +51,7 @@ $requiredApps = @(
 # Directories, Files and Misc.
 $dir_tf = "$PSScriptRoot/terraform" # Location of Terraform files. 
 $dir_ps_vars = "$PSScriptRoot/../../variables" # Location of Terraform variable files (in relation project root).
-$tf_backend_state_key = "azure-iac-bootstrap.tfstate" # Terraform state file name.
+$tf_backend_state_key = "iac-bootstrap.tfstate" # Terraform state file name.
 $var_files = @("global.tfvars", "iac-bootstrap.tfvars") # Array of required variable files for bootstrap process. 
 
 # Set action attributes. 
@@ -189,7 +189,8 @@ Invoke-Expression "az config set extension.use_dynamic_install=yes_without_promp
 #================================================#
 # MAIN: Stage 2 - Display Config / Actions
 #================================================#
-$azSession
+
+Write-Host ""
 Write-Host -ForegroundColor $HD2 "==========================================================================================="
 Write-Host -ForegroundColor $HD1 "Azure"
 Write-Host "- Tenant:       $($azSession.tenantId) ($($azSession.tenantDisplayName))"
@@ -365,13 +366,13 @@ elseif (Test-Path -Path "$dir_tf/terraform.tfstate") {
         Try {
             $tfOutputs = terraform -chdir="$dir_tf" output -json | ConvertFrom-Json
             if ($LASTEXITCODE -eq 0) {
-                $deployments = $tfOutputs.deployments.value
-                $tf_backend_resource_group = $deployments.platform.backend_resource_group
-                $tf_backend_storage_account = $deployments.platform.backend_storage_account
-                $tf_backend_container = $deployments.platform.backend_blob_container
+                $bootstrap_output = $tfOutputs.bootstrap_backend.value
+                $tf_backend_resource_group = $bootstrap_output.resource_group
+                $tf_backend_storage_account = $bootstrap_output.storage_account
+                $tf_backend_blob_container = $bootstrap_output.blob_container
                 Write-Host "- Resource Group: $tf_backend_resource_group"
                 Write-Host "- Storage Account: $tf_backend_storage_account"
-                Write-Host "- Blob Continer: $tf_backend_container"
+                Write-Host "- Blob Container: $tf_backend_blob_container"
                 Write-Host "- State File: $tf_backend_state_key"
                 Write-Host -ForegroundColor $PASS "[+] PASS: Terraform outputs retrieved successfully."
 
@@ -380,7 +381,7 @@ terraform {
   backend "azurerm" {
     resource_group_name  = "$($tf_backend_resource_group)"
     storage_account_name = "$($tf_backend_storage_account)"
-    container_name       = "$($tf_backend_container)"
+    container_name       = "$($tf_backend_blob_container)"
     key                  = "$($tf_backend_state_key)"
     use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
   }

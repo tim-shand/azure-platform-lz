@@ -38,14 +38,14 @@ resource "github_actions_variable" "sub_iac" {
 # GitHub: Repo [VARIABLE] - Backend: Resource Group
 resource "github_actions_variable" "iac_rg" {
   repository    = data.github_repository.repo.name
-  variable_name = "TF_BACKEND_RG"
+  variable_name = "TF_BACKEND_RESOURCE_GROUP"
   value         = azurerm_resource_group.backend[local.backend_categories["platform"]].name
 }
 
 # GitHub: Repo [VARIABLE] - Backend: Storage Account
 resource "github_actions_variable" "iac_sa" {
   repository    = data.github_repository.repo.name
-  variable_name = "TF_BACKEND_SA"
+  variable_name = "TF_BACKEND_STORAGE_ACCOUNT"
   value         = azurerm_storage_account.backend[local.backend_categories["platform"]].name
 }
 

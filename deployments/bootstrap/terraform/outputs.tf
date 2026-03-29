@@ -7,3 +7,12 @@ output "service_principal" {
     display_name = azuread_application.iac_sp.display_name    # App Registration display name. 
   }
 }
+
+output "bootstrap_backend" {
+  description = "Map of bootstrap backend details for state file migration."
+  value = {
+    resource_group  = azurerm_resource_group.backend["platform"].name
+    storage_account = azurerm_storage_account.backend["platform"].name
+    blob_container  = azurerm_storage_container.bootstrap.name
+  }
+}

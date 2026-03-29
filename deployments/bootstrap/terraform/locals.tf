@@ -1,12 +1,6 @@
 locals {
   tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
 
-  # Map subscription IDs and names.
-  # subscriptions_resolved = {
-  #   for sub in data.azurerm_subscriptions.all.subscriptions : # Loop each sub in data call. 
-  #   lower(sub.display_name) => sub.subscription_id            # Key:"plz-connectivity-prod", Value:"00000000-0000-0000-0000-000000000000". 
-  # }
-
   # Define backend categories used for Resource Groups and Storage Accounts.
   backend_categories = {
     platform = "platform" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
