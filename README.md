@@ -179,15 +179,15 @@ Resource names are provided using a custom [naming module](./modules/global-reso
 
 ### Examples: Platform
 
-| Resource                    | Name Example              | Notes                               |
-| --------------------------- | ------------------------- | ----------------------------------- |
-| Connectivity Resource Group | `abc-plz-con-rg-01`       | Resource Group for hub connectivity |
-| Azure Firewall              | `abc-plz-con-fwl-01`      | Azure Firewall or NVA appliance     |
-| Hub VNet                    | `abc-plz-con-hub-vnet-01` | Central hub virtual network         |
-| Bastion Subnet              | `abc-plz-con-bas-snet-01` | Subnet for Azure Bastion            |
-| VPN Gateway Subnet          | `abc-plz-con-gwy-snet-01` | Subnet for VPN Gateway              |
-| Firewall Subnet             | `abc-plz-con-fwl-snet-01` | Subnet for Azure Firewall           |
-| Management Subnet           | `abc-plz-con-mgt-snet-01` | Subnet for monitoring/management    |
+| Resource                    | Name Example           | Notes                               |
+| --------------------------- | ---------------------- | ----------------------------------- |
+| Connectivity Resource Group | `abc-plz-con-rg-01`    | Resource Group for hub connectivity |
+| Azure Firewall              | `abc-plz-con-fwl-01`   | Azure Firewall or NVA appliance     |
+| Hub VNet                    | `abc-plz-con-hub-vnet` | Central hub virtual network         |
+| Bastion Subnet              | `abc-plz-con-bas-snet` | Subnet for Azure Bastion            |
+| VPN Gateway Subnet          | `abc-plz-con-gwy-snet` | Subnet for VPN Gateway              |
+| Firewall Subnet             | `abc-plz-con-fwl-snet` | Subnet for Azure Firewall           |
+| Management Subnet           | `abc-plz-con-mgt-snet` | Subnet for monitoring/management    |
 
 ### Examples: Workload
 
@@ -206,17 +206,6 @@ Resource names are provided using a custom [naming module](./modules/global-reso
 | gwy          | VPN Gateway subnet        |
 | fwl          | Firewall / Azure Firewall |
 | mgt          | Management subnet         |
-
-### Abbreviation Reference: Resource Types
-
-| Abbreviation | Meaning               |
-| ------------ | --------------------- |
-| rg           | Resource Group        |
-| vnet         | Virtual Network       |
-| snet         | Subnet                |
-| app          | App Service / Web App |
-| sql          | SQL Database          |
-| api          | API / Function        |
 
 ---
 
