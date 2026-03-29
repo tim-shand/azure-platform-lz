@@ -23,7 +23,8 @@ resource "azurerm_user_assigned_identity" "policy" {
 
 # RBAC: Monitoring Contributor
 resource "azurerm_role_assignment" "rbac_policy_mi" {
+  for_each             = tosert(local.policy_managed_identity_roles)         # Defined in locals.tf file.
   scope                = data.azurerm_app_configuration_key.mg_core_id.value # Assign at core management group.
   principal_id         = azurerm_user_assigned_identity.policy.principal_id  # Assign to User-Assigned Managed Identity. 
-  role_definition_name = "Monitoring Contributor"                            # Required to modify diagnostic settings on resources.
+  role_definition_name = each.value
 }
