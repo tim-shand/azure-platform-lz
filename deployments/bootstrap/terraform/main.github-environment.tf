@@ -19,19 +19,21 @@ resource "github_actions_variable" "tenant_id" {
   value         = data.azuread_client_config.current.tenant_id
 }
 
-# GitHub: Repo [VARIABLE] - Azure Subscription (IaC)
-resource "github_actions_variable" "sub_iac" {
-  repository    = data.github_repository.repo.name
-  variable_name = "ARM_SUBSCRIPTION_ID_IAC"
-  value         = data.azurerm_subscription.current.subscription_id # Current in use IaC subscription. 
-}
-
 # GitHub: Repo [SECRET] - Service Principal Client ID
 resource "github_actions_secret" "client_id" {
   repository      = data.github_repository.repo.name
   secret_name     = "ARM_CLIENT_ID"
   plaintext_value = azuread_application.iac_sp.client_id # Service Principal ID.
 }
+
+# GitHub: Repo [VARIABLE] - Azure Subscription (IaC): Stored remote state files.
+resource "github_actions_variable" "sub_iac" {
+  repository    = data.github_repository.repo.name
+  variable_name = "ARM_SUBSCRIPTION_ID_IAC"
+  value         = data.azurerm_subscription.current.subscription_id # Current in use IaC subscription. 
+}
+
+#----------------------------------------------------------------#
 
 # GitHub: Repo [VARIABLE] - Backend: Resource Group
 resource "github_actions_variable" "iac_rg" {
@@ -47,45 +49,26 @@ resource "github_actions_variable" "iac_sa" {
   value         = azurerm_storage_account.backend[var.backend_categories["platform"]].name
 }
 
-# GitHub: Repo [VARIABLE] - Global Output: App Config (Name)
-resource "github_actions_variable" "iac_cfg" {
+# GitHub: Repo [VARIABLE] - Backend: Container
+resource "github_actions_variable" "stack_cn" {
+  for_each      = local.platform_stack_subscriptions
   repository    = data.github_repository.repo.name
-  variable_name = "GLOBAL_OUTPUTS_NAME"
-  value         = azurerm_app_configuration.iac.name
-}
-
-#----------------------------------------------------------------#
-
-# GitHub: Environment - Create environments per deployment stack. 
-resource "github_repository_environment" "env" {
-  for_each    = local.platform_stacks_with_env # Create separate environment per stack, only for those with 'create_env=true'. 
-  repository  = data.github_repository.repo.name
-  environment = each.value.stack_name # Use variable property 'stack_name' for GitHub environment naming. 
-}
-
-# GitHub: Environment [VARIABLE] - Subscription ID
-resource "github_actions_environment_variable" "env_sub" {
-  for_each      = local.platform_stacks_with_env
-  repository    = data.github_repository.repo.name
-  environment   = github_repository_environment.env[each.key].environment
-  variable_name = "ARM_SUBSCRIPTION_ID"
-  value         = each.value.subscription_id
-}
-
-# GitHub: Environment [VARIABLE] - Backend: Container
-resource "github_actions_environment_variable" "env_cn" {
-  for_each      = local.platform_stacks_with_env
-  repository    = data.github_repository.repo.name
-  environment   = github_repository_environment.env[each.key].environment
-  variable_name = "TF_BACKEND_CONTAINER"
+  variable_name = "TF_BACKEND_CONTAINER_${upper(each.value.stack_code)}"
   value         = azurerm_storage_container.backend[each.key].name
 }
 
-# GitHub: Environment [VARIABLE] - Backend: State File Name
-resource "github_actions_environment_variable" "env_key" {
-  for_each      = local.platform_stacks_with_env
+# GitHub: Repo [VARIABLE] - Backend: State File Name
+resource "github_actions_variable" "stack_key" {
+  for_each      = local.platform_stack_subscriptions
   repository    = data.github_repository.repo.name
-  environment   = github_repository_environment.env[each.key].environment
-  variable_name = "TF_BACKEND_KEY"
-  value         = "azure-${each.value.stack_name}.tfstate"
+  variable_name = "TF_BACKEND_KEY_${upper(each.value.stack_code)}"
+  value         = "${each.value.stack_name}.tfstate"
+}
+
+# GitHub: Repo [VARIABLE] - Stack Subscription ID
+resource "github_actions_variable" "stack_sub" {
+  for_each      = local.platform_stack_subscriptions
+  repository    = data.github_repository.repo.name
+  variable_name = "ARM_SUBSCRIPTION_ID_${upper(each.value.stack_code)}"
+  value         = each.value.subscription_id
 }

@@ -1,9 +1,9 @@
-output "deployments" {
-  description = "Map of environment configuration to deploy."
-  value       = local.deployment_configs
-}
-
-output "service_principal_name" {
-  description = "Name of the pipeline Service Principal."
-  value       = azuread_application.iac_sp.display_name
+output "service_principal" {
+  description = "Map detailing properties of the pipeline Service Principal."
+  value = {
+    object_id    = azuread_application.iac_sp.object_id
+    app_id       = azuread_application.iac_sp.app_id
+    sp_id        = azuread_service_principal.app_id
+    display_name = azuread_application.iac_sp.display_name
+  }
 }

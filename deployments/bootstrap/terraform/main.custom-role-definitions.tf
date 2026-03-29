@@ -9,7 +9,7 @@
 resource "azurerm_role_definition" "custom_role_iac_deploy" {
   name        = "Custom-IaC-Deploy"
   description = "Custom role for executing automation deployments using IaC service principal."
-  scope       = azurerm_management_group.core.id # Assign at core management group level. 
+  scope       = data.azurerm_management_group.tenant_root.id # Assign at core management group level (azurerm_management_group.core.id). 
   permissions {
     actions = [
       # General resource control
@@ -40,9 +40,6 @@ resource "azurerm_role_definition" "custom_role_iac_deploy" {
     ]
     not_actions = [
       "Microsoft.Authorization/elevateAccess/Action",
-      "Microsoft.Blueprint/blueprintAssignments/write",
-      "Microsoft.Blueprint/blueprintAssignments/delete",
-      "Microsoft.Purview/consents/delete",
     ]
     data_actions = [] # Role assignments to Management Groups can not be made to custom role definitions with DataActions. 
   }
