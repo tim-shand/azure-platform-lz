@@ -7,9 +7,9 @@
 # Action Groups: Define actions to be taken when triggered. 
 resource "azurerm_monitor_action_group" "all" {
   for_each            = var.action_groups # Use TFVARS. 
-  name                = lower("${module.naming_mgt_alerts.full_name}-${each.key}-ag")
+  name                = lower("${module.naming_mgt.full_name}-${each.key}-ag")
   short_name          = upper(each.key)
-  resource_group_name = azurerm_resource_group.mgt_alerts.name
+  resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
   dynamic "email_receiver" {
     for_each = each.value.email_address # Loop each email address in priority list. 

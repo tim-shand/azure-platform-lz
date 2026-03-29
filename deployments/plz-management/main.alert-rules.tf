@@ -7,8 +7,8 @@
 
 # Alerts: Administrative
 resource "azurerm_monitor_activity_log_alert" "administrative" {
-  name                = lower("${module.naming_mgt_alerts.full_name}-admin-ar") # "ActivityLog-${each.key}"
-  resource_group_name = azurerm_resource_group.mgt_alerts.name
+  name                = lower("${module.naming_mgt.full_name}-admin-ar") # "ActivityLog-${each.key}"
+  resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
   scopes              = local.platform_subs # Assign to platform subscriptions.  
@@ -25,8 +25,8 @@ resource "azurerm_monitor_activity_log_alert" "administrative" {
 
 # Alerts: Policy
 resource "azurerm_monitor_activity_log_alert" "policy" {
-  name                = lower("${module.naming_mgt_alerts.full_name}-policy-ar") # "ActivityLog-${each.key}"
-  resource_group_name = azurerm_resource_group.mgt_alerts.name
+  name                = lower("${module.naming_mgt.full_name}-policy-ar") # "ActivityLog-${each.key}"
+  resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
   scopes              = local.platform_subs # Assign to platform subscriptions.  
@@ -43,8 +43,8 @@ resource "azurerm_monitor_activity_log_alert" "policy" {
 
 # Alerts: Security
 resource "azurerm_monitor_activity_log_alert" "security" {
-  name                = lower("${module.naming_mgt_alerts.full_name}-security-ar") # "ActivityLog-${each.key}"
-  resource_group_name = azurerm_resource_group.mgt_alerts.name
+  name                = lower("${module.naming_mgt.full_name}-security-ar") # "ActivityLog-${each.key}"
+  resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
   scopes              = local.platform_subs # Assign to platform subscriptions.  
@@ -61,8 +61,8 @@ resource "azurerm_monitor_activity_log_alert" "security" {
 
 # Alerts: Resource Health
 resource "azurerm_monitor_activity_log_alert" "resource_health" {
-  name                = lower("${module.naming_mgt_alerts.full_name}-resource-ar") # "ActivityLog-${each.key}"
-  resource_group_name = azurerm_resource_group.mgt_alerts.name
+  name                = lower("${module.naming_mgt.full_name}-resource-ar") # "ActivityLog-${each.key}"
+  resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
   scopes              = local.platform_subs # Assign to platform subscriptions.  
@@ -80,8 +80,8 @@ resource "azurerm_monitor_activity_log_alert" "resource_health" {
 
 # Alerts: Service Health 
 resource "azurerm_monitor_activity_log_alert" "service_health" {
-  name                = lower("${module.naming_mgt_alerts.full_name}-service-ar") # "ActivityLog-${each.key}"
-  resource_group_name = azurerm_resource_group.mgt_alerts.name
+  name                = lower("${module.naming_mgt.full_name}-service-ar") # "ActivityLog-${each.key}"
+  resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
   scopes              = local.platform_subs # Assign to platform subscriptions.  
@@ -96,4 +96,20 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
   action {
     action_group_id = local.action_group_ids[var.activity_log_alerts["ServiceHealth"].action_group]
   }
+}
+
+# Alerts: Security Center
+# Enable logging to Log Analytics. 
+resource "azurerm_security_center_workspace" "mdfc" {
+  for_each     = data.azurerm_subscription.platform_subs # Set for platform subscriptions. 
+  scope        = each.value.id
+  workspace_id = azurerm_log_analytics_workspace.mgt_logs.id
+}
+
+# Alerts: Send to contact.
+resource "azurerm_security_center_contact" "mdfc" {
+  name                = "SecurityTeam"
+  email               = var.action_groups.security.email_address[0]
+  alert_notifications = true  # Send security alerts notifications to the security contact.
+  alerts_to_admins    = false # Send security alerts notifications to subscription admins.
 }

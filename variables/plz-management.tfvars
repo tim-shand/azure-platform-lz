@@ -13,18 +13,35 @@ stack = {
 
 # Log Analytics
 law_retenion_days = 30 # Days to retain logs in LOg Analytics Workspace. 
-law_export_log_tables = [
-  "Alert",
-  "AppCenterError",
-  "ComputerGroup",
-  "InsightsMetrics",
-  "Operation",
-  "Usage"
-]
 
 # Policy, Diagnostics & Logging
 policy_diagnostic_settings_effect = "AuditIfNotExists" # DeployIfNotExists, AuditIfNotExists, Disabled
 policy_activity_logs_effect       = "AuditIfNotExists" # DeployIfNotExists, AuditIfNotExists, Disabled
+
+# Entra ID: Groups (Privilaged RBAC) 
+entra_groups_admins_prefix = "GRP_ADM_" # GRP_ADM_NetworkAdmins
+entra_groups_admins = {
+  "NetworkAdmins" = {
+    description       = "RBAC - Privilaged Group: Network Administrators"
+    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TST0001"
+  }
+  "SecurityAdmins" = {
+    description       = "RBAC - Privilaged Group: Security Administrators"
+    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TST0001"
+  }
+  "PlatformAdmins" = {
+    description       = "RBAC - Privilaged Group: Platform Administrators"
+    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TST0001"
+  }
+  "UserAccessAdmins" = {
+    description       = "RBAC - Privilaged Group: User Access Administrators"
+    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    owner_employee_id = "TST0001"
+  }
+}
 
 # Define Action Groups and email recipients. 
 action_groups = {
@@ -101,29 +118,4 @@ entraid_log_types = {
   "AzureADGraphActivityLogs"            = true  # [True/False]: Enable or disable logging for category. 
   "NetworkAccessGenerativeAIInsights"   = false # [True/False]: Enable or disable logging for category. 
   "GraphNotificationsActivityLogs"      = false # [True/False]: Enable or disable logging for category. 
-}
-
-# Entra ID: Groups (Privilaged RBAC) 
-entra_groups_admins_prefix = "GRP_ADM_" # GRP_ADM_NetworkAdmins
-entra_groups_admins = {
-  "NetworkAdmins" = {
-    description       = "RBAC - Privilaged Group: Network Administrators"
-    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
-    owner_employee_id = "TST0001"
-  }
-  "SecurityAdmins" = {
-    description       = "RBAC - Privilaged Group: Security Administrators"
-    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
-    owner_employee_id = "TST0001"
-  }
-  "PlatformAdmins" = {
-    description       = "RBAC - Privilaged Group: Platform Administrators"
-    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
-    owner_employee_id = "TST0001"
-  }
-  "UserAccessAdmins" = {
-    description       = "RBAC - Privilaged Group: User Access Administrators"
-    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
-    owner_employee_id = "TST0001"
-  }
 }

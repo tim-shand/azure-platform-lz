@@ -1,14 +1,10 @@
 # GOVERNANCE: Management Groups
-# ------------------------------------------------------------- #
-
 output "management_groups_all" {
   description = "Full details of created Management Groups."
   value       = local.management_groups_all_created
 }
 
 # GOVERNANCE: Policy Definitions
-# ------------------------------------------------------------- #
-
 output "policy_definitions" {
   description = "Map of custom policy definitions."
   value = {
@@ -20,8 +16,6 @@ output "policy_definitions" {
 }
 
 # GOVERNANCE: Policy Initiatives
-# ------------------------------------------------------------- #
-
 output "policies_builtin" {
   description = "Map of built-in policy initiatives to assign."
   value = {
@@ -49,8 +43,6 @@ output "policy_initiatives" {
 }
 
 # GOVERNANCE: Policy Assignments
-# ------------------------------------------------------------- #
-
 output "policy_initiative_assignments" {
   description = "Map of policy initiative assignments to Management Groups."
   value = {
@@ -62,5 +54,16 @@ output "policy_initiative_assignments" {
       identity            = v.identity
       management_group_id = v.management_group_id
     }
+  }
+}
+
+# GOVERNANCE: Managed Identity
+output "policy_managed_identity" {
+  description = "Map of policy managed identity resource."
+  value = {
+    principal_id        = azurerm_user_assigned_identity.policy.principal_id
+    name                = azurerm_user_assigned_identity.policy.name
+    resource_group_name = azurerm_user_assigned_identity.policy.resource_group_name
+    location            = azurerm_user_assigned_identity.policy.location
   }
 }
