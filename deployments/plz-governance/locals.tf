@@ -66,6 +66,7 @@ locals {
       ]
     ]))
   }
+
   # Merge the individual lookup maps into a single map (flatten).
   management_groups_all = merge(
     var.management_groups_level1,
