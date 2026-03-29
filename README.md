@@ -13,7 +13,7 @@ Ideal for a small organization, personal tenant, light production or development
   - Separate state files per deployment stack, reducing blast radius in case of corruption or loss.
 - **Powershell Bootstrapping**
   - Locally executed [Powershell script](./deployments/bootstrap) automates initial setup process.
-  - Prepares both Azure tenant and GitHub repository for automated deployments.
+  - Prepares both Azure tenant and GitHub repository for automated deployments using Terraform.
 
 ---
 
@@ -56,10 +56,9 @@ TBC
   - **Roles:** Read/Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.
 - Existing Azure tenant with required roles assigned to a _dedicated_ IaC subscription (can also be used with a single platform subscription).
   - **Built-in Roles:** Bootstrap process requires:
-    - `Global Administrator`: Required to approve MSGraph application API permissions assigned to the Service Principal.
+    - `Global Administrator` (preferred): Required to approve MSGraph application API permissions assigned to the Service Principal.
     - `Contributor`: Required to deploy initial resources.
     - `User Access Administrator`: Required to assign RBAC roles.
-    - `App Configuration Data Owner`: Required to access data plane (read/write) for shared services data.
 - Applications installed locally (during bootstrap process):
   - **[Terraform](https://developer.hashicorp.com/terraform/install):**
     - Cloud-agnostic Infra-as-Code tool for deploying and managing resources in Azure and GitHub.
@@ -79,36 +78,34 @@ TBC
 
 Automates the **initial bootstrapping** process, preparing both Azure and GitHub for platform landing zone deployments.
 
-- Locally executed [Powershell script](./deployments/bootstrap) performs the initial setup process, configuring Azure and GitHub for automation.
-  - Performs pre-flight checks, validates authentication and intentions.
-- Executes pre-defined Terraform module to deploy base resources (core management group, service principal, RBAC assignments).
+- Locally executed Powershell script performs the initial setup process, configuring Azure and GitHub for automation.
+  - Performs pre-flight checks, validates authentication and confirms intentions.
+- Executes pre-defined Terraform module to deploy base resources.
 - Creates Entra ID Service Principal:
   - Secured with Federated Credentials (OIDC) for GitHub repository and environments.
-  - Details added as repository variables and referenced by workflows.
   - Custom RBAC role assigned at core management group level.
 - Deploys backend resources **per stack** into a dedicated IaC subscription:
-  - Maintaining isolation and independence per stack.
-  - Resource Groups and Storage Accounts per category (bootstrap, platform, workloads).
-  - One state file per stack (governance, connectivity, management).
-  - Azure App Configuration used to store **shared service/global outputs** to be accessed by other stacks.
-- Adds stack environments, variables and secrets into the provided GitHub repository.
+  - Resource Groups and Storage Accounts per category (platform, workloads).
+  - Maintaining isolation and independence, using separate tate files per stack (governance, connectivity, management).
+- Adds stack variables and secrets into the provided GitHub repository.
+- Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 
 ---
 
 ## ▶️ Deployment
 
 Stacks are deployed using GitHub Actions workflows located in `.github/workflows`.  
-Workflows are designed to be ruin in the order provided below for the **inital deployment** only.  
-Once the full stack list has been deployed, changes can be made, with individual workflows executed as and when required.
+Workflows are designed to be run in the order provided below for the **initial deployment** only.  
+Once the full stack list has been deployed, changes can be made, with individual workflows executed when required.
 
 1. **Bootstrap:** Execute [bootstrap script](./deployments/bootstrap) to begin deployment process.
-2. **Governance:** Assign base policies at defined management group and subscription structure.
-3. **Management:** Create monitoring and observability resources, policy assignments using initiatives from Governance stack.
+2. **Management:** Create monitoring and observability resources, policy assignments using initiatives from Governance stack.
+3. **Governance:** Assign base policies at defined management group and subscription structure.
 4. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized flow control.
 
 ---
 
-## 📕 Naming Conventions
+## 📕 Naming Convention
 
 This project uses a semi-opinionated naming format for resources to ensure consistency, readability, and CAF alignment.  
 Resource names are provided using a custom [naming module](./modules/global-resource-naming/) that produces multiple naming outputs.
@@ -169,7 +166,7 @@ Resource names are provided using a custom [naming module](./modules/global-reso
 
 ## 📚 Reference Materials
 
-A list of references, material and content that contributed to, or influnenced this project.
+A list of references, material and content that contributed to, or influenced this project.
 
 - [Azure Landing Zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
 - [Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/overview)
