@@ -17,6 +17,12 @@ Ideal for a small organization, personal tenant, light production or development
 
 ---
 
+## 🏢 Architecture & Design
+
+TBC
+
+---
+
 ## ✨ Deployment Stacks
 
 ### 🚀 [Bootstrapping](./deployments/bootstrap)
@@ -38,7 +44,7 @@ Automates the **initial bootstrapping** process, preparing both Azure and GitHub
 ### 📜 [Governance](./deployments/plz-governance)
 
 The Governance stack provides structure and policy enforcement, combining Management Groups with Azure Policy assignments.
-This stack lays the ground work for policy assignments and remediations to enforce resource configuration.
+This stack lays the ground work for policy assignments and remediation to enforce resource configuration.
 
 - **Management Groups:**
   - Deploy multi-level Management Group structure, defined within the `plz-governance.tfvars` file, allowing for expansion.
@@ -49,6 +55,36 @@ This stack lays the ground work for policy assignments and remediations to enfor
   - Policy Initiative Assignments are mapped to Management Groups using the `policy_initiatives` field in the Management Group structure.
   - Built-in Policy Initiatives are resolved by ID and assigned to target Management Groups in the `policy_initiatives_builtin` variable.
   - Remediation tasks enforce policy compliance continuously, ensuring current and future resources are in compliance.
+
+**Example:** Management Group Structure  
+
+```text
+TENANT_ROOT
+└── abc-core-mg               (Core Management Group)
+    ├── abc-platform-mg       (L1: Platform subscriptions)
+    ├── abc-workload-mg       (L1: Workload subscriptions)
+        ├── abc-online-mg     (L2: Online/Internet-facing workload subscriptions)
+        └── abc-corporate-mg  (L2: Internal/business workload subscriptions)
+    ├── abc-sandbox-mg        (L1: Dev/test/sandbox subscriptions)
+    └── abc-decom-mg          (L1: Holding group for decommissioned subscriptions)
+```
+
+```hcl
+management_groups_level1 = {
+  "platform" = {
+    display_name             = "Platform"                                   # Contains all platform subscriptions. 
+    parent_mg_name           = "core"                                       # Key ID of the parent Management Group. 
+    subscription_identifiers = ["12345678-0000-0000", "12345678-1111-1111"] # List of subscription identifiers, first 3 segments used to resolve full ID.
+    policy_initiatives       = [core_baseline]                              # Assign Policy Initiatives directly to MGs. 
+  }
+  "workload" = {
+    display_name             = "Workload"
+    parent_mg_name           = "core"
+    subscription_identifiers = ["12345678-2222-2222]
+    policy_initiatives       = ["cost_controls"] 
+  }
+}
+```
 
 ### 🔍 [Management](./deployments/plz-management)
 
@@ -70,17 +106,29 @@ This stack provides centralized logging, monitoring, alerting, and policy-driven
 
 ### 🌐 [Connectivity](./deployments/plz-connectivity)
 
-- Implements a hub-and-spoke network architecture for centralized network management and secure traffic flow.
-- Spoke VNets connect to the hub VNet using VNet peering, with optional User-Defined Routes (UDRs) directing traffic through Azure Firewall.
-- Azure Firewall provides optional centralized network security and traffic inspection for hub and spoke workloads.
-- Azure Bastion enables secure RDP/SSH access to VMs in peered VNets without exposing public endpoints or requiring public IPs.
-- Network Security Groups (NSGs) enforce fine-grained, rule-based traffic controls at the subnet levels.
+The Connectivity stack deploys the resources required for secure networking between workloads and on-prem.
 
----
+- **Hub-Spoke Architecture:**
+  - Deploys a hub-spoke network architecture for centralized network management and secure traffic flow.
+  - Spoke VNets (workloads) peer to the central hub VNet (platform).
+  - Network Security Groups (NSGs) enforce rule-based traffic controls at the subnet levels.
+- **Azure Firewall:**
+  - Provides centralized network security and traffic inspection for hub and spoke workloads.
+  - Management subnet, NIC and public IP, allowing for separation between data and operational traffic.
+- **Azure Bastion:**
+  - Secure and centralized RDP and SSH connectivity to cloud VMs.
+  - Reduce risk by removing the need to expose public IP or endpoints for VM workloads.
+- **VPN Gateway:**
+  - Site-to-Site VPN for hybrid connectivity between Azure and on-prem.
+  - Dedicated subnet providing gateway services for hub virtual network.
 
-## 🏢 Architecture & Design
+> [!NOTE]
+> Automatic creation of Network Watcher is enabled by default. Use the below commands to disable this and allow Terraform to manage the deployment.
 
-TBC
+```bash
+# Disable auto-creation of Network Watcher. 
+az feature register --namespace Microsoft.Network --name DisableNetworkWatcherAutocreation
+```
 
 ---
 
