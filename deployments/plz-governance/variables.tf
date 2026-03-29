@@ -32,20 +32,6 @@ variable "remote_state_bootstrap" {
 # GOVERNANCE: Management Groups
 # ------------------------------------------------------------- #
 
-# variable "management_group_core" {
-#   description = "Map of top-level Management Group object, placed under tenant root."
-#   type = map(object({
-#     display_name       = string
-#     policy_initiatives = optional(list(string)) # Assign Policy Initiatives directly to MGs. 
-#   }))
-#   validation {
-#     condition = alltrue([
-#       for mg, details in var.management_group_core : length(details.display_name) >= 3
-#     ])
-#     error_message = "Display name is required for top-level (core) Management Group."
-#   }
-# }
-
 variable "management_groups_level1" {
   description = "Map of first level Management Group objects, nested under the core Manangement Group."
   type = map(object({
