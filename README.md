@@ -17,9 +17,9 @@ Ideal for a small organization, personal tenant, light production or development
 
 ---
 
-## 🚀 Deployment Stacks
+## ✨ Deployment Stacks
 
-### 🛠️ [Bootstrapping](./deployments/bootstrap)
+### 🚀 [Bootstrapping](./deployments/bootstrap)
 
 Automates the **initial bootstrapping** process, preparing both Azure and GitHub for platform landing zone deployments.
 
@@ -37,9 +37,18 @@ Automates the **initial bootstrapping** process, preparing both Azure and GitHub
 
 ### 📜 [Governance](./deployments/plz-governance)
 
-- Multi-level Management Groups providing Azure Policy assignment and subscription hierarchy.
-- Automated mapping of subscriptions to target management groups using a subscription identifier value.
-- Custom policy definitions and initiatives, defined in JSON and deployed using Terraform.
+The Governance stack provides structure and policy enforcement, combining Management Groups with Azure Policy assignments.
+This stack lays the ground work for policy assignments and remediations to enforce resource configuration.
+
+- **Management Groups:**
+  - Deploy multi-level Management Group structure, defined within the `plz-governance.tfvars` file, allowing for expansion.
+  - Management Groups are assigned to a "Level", determining the layer of depth at which each Management Group sits (parent/child).
+  - Automated mapping of subscriptions to parent management groups using a subscription ID prefix identifier value.
+- **Azure Policy:**
+  - Custom policy definitions and initiatives, defined in JSON files and created using Terraform.
+  - Policy Initiative Assignments are mapped to Management Groups using the `policy_initiatives` field in the Management Group structure.
+  - Built-in Policy Initiatives are resolved by ID and assigned to target Management Groups in the `policy_initiatives_builtin` variable.
+  - Remediation tasks enforce policy compliance continuously, ensuring current and future resources are in compliance.
 
 ### 🔍 [Management](./deployments/plz-management)
 
@@ -52,7 +61,6 @@ This stack provides centralized logging, monitoring, alerting, and policy-driven
   - Storage Account for long term log archiving.
 - **Policy-Driven Diagnostics:**
   - Diagnostic settings applied to resources via Azure Policy assignments.
-  - Remediation tasks enforce policy compliance continuously, ensuring current and future resources are monitored.
 - **Alerting & Action Groups:**
   - Activity, Service and Health alerting, with category-based action groups.
   - Severity-based notification routing using Action Groups, targeting required support teams.
