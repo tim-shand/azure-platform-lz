@@ -103,19 +103,19 @@ locals {
     }
   })
 
-  # # Initiative specific parameters for assignment. 
-  # initiative_assignment_parameters = {
-  #   core_baseline = {
-  #     allowedLocations = var.policy_param_allowed_locations
-  #     requiredTags     = var.policy_param_required_tags
-  #     effect           = var.policy_effect_mode
-  #   }
-  #   cost_controls = {
-  #     allowedVmSkus = var.policy_param_allowed_vm_skus
-  #     effect        = var.policy_effect_mode
-  #   }
-  #   decommissioned = {
-  #     effect = var.policy_effect_mode
-  #   }
-  # }
+  # Initiative specific parameters for assignment. 
+  initiative_assignment_parameters = {
+    core_baseline = {
+      allowedLocations = var.policy_param_allowed_locations
+      requiredTags     = var.policy_param_required_tags
+      effect           = var.policy_effect_mode
+    }
+    cost_controls = {
+      allowedVmSkus = var.policy_param_allowed_vm_skus
+      effect        = var.policy_effect_mode
+    }
+    decommissioned = {
+      effect = var.policy_effect_mode
+    }
+  }
 }
