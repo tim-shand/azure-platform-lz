@@ -17,10 +17,10 @@ module "naming_mg" {
 # Management Groups: Level 1
 resource "azurerm_management_group" "level1" {
   for_each                   = var.management_groups_level1
-  name                       = module.naming_mg[each.key].full_name                              # Use naming module to produce MG name format. 
-  display_name               = title(var.management_groups_level1[each.key].display_name)        # Use map key for MG display name.   
-  subscription_ids           = lookup(local.management_group_subscriptions_level1, each.key, []) # Assign mapped subscriptions from locals. 
-  parent_management_group_id = data.azurerm_app_configuration_key.mg_core_id.value               # Assign to top-level MG.
+  name                       = module.naming_mg[each.key].full_name                                   # Use naming module to produce MG name format. 
+  display_name               = title(var.management_groups_level1[each.key].display_name)             # Use map key for MG display name.   
+  subscription_ids           = lookup(local.management_group_subscriptions_level1, each.key, [])      # Assign mapped subscriptions from locals. 
+  parent_management_group_id = data.terraform_remote_state.bootstrap.outputs.management_group_core.id # Use 'core' MG created during bootstrapping.
 }
 
 # Management Groups: Level 2

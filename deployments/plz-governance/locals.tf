@@ -8,6 +8,12 @@ locals {
 # ------------------------------------------------------------- #
 
 locals {
+  policy_mi_roles = [
+    "Monitoring Contributor"
+  ]
+}
+
+locals {
   # Build a subscription lookup map (sub display name to ID).
   subscriptions_by_name = {
     for sub in data.azurerm_subscriptions.all.subscriptions : # Loop each sub in data call. 
