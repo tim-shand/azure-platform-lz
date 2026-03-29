@@ -86,3 +86,13 @@ resource "azurerm_role_assignment" "rbac_cu_backend_rg" {
   role_definition_name = "Storage Blob Data Contributor"              # Required to access and update blob storage properties. 
   principal_id         = data.azuread_client_config.current.object_id # Current user object ID. 
 }
+
+# RBAC: [Service Principal] - Assign default/built-in RBAC roles (see `local.rbac_roles_builtin`). 
+resource "azurerm_role_assignment" "rbac_sp_builtin" {
+  for_each             = { for a in local.rbac_assignments_builtin : "${a.rg_key}-${a.role}" => a }
+  name                 = uuidv5("52c6b8b5-0000-0000-0000-000000000000", "${each.value.rg_key}-${each.value.role}") # Use a deterministic GUID to avoid duplicates.
+  scope                = each.value.rg_id                                                                          # Each backend category Resource Group.
+  role_definition_name = each.value.role                                                                           # Each mapped RBAC role. 
+  principal_id         = azuread_service_principal.iac_sp.object_id                                                # Service Principal object ID.
+  principal_type       = "ServicePrincipal"                                                                        # Avoids Azure RBAC graph lookup delays that sometimes break CI/CD pipelines.
+}
