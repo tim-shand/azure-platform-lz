@@ -97,11 +97,7 @@ jobs: # List jobs to execute.
                   -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
                   -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
                   -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC" \
-                  -var='remote_state_bootstrap={ \
-                    "resource_group_name":"$TF_BACKEND_RG", \
-                    "storage_account_name":"$TF_BACKEND_SA", \
-                    "blob_container":"$ARM_SUBSCRIPTION_ID_IAC", \
-                    "state_key":"$TF_BACKEND_KEY_IAC"}'
+                  -var='remote_state_bootstrap={"resource_group_name"="$TF_BACKEND_RG","storage_account_name"="$TF_BACKEND_SA","blob_container"="$ARM_SUBSCRIPTION_ID_IAC","state_key"="$TF_BACKEND_KEY_IAC"}'
 
             - name: "Terraform: Apply"
               if: env.RUN_APPLY == 'true'
