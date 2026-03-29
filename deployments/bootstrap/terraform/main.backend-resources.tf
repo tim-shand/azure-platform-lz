@@ -48,6 +48,6 @@ resource "azurerm_storage_account" "backend" {
 resource "azurerm_storage_container" "backend" {
   for_each              = var.platform_stacks # Create Blob Container for each stack in platform_stacks map. 
   name                  = "tfstate-${each.value.stack_name}"
-  storage_account_id    = azurerm_storage_account.backend[each.value.backend_category].id
+  storage_account_id    = azurerm_storage_account.backend["platform"].id
   container_access_type = "private"
 }
