@@ -185,6 +185,8 @@ ForEach ($app in $requiredApps) {
 Write-Host -ForegroundColor $PASS "PASS"
 # Enables Azure CLI to automatically install missing extensions whenever a command requires them, without asking for confirmation.
 Invoke-Expression "az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors" >$null 2>&1
+# Disable auto-creation of Network Watcher. 
+Invoke-Expression "az feature register --namespace Microsoft.Network --name DisableNetworkWatcherAutocreation" >$null 2>&1
 
 #================================================#
 # MAIN: Stage 2 - Display Config / Actions
