@@ -138,18 +138,18 @@ Try {
             exit 1
         }
     }  
-    Try{
+    Try {
         $repoConfig = Get-RepoConfig "$dir_ps_vars/global.tfvars"
-        if($repoConfig.repo){
+        if ($repoConfig.repo) {
             Write-Host -ForegroundColor $PASS "PASS"
         }
-        else{
+        else {
             Write-Host -ForegroundColor $ERR "FAIL"
             Write-Host -ForegroundColor $ERR "[x] ERROR: Unable to extract repository details from variables file. Abort."
             exit 1
         }
     }
-    Catch{
+    Catch {
         Write-Host -ForegroundColor $ERR "FAIL"
         Write-Host -ForegroundColor $ERR "[x] ERROR: Unable to extract repository details from variables file. Abort. $_"
         exit 1
@@ -303,13 +303,11 @@ if (Test-Path -Path "$dir_tf/backend.tf") {
     # Already migrated (remote). Backend configuration already exists. 
     if ($Remove) {
         Try {
-
             # Pull from remote --> local
             terraform -chdir="$dir_tf" state pull > "$dir_tf/terraform.tfstate"
             if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state successfully copied locally."
                 if (Test-Path "$dir_tf/terraform.tfstate") {
-                    Write-Host -ForegroundColor $PASS "[+] PASS: Local Terraform state file present."
+                    Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state copied locally from remote."
                 }
                 else {
                     Write-Host -ForegroundColor $ERR "[x] FAIL: Local Terraform state is not present! Remote to local migration may have failed."
@@ -318,7 +316,7 @@ if (Test-Path -Path "$dir_tf/backend.tf") {
                 }
             }
             else {
-                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed during remote to local migration. [284]"
+                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed during remote to local migration."
                 Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
                 exit 1
             }
@@ -332,30 +330,22 @@ if (Test-Path -Path "$dir_tf/backend.tf") {
             # Reconfigure Terraform to use local state file.
             terraform -chdir="$dir_tf" init -migrate-state -input=false > $null 2>&1
             if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor $PASS "[+] PASS: Terraform state successfully copied locally."
-                if (Test-Path "$dir_tf/terraform.tfstate") {
-                    Write-Host -ForegroundColor $PASS "[+] PASS: Local Terraform state file present."
-                }
-                else {
-                    Write-Host -ForegroundColor $ERR "[x] FAIL: Local Terraform state is not present! Remote to local migration may have failed."
-                    Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
-                    exit 1
-                }
+                Write-Host -ForegroundColor $PASS "[+] PASS: Terraform configured to use local state."
             }
             else {
-                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed during remote to local migration. [309]"
+                Write-Host -ForegroundColor $ERR "[x] FAIL: Terraform failed to configure local state. Abort"
                 Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" -ErrorAction SilentlyContinue # Rename file back to avoid issues when re-running. 
                 exit 1
             }
         }
         Catch {
-            Write-Host -ForegroundColor $ERR "[x] FAIL: An error occurred during Terraform remote to local migration. [315] $_"
+            Write-Host -ForegroundColor $ERR "[x] FAIL: An error occurred during Terraform remote to local state migration. $_"
             Rename-Item -Path "$dir_tf/backend.tf.bak" -NewName "$dir_tf/backend.tf" # Rename file back to avoid issues when re-running. 
             exit 1
         }
     } 
     else {
-        Write-Host -ForegroundColor $HD1 "[*] Existing backend configuration detected. Skipping migration..."
+        Write-Host -ForegroundColor $HD1 "[*] Existing backend configuration file detected. Skipping migration..."
     }
 }
 elseif (Test-Path -Path "$dir_tf/terraform.tfstate") {
