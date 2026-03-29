@@ -40,20 +40,7 @@ management_groups_level1 = {
 }
 
 # Management Groups: Second level nested under level 1 manangement groups.
-management_groups_level2 = {
-  # "online" = {
-  #   display_name             = "Online"              # Workloads requiring direct internet inbound or outbound connectivity, or may not require a virtual network.
-  #   parent_mg_name           = "workload"            # Key ID of the parent Management Group. 
-  #   subscription_identifiers = [] # List of subscription prefixes (first 3 segments). Maps MG to sub associations keeping full sub out of code.
-  #   policy_initiatives       = []                    # Assign Policy Initiatives directly to MGs. 
-  # }
-  # "corporate" = {
-  #   display_name             = "Corporate" # Workloads that require connectivity with the corporate/on-prem network via the hub in the connectivity subscription. 
-  #   parent_mg_name           = "workload"  # Key ID of the parent Management Group. 
-  #   subscription_identifiers = []          # List of subscription prefixes (first 3 segments). Maps MG to sub associations keeping full sub out of code.
-  #   policy_initiatives       = []          # Assign Policy Initiatives directly to MGs. 
-  # }
-}
+management_groups_level2 = {} # Leave blank if not required. Repeat same structure as "management_groups_level2". 
 
 # Management Groups: Third level nested under level 2 manangement groups.
 management_groups_level3 = {} # Leave blank if not required. Repeat same structure as "management_groups_level2". 
