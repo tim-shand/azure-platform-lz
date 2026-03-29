@@ -6,12 +6,18 @@ locals {
     platform = "platform" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
     workload = "workload" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA.
   }
+
+  # Merge both bootstrap and platform stacks into 'deployment stacks'.
+  deployment_stacks = merge(
+    var.bootstrap_stacks,
+    var.platform_stacks
+  )
 }
 
 locals {
   # Map deployment stacks to relevant subscriptions, by data call using 'key' as identifier.
   deployment_stack_subscriptions = {
-    for stack_key, stack in var.deployment_stacks :
+    for stack_key, stack in local.deployment_stacks :
     stack_key => {
       stack_name = stack.stack_name # Full stack name.
       stack_code = stack.stack_code # Short code for stack.

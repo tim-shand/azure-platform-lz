@@ -24,7 +24,16 @@ variable "stack" {
   default     = {}
 }
 
-variable "deployment_stacks" {
+variable "bootstrap_stacks" {
+  description = "Map of deployment objects listing the bootstrap stack details."
+  type = map(object({
+    stack_name              = string
+    stack_code              = string
+    subscription_identifier = string # Name part that is used in "contains" filter to resolve ID. 
+  }))
+}
+
+variable "platform_stacks" {
   description = "Map of deployment objects listing the platform stack details."
   type = map(object({
     stack_name              = string
