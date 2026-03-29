@@ -13,7 +13,7 @@ output "bootstrap_backend" {
   value = {
     resource_group  = azurerm_resource_group.backend["platform"].name
     storage_account = azurerm_storage_account.backend["platform"].name
-    blob_container  = azurerm_storage_container.bootstrap.name
+    blob_container  = azurerm_storage_container.backend["bootstrap"].name
     state_key       = "${lower(var.stack.naming.workload_code)}-${lower(var.stack.naming.workload_name)}.tfstate"
   }
 }

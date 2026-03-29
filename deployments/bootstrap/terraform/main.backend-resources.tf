@@ -52,9 +52,9 @@ resource "azurerm_storage_container" "backend" {
   container_access_type = "private"
 }
 
-# Blob Container: Bootstrap
-resource "azurerm_storage_container" "bootstrap" {
-  name                  = "tfstate-${lower(var.stack.naming.workload_code)}-${lower(var.stack.naming.workload_name)}"
-  storage_account_id    = azurerm_storage_account.backend["platform"].id
-  container_access_type = "private"
-}
+# # Blob Container: Bootstrap
+# resource "azurerm_storage_container" "bootstrap" {
+#   name                  = "tfstate-${lower(var.stack.naming.workload_code)}-${lower(var.stack.naming.workload_name)}"
+#   storage_account_id    = azurerm_storage_account.backend["platform"].id
+#   container_access_type = "private"
+# }
