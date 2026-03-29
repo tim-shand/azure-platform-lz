@@ -59,39 +59,25 @@ This design is intended to be used with a **dedicated IaC subscription**, contai
 
 Notice that both the `governance` and `identity` stack configurations below are using the **same value** for the `subscription_identifier` field.
 
-Using the same value of `platform-plz-sub` will result in the **same subscription ID** being resolved and used for both stacks.  
-The subscription ID is resolved when a data call is made using the value provided by the `display_name_contains` parameter.
+Using the same value will result in the **same subscription ID** being used for both stacks.  
+The subscription ID is resolved when by a data call made using the value provided by the `subscription_identifier` parameter.
 
 ```hcl
-data "azurerm_subscriptions" "platform" {
-  for_each              = var.platform_stacks                 # Loop for each object in "platform_stacks". 
-  display_name_contains = each.value.subscription_identifier  # Read in each "subscription_identifier" per stack iteration. 
-}
-
 platform_stacks = {
-  "bootstrap" = {
-    stack_name              = "iac-bootstrap"    # Name of stack directory and GitHub environment. 
-    backend_category        = "bootstrap"        # Backend Category [backend_categories]: bootstrap, platform, workload. 
-    subscription_identifier = "platform-iac-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
-    create_environment      = false              # Enable to create related environment in GitHub for stack.  
-  },
   "connectivity" = {
-    stack_name              = "plz-connectivity" # Name of stack directory and GitHub environment. 
-    backend_category        = "platform"         # Backend Category [backend_categories]: bootstrap, platform, workload. 
-    subscription_identifier = "platform-con-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
-    create_environment      = true               # Enable to create related environment in GitHub for stack.  
+    stack_name              = "plz-connectivity"  # Name of stack directory and GitHub environment.
+    stack_code              = "con"               # Short code for the stack name.
+    subscription_identifier = "12345678-0000-000" # Subscription ID part, resolved to full ID in data call.
   },
   "governance" = {
-    stack_name              = "plz-governance"   # Name of stack directory and GitHub environment. 
-    backend_category        = "platform"         # Backend Category [backend_categories]: bootstrap, platform, workload. 
-    subscription_identifier = "platform-plz-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value.
-    create_environment      = true               # Enable to create related environment in GitHub for stack. 
+    stack_name              = "plz-governance"
+    stack_code              = "gov"
+    subscription_identifier = "12345678-0000-000"
   },
   "management" = {
-    stack_name              = "plz-management"   # Name of stack directory and GitHub environment. 
-    backend_category        = "platform"         # Backend Category [backend_categories]: bootstrap, platform, workload.  
-    subscription_identifier = "platform-mgt-sub" # Subscription name part, resolved to ID in data call. Subscription name required to contain provided value. 
-    create_environment      = true               # Enable to create related environment in GitHub for stack. 
+    stack_name              = "plz-management"
+    stack_code              = "mgt"
+    subscription_identifier = "12345678-0000-000"
   }
 }
 ```
@@ -110,39 +96,26 @@ platform_stacks = {
 
 #### Management Group
 
-- A top-level "core" Management Group is created under the default tenant root group.
-- This "core" Management Group represents the organisation in the current hierarchy, while accommodating for future changes or migration in the future.
+- A top-level "core" Management Group is created under the default tenant root group, representing the current organisation hierarchy.
 - All existing subscriptions accessible by the user running the bootstrap, will be **moved** under this new Management Group.
-  - **NOTE:** The governance stack is resonsible for deploying additional Management Groups and subscription assignments.
 - **RBAC** roles assigned at the "core" Management Group level are then inherited by child subscriptions.
 - This allows the Service Principal to provision resources, make further changes to Management Group structure, and perform subscription assignments.
 
 #### Remote Backend Resources
 
 - **Resource Groups:**
-  - Created per deployment category (global, platform, workloads) to group related child resources for easy management and separation of purpose.  
+  - Created per deployment category (platform, workloads) to group related child resources for easy management and separation of purpose.  
 - **Storage Accounts:**
   - Similar to Resource Groups, created per deployment category to hold the Blob Containers used by each deployment stack.
 - **Blob Containers:**
-  - Created per deployment stack (plz-governance, plz-management, etc) under each parent category Storage Account to hold the remote Terraform state files.
-
-#### Azure App Config (Global Outputs)
-
-- Used to store key/value pairs for shared services resource IDs and names (Hub VNet, Log Analytics Workspace etc).
-- This allows the Service Principal to resolve these resources by ID/name during data calls in other stacks running in **separate workflows**.
+  - Created per deployment stack to hold the remote Terraform state files per stack.
 
 ### 👜 GitHub
 
-#### Environments
-
-- Creates individual environments within the defined repository, **per deployment stack**.
-- This enables separation of concerns/duties, and allows deployments to execute independently (post bootstrap).
-
-#### Secrets & Variables
-
-- Entra ID Service Principal details added at the repository level (globals).
-- Azure remote backend resources, added per deployment stack for each environment.
-- These allow workflows to utilise the `environment` parameter to pass environment specific variables, or override globals (repo level) using the same name.
+- Code repository, version control and automation workflows.
+- Entra ID Service Principal details added as repository secrets.
+- Azure remote backend resources and subscription details added per deployment stack as secrets and variables.
+- Workflows to read individual stack variables/secrets and pass securely to Terraform at workflow run-time.
 
 ---
 
@@ -151,7 +124,6 @@ platform_stacks = {
 Resources are grouped by categories and their child stacks.
 
 - **Categories:**
-  - Bootstrap
   - Platform
   - Workload
 - **Stacks:**
@@ -160,12 +132,9 @@ Resources are grouped by categories and their child stacks.
   - Platform --> Connectivity (plz-connectivity)
 
 ```text
-org-iac-bootstrap-rg
-└── orgiacbootstrapsa12345
-    └── tfstate-iac-bootstrap
-
 org-platform-iac-rg
 └── orgiacplatformsa12345
+    ├── tfstate-iac-bootstrap
     ├── tfstate-plz-governance
     ├── tfstate-plz-management
     └── tfstate-plz-connectivity
@@ -173,17 +142,14 @@ org-platform-iac-rg
 
 | Object                  | Created Per  | Example Name             | Purpose                                                      |
 | ----------------------- | ------------ | ------------------------ | ------------------------------------------------------------ |
-| Resource Group          | **Category** | org-iac-bootstrap-rg     | Resource group containing bootstrap and global resources.    |
 | Resource Group          | **Category** | org-iac-platform-rg      | Resource group containing components for platform LZ.        |
-| Storage Account         | **Category** | orgiacbootstrapsa12345   | Holds blob container for bootstrap and global resources.     |
+| Resource Group          | **Category** | org-iac-workload-rg      | Resource group containing future workload remote states.     |
 | Storage Account         | **Category** | orgiacplatformsa12345    | Holds blob containers per platform deployment stack.         |
-| App Configuration       | **Category** | org-iac-platform-cfg     | Stores key/value pairs of shared service resources names/IDs.|
+| Storage Account         | **Category** | orgiacworkloadsa12345    | Holds blob container for bootstrap and global resources.     |
+| Blob Container          | **Stack**    | tfstate-iac-bootstrap    | Contains remote state file, created during initial setup.    |
 | Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow.    |
 | Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow.    |
 | Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow.    |
-| Repository Environment  | **Stack**    | plz-governance           | Repository environment, contains stack related variables.    |
-| Repository Environment  | **Stack**    | plz-management           | Repository environment, contains stack related variables.    |
-| Repository Environment  | **Stack**    | plz-connectivity         | Repository environment, contains stack related variables.    |
 
 ---
 

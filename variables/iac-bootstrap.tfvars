@@ -19,15 +19,9 @@ management_group_core = {
 
 # Deployment Stacks: Map of objects representing the platform workloads to provision. 
 platform_stacks = {
-  # "bootstrap" = {
-  #   stack_name              = "iac-bootstrap"      # Name of stack directory and GitHub environment. 
-  #   backend_category        = "bootstrap"          # Backend Category [backend_categories]: bootstrap, platform, workload. 
-  #   subscription_identifier = "56effccd-9f6c-4b5e" # Subscription ID part, resolved to full ID in data call. 
-  #   create_environment      = false                # Enable to create related environment in GitHub for stack.  
-  # },
   "connectivity" = {
-    stack_name              = "plz-connectivity" # Name of stack directory and GitHub environment.
-    stack_code              = "con"
+    stack_name              = "plz-connectivity"   # Name of stack directory and GitHub environment.
+    stack_code              = "con"                # Short code for the stack name.
     subscription_identifier = "8cf80f38-0042-413a" # Subscription ID part, resolved to full ID in data call.
   },
   "governance" = {
