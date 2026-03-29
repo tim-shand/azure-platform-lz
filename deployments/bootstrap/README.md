@@ -28,10 +28,9 @@ Automates the **initial bootstrapping** process of both Azure and GitHub, in pre
   - **Roles:** Read/Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.
 - Existing Azure tenant with required roles assigned to a _dedicated_ IaC subscription (can also be used with a single platform subscription).
 - **Built-in Roles:** Bootstrap process requires:
-  - `Global Administrator`: Required to approve MSGraph application API permissions assigned to the Service Principal.
+  - `Global Administrator` (preferred): Required to approve MSGraph application API permissions assigned to the Service Principal.
   - `Contributor`: Required to deploy initial resources.
   - `User Access Administrator`: Required to assign RBAC roles.
-  - `App Configuration Data Owner`: Required to access data plane (read/write) for shared services data.
 - Applications installed locally (during bootstrap process):
   - **[Terraform](https://developer.hashicorp.com/terraform/install):** IaC tool used to deploy resources into the target Azure and GitHub tenancies.
   - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):** CLI tool required by Terraform provider (`AzureRM`) to connect to Azure.
@@ -40,21 +39,15 @@ Automates the **initial bootstrapping** process of both Azure and GitHub, in pre
 
 ## 🔑 Subscriptions
 
-This design is intended to be used with a **dedicated IaC subscription**, containing and isolating all backend resources from workload subscriptions to reduce the blast radius caused by unwanted subscription changes.
+This design is intended to be used with a **dedicated IaC subscription**, containing and isolating all backend resources from workload subscriptions to reduce the blast radius caused by potentially undesirable subscription changes.
 
 - Requires at least **one existing** subscription to be used as the **IaC** (Infrastructure-as-Code) subscription.
 - The subscription provided will be used to contain **all** backend resources for all the platform landing zone.
-- Separate subscriptions can be used per deployment stack if required; however, using the same subscription is also accepted.
-
-### Naming Method
-
-- Subscriptions should be named in a way that makes them uniquely identifiable.
-- This enables the subscription IDs to be resolved by a Terraform data call, using a **keyword-based** lookup method.
-- Although not technically sensitive, this ensures subscription IDs are kept out of variable files, being a public repo.
+- Separate subscriptions can be used per deployment stack if required; however, using the same subscription is also possible.
 
 ### Example
 
-Notice that both the `governance` and `identity` stack configurations below are using the **same value** for the `subscription_identifier` field.
+Notice that both the `governance` and `management` stack configurations below are using the **same value** for the `subscription_identifier` field.
 
 Using the same value will result in the **same subscription ID** being used for both stacks.  
 The subscription ID is resolved when by a data call made using the value provided by the `subscription_identifier` parameter.
@@ -64,7 +57,7 @@ platform_stacks = {
   "connectivity" = {
     stack_name              = "plz-connectivity"  # Name of stack directory and GitHub environment.
     stack_code              = "con"               # Short code for the stack name.
-    subscription_identifier = "12345678-0000-000" # Subscription ID part, resolved to full ID in data call.
+    subscription_identifier = "12345678-0000-000" # Subscription ID snippet, resolved to full ID in data call.
   },
   "governance" = {
     stack_name              = "plz-governance"
@@ -161,7 +154,7 @@ org-platform-iac-rg
 # Use Azure CLI to check the ID and Name fields for the current subscription. 
 az account show
 
-# [OPTIONAL] Set the correct sunscription (if required). 
+# [OPTIONAL] Set the correct subscription (if required). 
 az account set --subscription mysubscription
 
 # Deploy Bootstrap resources (will perform update on subsequent runs).
@@ -177,7 +170,7 @@ powershell -file ./deployments/bootstrap/bootstrap-azure-github.ps1 -Remove
 
 ## 📚 Reference Materials
 
-A list of references, material and content that contributed to, or influnenced this project.
+A list of references, material and content that contributed to, or influenced this project.
 
 - [Azure Landing Zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
 - [Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/overview)
