@@ -23,8 +23,8 @@ data "terraform_remote_state" "bootstrap" {
 # Subscriptions: Collect all available subscriptions, to be nested under management groups.  
 data "azurerm_subscriptions" "all" {}
 
-# # Policy Initiative (Built-in)
-# data "azurerm_policy_set_definition" "builtin" {
-#   for_each     = var.policy_initiatives_builtin # Resolve name of each initiative to ID. 
-#   display_name = each.key
-# }
+# Policy Initiative (Built-in)
+data "azurerm_policy_set_definition" "builtin" {
+  for_each     = var.policy_initiatives_builtin # Resolve name of each initiative to ID. 
+  display_name = each.key
+}
