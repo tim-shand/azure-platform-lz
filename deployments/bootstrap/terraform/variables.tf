@@ -24,19 +24,6 @@ variable "stack" {
   default     = {}
 }
 
-# variable "global_outputs" {
-#   description = "Map of Shared Service key names, used to get IDs and names in data calls."
-#   type        = map(map(string))
-# }
-
-# variable "backend_categories" {
-#   description = "Backend category map, used to define the top-level IaC backend structure."
-#   type        = map(string) # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-#   default = {
-
-#   }
-# }
-
 variable "management_group_core" {
   description = "Map of top-level Management Group object, placed under tenant root."
   type        = map(string)
