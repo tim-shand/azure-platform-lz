@@ -19,6 +19,22 @@ Ideal for a small organization, personal tenant, light production or development
 
 ## 🚀 Deployment Stacks
 
+### 🛠️ [Bootstrapping](./deployments/bootstrap)
+
+Automates the **initial bootstrapping** process, preparing both Azure and GitHub for platform landing zone deployments.
+
+- Locally executed Powershell script performs the initial setup process, configuring Azure and GitHub for automation.
+  - Performs pre-flight checks, validates authentication and confirms intentions.
+- Executes pre-defined Terraform module to deploy base resources.
+- Creates Entra ID Service Principal:
+  - Secured with Federated Credentials (OIDC) for GitHub repository and environments.
+  - Custom RBAC role assigned at core management group level.
+- Deploys backend resources **per stack** into a dedicated IaC subscription:
+  - Resource Groups and Storage Accounts per category (platform, workloads).
+  - Maintaining isolation and independence, using separate tate files per stack (governance, connectivity, management).
+- Adds stack variables and secrets into the provided GitHub repository.
+- Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
+
 ### 📜 [Governance](./deployments/plz-governance)
 
 - Multi-level Management Groups providing Azure Policy assignment and subscription hierarchy.
@@ -81,24 +97,6 @@ TBC
   - **[PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/install-powershell):**
     - Used to execute the bootstrap automation script locally.
     - High readability with extensive user base, cross platform.
-
----
-
-## 🛠️ [Bootstrapping](./deployments/bootstrap)
-
-Automates the **initial bootstrapping** process, preparing both Azure and GitHub for platform landing zone deployments.
-
-- Locally executed Powershell script performs the initial setup process, configuring Azure and GitHub for automation.
-  - Performs pre-flight checks, validates authentication and confirms intentions.
-- Executes pre-defined Terraform module to deploy base resources.
-- Creates Entra ID Service Principal:
-  - Secured with Federated Credentials (OIDC) for GitHub repository and environments.
-  - Custom RBAC role assigned at core management group level.
-- Deploys backend resources **per stack** into a dedicated IaC subscription:
-  - Resource Groups and Storage Accounts per category (platform, workloads).
-  - Maintaining isolation and independence, using separate tate files per stack (governance, connectivity, management).
-- Adds stack variables and secrets into the provided GitHub repository.
-- Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 
 ---
 
