@@ -124,7 +124,7 @@ The Connectivity stack deploys the resources required for secure networking betw
 
 ---
 
-## 📦 Requirements
+## ❔ Requirements
 
 - GitHub account with a existing repository for the Azure platform landing zone project.
   - **Roles:** Read/Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.

@@ -2,7 +2,6 @@
 # Governance: Policy Initiatives
 # Description: 
 # - Build policy initiatives from mapped definitions. 
-# - Deploy these once, at the root MG level. 
 #====================================================================================#
 
 locals {

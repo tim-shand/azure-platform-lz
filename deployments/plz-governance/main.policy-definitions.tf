@@ -1,8 +1,7 @@
 #====================================================================================#
 # Governance: Policy Definitions
 # Description: 
-# - Create Policy Definitions from local JSON files. 
-# - Deploy these once, at the root MG level. 
+# - Create Policy Definitions from local JSON files.
 #====================================================================================#
 
 locals {

@@ -6,16 +6,16 @@ data "azurerm_subscription" "iac_sub" {
   subscription_id = var.subscription_id_iac # Pass in the IaC subscription variable. 
 }
 
-# # IaC: Get core management group from bootstrap state.
-# data "terraform_remote_state" "bootstrap" {
-#   backend = "azurerm"
-#   config = {
-#     resource_group_name  = "${var.remote_state_bootstrap.resource_group}"
-#     storage_account_name = "${var.remote_state_bootstrap.storage_account}"
-#     container_name       = "${var.remote_state_bootstrap.blob_container}"
-#     key                  = "iac-bootstrap.tfstate"
-#   }
-# }
+# IaC: Get core management group from bootstrap state.
+data "terraform_remote_state" "bootstrap" {
+  backend = "azurerm"
+  config = {
+    resource_group_name  = "${var.remote_state_bootstrap.resource_group}"
+    storage_account_name = "${var.remote_state_bootstrap.storage_account}"
+    container_name       = "${var.remote_state_bootstrap.blob_container}"
+    key                  = "${var.remote_state_bootstrap.state_key}"
+  }
+}
 
 # GOVERNANCE: Management Groups
 # ------------------------------------------------------------- #
@@ -28,19 +28,6 @@ data "azurerm_policy_set_definition" "builtin" {
   for_each     = var.policy_initiatives_builtin # Resolve name of each initiative to ID. 
   display_name = each.key
 }
-
-
-# # Management Group: Core MG ID/name.  
-# data "azurerm_app_configuration_key" "mg_core_id" {
-#   configuration_store_id = data.azurerm_app_configuration.iac.id
-#   key                    = var.global_outputs.governance.core_mg_id
-#   label                  = var.global_outputs.governance.label
-# }
-# data "azurerm_app_configuration_key" "mg_core_name" {
-#   configuration_store_id = data.azurerm_app_configuration.iac.id
-#   key                    = var.global_outputs.governance.core_mg_name
-#   label                  = var.global_outputs.governance.label
-# }
 
 # # Get created names for all MGs. 
 # data "azurerm_management_group" "lookup" {
