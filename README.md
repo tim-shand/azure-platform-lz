@@ -122,14 +122,6 @@ The Connectivity stack deploys the resources required for secure networking betw
   - Site-to-Site VPN for hybrid connectivity between Azure and on-prem.
   - Dedicated subnet providing gateway services for hub virtual network.
 
-> [!NOTE]
-> Automatic creation of Network Watcher is enabled by default. Use the below commands to disable this and allow Terraform to manage the deployment.
-
-```bash
-# Disable auto-creation of Network Watcher. 
-az feature register --namespace Microsoft.Network --name DisableNetworkWatcherAutocreation
-```
-
 ---
 
 ## 📦 Requirements
