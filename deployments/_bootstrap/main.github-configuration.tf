@@ -30,8 +30,6 @@ resource "github_actions_variable" "tenant_id" {
   value         = data.azuread_client_config.current.tenant_id
 }
 
-#----------------------------------------------------------------#
-
 # GitHub: Repo [VARIABLE] - Backend: Resource Group
 resource "github_actions_variable" "iac_rg" {
   repository    = data.github_repository.repo.name
