@@ -22,6 +22,12 @@ variable "subscription_id" {
 
 # STACK ------------------------------------------------------------ #
 
+variable "terraform_version" {
+  description = "Terraform version to use with workflows. Added to GitHub variables."
+  type        = string
+  nullable    = false
+}
+
 # Subscription IDs for deployment stacks.
 variable "platform_subscriptions" {
   type = object({

@@ -35,3 +35,20 @@ locals {
     }
   }
 }
+
+locals {
+  # RBAC roles to assign to the Service Principal at the data plane level.
+  rbac_roles_builtin = [
+    "Key Vault Administrator",
+    "Key Vault Secrets Officer",
+    "Storage Blob Data Contributor",
+  ]
+  # Mapping Backend_Category to RBAC_Builtin_Role matrix. 
+  rbac_assignments_builtin = [
+    for combo in setproduct(keys(azurerm_resource_group.backend), local.rbac_roles_builtin) : { # setproduct(A, B) --> all pairs of elements from A and B.
+      rg_key = combo[0]                                                                         # Each element combo is a tuple [rg_key, role].
+      role   = combo[1]
+      rg_id  = azurerm_resource_group.backend[combo[0]].id # Add rg_id for the Terraform resource reference.
+    }
+  ]
+}
