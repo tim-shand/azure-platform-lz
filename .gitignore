@@ -1,6 +1,7 @@
 # General
 .notes/
 .notes.md
+*.notes.md
 .token
 .config
 *.log
