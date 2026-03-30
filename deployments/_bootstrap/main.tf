@@ -18,15 +18,15 @@ module "naming_backend" {
 # Resource Groups: Backend Category
 resource "azurerm_resource_group" "backend" {
   for_each = toset(local.backend_categories) # List: Platform, Workload 
-  name     = "rg-${module.naming_backend[each.value].full_name}"
+  name     = module.naming_backend[each.value].resource_group
   location = var.global.location.primary
   tags     = local.tags_merged
 }
 
 # Storage Accounts: Backend Category
 resource "azurerm_storage_account" "backend" {
-  for_each                        = local.backend_categories # Create Storage Account per backend category. 
-  name                            = module.naming_backend[each.key].storage_account_name
+  for_each                        = toset(local.backend_categories)
+  name                            = module.naming_backend[each.key].storage_account
   resource_group_name             = azurerm_resource_group.backend[each.key].name
   location                        = azurerm_resource_group.backend[each.key].location
   tags                            = local.tags_merged
@@ -35,19 +35,13 @@ resource "azurerm_storage_account" "backend" {
   account_kind                    = "StorageV2" # BlobStorage, BlockBlobStorage, FileStorage, StorageV2
   https_traffic_only_enabled      = true        # Enforce secure file transfer. 
   allow_nested_items_to_be_public = false       # Prevent anonymous/public access to Storage Accounts. 
-  shared_access_key_enabled       = false       # SECURITY: Disable Shared Key Access in favour of Entra ID authorisation. 
-  lifecycle {
-    precondition {
-      condition     = length(azurerm_resource_group.backend[each.key].name) <= 24
-      error_message = "Storage Account names must be equal to, or less than 24 characters total."
-    }
-  }
+  shared_access_key_enabled       = false       # SECURITY: Disable Shared Key Access in favour of Entra ID authorization.
 }
 
-# Blob Container: Deployment Stacks
+# Blob Container: Deployment Stacks 
 resource "azurerm_storage_container" "backend" {
-  for_each              = local.deployment_stacks # Create Blob Container for each stack in platform_stacks map. 
+  for_each              = local.deployment_stacks
   name                  = "tfstate-${each.value.stack_name}"
-  storage_account_id    = azurerm_storage_account.backend["platform"].id
+  storage_account_id    = azurerm_storage_account.backend[each.value.backend_category].id
   container_access_type = "private"
 }
