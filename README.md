@@ -37,7 +37,7 @@ Automates the **initial bootstrapping** process, preparing both Azure and GitHub
   - Custom RBAC role assigned at core management group level.
 - Deploys backend resources **per stack** into a dedicated IaC subscription:
   - Resource Groups and Storage Accounts per category (platform, workloads).
-  - Maintaining isolation and independence, using separate tate files per stack (governance, connectivity, management).
+  - Maintaining isolation and independence, using separate state files per stack (governance, connectivity, management).
 - Adds stack variables and secrets into the provided GitHub repository.
 - Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 
