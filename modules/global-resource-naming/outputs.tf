@@ -91,3 +91,8 @@ output "public_ip" {
   description = "Full length name separated by dashes."
   value       = "pip-${local.full_name}"
 }
+
+output "service_principal" {
+  description = "Full length name separated by dashes."
+  value       = "sp-${local.full_name}"
+}
