@@ -29,7 +29,8 @@ variable "terraform_version" {
 }
 
 # Subscription IDs for deployment stacks.
-variable "platform_subscriptions" {
+variable "platform_subscription_identifiers" {
+  description = "Object containing string values unique to each stack subscription. Used ONCE to get ID values using data call."
   type = object({
     mgt = string
     gov = string
@@ -37,15 +38,15 @@ variable "platform_subscriptions" {
   })
   nullable = false
   validation {
-    condition     = can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$", var.platform_subscriptions.mgt))
-    error_message = "The subscription_id must be a valid GUID."
+    condition     = length(trim(var.platform_subscription_identifiers.mgt)) > 0
+    error_message = "The subscription display name must not be empty."
   }
   validation {
-    condition     = can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$", var.platform_subscriptions.gov))
-    error_message = "The subscription_id must be a valid GUID."
+    condition     = length(trim(var.platform_subscription_identifiers.gov)) > 0
+    error_message = "The subscription display name must not be empty."
   }
   validation {
-    condition     = can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$", var.platform_subscriptions.con))
-    error_message = "The subscription_id must be a valid GUID."
+    condition     = length(trim(var.platform_subscription_identifiers.con)) > 0
+    error_message = "The subscription display name must not be empty."
   }
 }

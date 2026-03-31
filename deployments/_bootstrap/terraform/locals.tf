@@ -7,6 +7,15 @@ locals {
 }
 
 locals {
+  # RBAC roles to assign to the Service Principal at the data plane level.
+  rbac_roles_builtin = [
+    "Key Vault Administrator",
+    "Key Vault Secrets Officer",
+    "Storage Blob Data Contributor",
+  ]
+}
+
+locals {
   # Deployment Stacks: Map of objects representing the platform workloads to provision. 
   deployment_stacks = {
     "bootstrap" = {
@@ -18,29 +27,29 @@ locals {
     "management" = {
       stack_name       = "plz-management"
       stack_code       = "mgt"
-      subscription_id  = var.platform_subscriptions.mgt
       backend_category = "platform"
+      subscription_id = one([ # Match subscription ID from data call with name part value in TFVARS.
+        for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
+        if contains(sub.display_name, var.platform_subscription_identifiers.mgt)
+      ])
     },
     "governance" = {
       stack_name       = "plz-governance"
       stack_code       = "gov"
-      subscription_id  = var.platform_subscriptions.gov
       backend_category = "platform"
+      subscription_id = one([
+        for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
+        if contains(sub.display_name, var.platform_subscription_identifiers.gov)
+      ])
     },
     "connectivity" = {
       stack_name       = "plz-connectivity"
       stack_code       = "con"
-      subscription_id  = var.platform_subscriptions.con
       backend_category = "platform"
+      subscription_id = one([
+        for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
+        if contains(sub.display_name, var.platform_subscription_identifiers.con)
+      ])
     }
   }
-}
-
-locals {
-  # RBAC roles to assign to the Service Principal at the data plane level.
-  rbac_roles_builtin = [
-    "Key Vault Administrator",
-    "Key Vault Secrets Officer",
-    "Storage Blob Data Contributor",
-  ]
 }
