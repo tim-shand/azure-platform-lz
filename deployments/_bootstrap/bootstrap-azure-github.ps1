@@ -51,7 +51,7 @@ $requiredApps = @(
 # Directories, Files and Misc.
 $dir_tf = "$PSScriptRoot/terraform" # Location of Terraform files. 
 $dir_ps_vars = "$PSScriptRoot/../../variables" # Location of Terraform variable files (in relation project root).
-$var_files = @("global.tfvars") # Array of required variable files for bootstrap process. 
+$var_files = @("global.tfvars", "iac-bootstrap.tfvars") # Array of required variable files for bootstrap process. 
 
 # Set action attributes. 
 if ($Remove) {
