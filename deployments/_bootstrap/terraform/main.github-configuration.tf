@@ -14,7 +14,7 @@ resource "github_actions_secret" "client_id" {
   plaintext_value = azuread_application.iac_sp.client_id # Service Principal ID.
 }
 
-# VARIABLES (Global) ------------------------------------------ #
+# VARIABLES --------------------------------------------------- #
 
 # GitHub: Repo [VARIABLE] - Terraform Version
 resource "github_actions_variable" "tf_version" {
@@ -34,15 +34,17 @@ resource "github_actions_variable" "tenant_id" {
 resource "github_actions_variable" "iac_rg" {
   repository    = data.github_repository.repo.name
   variable_name = "TF_BACKEND_RESOURCE_GROUP"
-  value         = azurerm_resource_group.backend[local.backend_categories["platform"]].name
+  value         = azurerm_resource_group.iac.name
 }
 
 # GitHub: Repo [VARIABLE] - Backend: Storage Account
 resource "github_actions_variable" "iac_sa" {
   repository    = data.github_repository.repo.name
   variable_name = "TF_BACKEND_STORAGE_ACCOUNT"
-  value         = azurerm_storage_account.backend[local.backend_categories["platform"]].name
+  value         = azurerm_storage_account.backend["platform"].name
 }
+
+# PER STACK --------------------------------------------------- #
 
 # GitHub: Repo [VARIABLE] - Backend: Container
 resource "github_actions_variable" "stack_container" {
