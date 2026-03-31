@@ -9,8 +9,8 @@ Automates the **initial bootstrapping** process of both Azure and GitHub, in pre
   - Secured with Federated Credentials (OIDC) for GitHub repository and environments.
   - Custom RBAC role assigned at core management group level.
 - Deploys backend resources **per stack** into a dedicated IaC subscription:
-  - Resource Groups and Storage Accounts per category (platform, workloads).
-  - Maintaining isolation and independence, using separate tate files per stack (governance, connectivity, management).
+  - Global Resource Group with dedicated Storage Accounts per category (platform, workloads).
+  - Maintaining isolation and independence, using separate state files per stack (governance, connectivity, management).
 - Adds stack variables and secrets into the provided GitHub repository.
 - Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 
@@ -50,24 +50,17 @@ This design is intended to be used with a **dedicated IaC subscription**, contai
 Notice that both the `governance` and `management` stack configurations below are using the **same value** for the `subscription_identifier` field.
 
 Using the same value will result in the **same subscription ID** being used for both stacks.  
-The subscription ID is resolved when by a data call made using the value provided by the `subscription_identifier` parameter.
+Subscription IDs are resolved via a data call using the value provided in `platform_subscription_identifiers` variable.  
+This value represents a text value extracted from the subscription display name.  
 
-```hcl
-platform_stacks = {
-  "connectivity" = {
-    stack_name              = "plz-connectivity"  # Name of stack directory and GitHub environment.
-    stack_code              = "con"               # Short code for the stack name.
-    subscription_identifier = "12345678-0000-000" # Subscription ID snippet, resolved to full ID in data call.
-  },
-  "governance" = {
-    stack_name              = "plz-governance"
-    stack_code              = "gov"
-    subscription_identifier = "12345678-0000-000"
-  },
-  "management" = {
-    stack_name              = "plz-management"
-    stack_code              = "mgt"
-    subscription_identifier = "12345678-0000-000"
+The varialbe file `iac-bootstrap.tfvars.json` is in JSON format, which can be read natively by both Terraform and Powershell.
+
+```json
+{
+  "platform_subscription_identifiers": {
+    "mgt": "platform-plz-sub",
+    "gov": "platform-plz-sub",
+    "con": "platform-plz-sub"
   }
 }
 ```
@@ -84,21 +77,14 @@ platform_stacks = {
 - Executes deployments against the tenant from within automation workflows.
 - Uses [OpenID Connect (OIDC)](https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols-oidc) for secure authentication, **avoiding** the need for managing client secrets or certificate based authentication.
 
-#### Management Group
-
-- A top-level "core" Management Group is created under the default tenant root group, representing the current organisation hierarchy.
-- All existing subscriptions accessible by the user running the bootstrap, will be **moved** under this new Management Group.
-- **RBAC** roles assigned at the "core" Management Group level are then inherited by child subscriptions.
-- This allows the Service Principal to provision resources, make further changes to Management Group structure, and perform subscription assignments.
-
 #### Remote Backend Resources
 
 - **Resource Groups:**
-  - Created per deployment category (platform, workloads) to group related child resources for easy management and separation of purpose.  
+  - A single Resource Group to contain both `platform` and `workload` Storage Accounts.  
 - **Storage Accounts:**
-  - Similar to Resource Groups, created per deployment category to hold the Blob Containers used by each deployment stack.
+  - Created per deployment category (`platform` and `workload`) to hold the Blob Containers used by each deployment stack.
 - **Blob Containers:**
-  - Created per deployment stack to hold the remote Terraform state files per stack.
+  - Created per deployment stack (`mgt`, `gov`, `con`) to hold the remote Terraform state files.
 
 ### 👜 GitHub
 
@@ -122,8 +108,8 @@ Resources are grouped by categories and their child stacks.
   - Platform --> Connectivity (plz-connectivity)
 
 ```text
-org-platform-iac-rg
-└── orgiacplatformsa12345
+rg-org-iac-global
+└── saorgiacplatform12345
     ├── tfstate-iac-bootstrap
     ├── tfstate-plz-governance
     ├── tfstate-plz-management
@@ -132,10 +118,9 @@ org-platform-iac-rg
 
 | Object                  | Created Per  | Example Name             | Purpose                                                      |
 | ----------------------- | ------------ | ------------------------ | ------------------------------------------------------------ |
-| Resource Group          | **Category** | org-iac-platform-rg      | Resource group containing components for platform LZ.        |
-| Resource Group          | **Category** | org-iac-workload-rg      | Resource group containing future workload remote states.     |
-| Storage Account         | **Category** | orgiacplatformsa12345    | Holds blob containers per platform deployment stack.         |
-| Storage Account         | **Category** | orgiacworkloadsa12345    | Holds blob container for bootstrap and global resources.     |
+| Resource Group          |              | rg-org-iac-global        | Resource group used for all remote state backend resources.  |
+| Storage Account         | **Category** | saorgiacplatform12345    | Holds blob containers per platform deployment stack.         |
+| Storage Account         | **Category** | saorgiacworkload12345    | Holds blob containers per workload deployment.               |
 | Blob Container          | **Stack**    | tfstate-iac-bootstrap    | Contains remote state file, created during initial setup.    |
 | Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow.    |
 | Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow.    |
@@ -163,8 +148,6 @@ powershell -file ./deployments/bootstrap/bootstrap-azure-github.ps1
 # [REMOVAL] Remove Bootstrap resources.
 powershell -file ./deployments/bootstrap/bootstrap-azure-github.ps1 -Remove
 ```
-
-![Bootstrap deployment prompt.](../docs/images/bootstrap_prompt_01.png)
 
 ---
 
