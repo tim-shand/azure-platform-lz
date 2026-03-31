@@ -7,6 +7,14 @@
 
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_backend" {
+  source        = "../../../modules/global-resource-naming"
+  prefix        = var.global.naming.org_prefix
+  workload      = var.stack.naming.workload_code
+  stack_or_env  = "backend"
+  ensure_unique = true
+}
+
+module "naming_category" {
   for_each      = toset(local.backend_categories) # List: Platform, Workload
   source        = "../../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
@@ -15,10 +23,10 @@ module "naming_backend" {
   ensure_unique = true
 }
 
-# Resource Groups: Backend Category
+# ------------------------------------------------------------------ #
+
 resource "azurerm_resource_group" "backend" {
-  for_each = toset(local.backend_categories) # List: Platform, Workload 
-  name     = module.naming_backend[each.value].resource_group
+  name     = module.naming_category.resource_group
   location = var.global.location.primary
   tags     = local.tags_merged
 }
@@ -26,9 +34,9 @@ resource "azurerm_resource_group" "backend" {
 # Storage Accounts: Backend Category
 resource "azurerm_storage_account" "backend" {
   for_each                        = toset(local.backend_categories)
-  name                            = module.naming_backend[each.key].storage_account
-  resource_group_name             = azurerm_resource_group.backend[each.key].name
-  location                        = azurerm_resource_group.backend[each.key].location
+  name                            = module.naming_category[each.key].storage_account
+  resource_group_name             = azurerm_resource_group.backend.name     #azurerm_resource_group.backend[each.key].name
+  location                        = azurerm_resource_group.backend.location #azurerm_resource_group.backend[each.key].location
   tags                            = local.tags_merged
   account_tier                    = "Standard"  # Standard, Premium
   account_replication_type        = "LRS"       # LRS, GRS, RAGRS, ZRS, GZRS, RAGZRS
