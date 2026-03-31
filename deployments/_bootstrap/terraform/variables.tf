@@ -38,15 +38,15 @@ variable "platform_subscription_identifiers" {
   })
   nullable = false
   validation {
-    condition     = length(trim(var.platform_subscription_identifiers.mgt)) > 0
+    condition     = length(trimspace(var.platform_subscription_identifiers.mgt)) > 0
     error_message = "The subscription display name must not be empty."
   }
   validation {
-    condition     = length(trim(var.platform_subscription_identifiers.gov)) > 0
+    condition     = length(trimspace(var.platform_subscription_identifiers.gov)) > 0
     error_message = "The subscription display name must not be empty."
   }
   validation {
-    condition     = length(trim(var.platform_subscription_identifiers.con)) > 0
+    condition     = length(trimspace(var.platform_subscription_identifiers.con)) > 0
     error_message = "The subscription display name must not be empty."
   }
 }
