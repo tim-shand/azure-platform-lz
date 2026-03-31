@@ -30,7 +30,7 @@ locals {
       backend_category = "platform"
       subscription_id = one([ # Match subscription ID from data call with name part value in TFVARS.
         for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
-        if contains(sub.display_name, var.platform_subscription_identifiers.mgt)
+        if strcontains(lower(sub.display_name), lower(var.platform_subscription_identifiers.mgt))
       ])
     },
     "governance" = {
@@ -39,7 +39,7 @@ locals {
       backend_category = "platform"
       subscription_id = one([
         for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
-        if contains(sub.display_name, var.platform_subscription_identifiers.gov)
+        if strcontains(lower(sub.display_name), lower(var.platform_subscription_identifiers.gov))
       ])
     },
     "connectivity" = {
@@ -48,7 +48,7 @@ locals {
       backend_category = "platform"
       subscription_id = one([
         for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
-        if contains(sub.display_name, var.platform_subscription_identifiers.con)
+        if strcontains(lower(sub.display_name), lower(var.platform_subscription_identifiers.con))
       ])
     }
   }
