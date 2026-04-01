@@ -12,10 +12,11 @@ module "naming_iac" {
   source        = "../../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
   workload      = var.stack.naming.workload_code
-  stack_or_env  = var.stack.naming.workload_name # global
+  stack_or_env  = local.backend_resource_group
   ensure_unique = true
 }
 
+# Resource Group: Single RG for all backends.
 resource "azurerm_resource_group" "iac" {
   name     = module.naming_iac.resource_group
   location = var.global.location.primary
@@ -24,8 +25,9 @@ resource "azurerm_resource_group" "iac" {
 
 # BACKENDS ------------------------------------------------------------------ #
 
+# Naming Module: Backend Categories (Platform, Workload)
 module "naming_backend" {
-  for_each      = toset(local.backend_categories) # List: Platform, Workload
+  for_each      = toset(local.backend_categories)
   source        = "../../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
   workload      = var.stack.naming.workload_code
@@ -33,7 +35,7 @@ module "naming_backend" {
   ensure_unique = true
 }
 
-# Storage Accounts: Backend Category
+# Storage Accounts: Backend Categories (Platform, Workload)
 resource "azurerm_storage_account" "backend" {
   for_each                        = toset(local.backend_categories)
   name                            = module.naming_backend[each.key].storage_account
@@ -48,7 +50,7 @@ resource "azurerm_storage_account" "backend" {
   shared_access_key_enabled       = false       # SECURITY: Disable Shared Key Access in favour of Entra ID authorization.
 }
 
-# Blob Container: Deployment Stacks 
+# Blob Container: Deployment Stacks (iac, mgt, gov, con)
 resource "azurerm_storage_container" "backend" {
   for_each              = local.deployment_stacks
   name                  = "tfstate-${each.value.stack_name}"

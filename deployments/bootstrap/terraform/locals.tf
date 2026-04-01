@@ -2,7 +2,10 @@ locals {
   # Merge global tags with stack tags.
   tags_merged = merge(var.global.tags, var.stack.tags)
 
-  # Define backend categories is a list, used for Resource Groups and Storage Accounts.
+  # Backend Resource Group naming. 
+  backend_resource_group = "backend"
+
+  # Define backend categories is a list, used for Storage Accounts.
   backend_categories = ["platform", "workload"]
 }
 
