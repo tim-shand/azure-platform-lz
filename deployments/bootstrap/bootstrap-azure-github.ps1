@@ -191,6 +191,11 @@ Try {
         $plz_sub_mgt = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.mgt)')].{Name:name, ID:id}" | ConvertFrom-Json)
         $plz_sub_gov = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.gov)')].{Name:name, ID:id}" | ConvertFrom-Json)
         $plz_sub_con = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.con)')].{Name:name, ID:id}" | ConvertFrom-Json)
+        if (-not($LASTEXITCODE -eq 0)) {
+            Write-Host -ForegroundColor $ERR "FAIL"
+            Write-Host -ForegroundColor $ERR "[x] ERROR: Failed to resolve platform subscriptions. Abort."
+            exit 1
+        }
     }
     Catch {
         Write-Host -ForegroundColor $ERR "FAIL"
