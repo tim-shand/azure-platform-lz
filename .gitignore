@@ -10,6 +10,7 @@
 *.plan
 *packer_cache/
 *.bak
+*.bkp
 
 # Environments
 .env
