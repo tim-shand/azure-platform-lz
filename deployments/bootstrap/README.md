@@ -42,18 +42,16 @@ Automates the **initial bootstrapping** process of both Azure and GitHub, in pre
 This design is intended to be used with a **dedicated IaC subscription**, containing and isolating all backend resources from workload subscriptions to reduce the blast radius caused by potentially undesirable subscription changes.
 
 - Requires at least **one existing** subscription to be used as the **IaC** (Infrastructure-as-Code) subscription.
-- The subscription provided will be used to contain **all** backend resources for all the platform landing zone.
+- The subscription provided will be used to contain **all** backend resources for the platform landing zone and future workloads.
 - Separate subscriptions can be used per deployment stack if required; however, using the same subscription is also possible.
 
 ### Example
 
-Notice that both the `governance` and `management` stack configurations below are using the **same value** for the `subscription_identifier` field.
-
 Using the same value will result in the **same subscription ID** being used for both stacks.  
 Subscription IDs are resolved via a data call using the value provided in `platform_subscription_identifiers` variable.  
-This value represents a text value extracted from the subscription display name.  
+This value represents either the full name or a string segment extracted from the subscription display name.  
 
-The varialbe file `iac-bootstrap.tfvars.json` is in JSON format, which can be read natively by both Terraform and Powershell.
+The variable file `iac-bootstrap.tfvars.json` is in JSON format, in order to be read natively by both Terraform and Powershell.
 
 ```json
 {
@@ -80,22 +78,23 @@ The varialbe file `iac-bootstrap.tfvars.json` is in JSON format, which can be re
 #### Remote Backend Resources
 
 - **Resource Groups:**
-  - A single Resource Group to contain both `platform` and `workload` Storage Accounts.  
+  - A single backend Resource Group to contain both `platform` and `workload` Storage Accounts.  
 - **Storage Accounts:**
   - Created per deployment category (`platform` and `workload`) to hold the Blob Containers used by each deployment stack.
 - **Blob Containers:**
   - Created per deployment stack (`mgt`, `gov`, `con`) to hold the remote Terraform state files.
+  - Additional container created to hold the `bootstrap` state file post-deployment.
 
 ### 👜 GitHub
 
 - Code repository, version control and automation workflows.
 - Entra ID Service Principal details added as repository secrets.
 - Azure remote backend resources and subscription details added per deployment stack as secrets and variables.
-- Workflows to read individual stack variables/secrets and pass securely to Terraform at workflow run-time.
+- Workflows read individual stack variables/secrets and pass securely to Terraform during workflow run-time.
 
 ---
 
-## 📁 Example Structure
+## 📁 Example Backend Structure
 
 Resources are grouped by categories and their child stacks.
 
