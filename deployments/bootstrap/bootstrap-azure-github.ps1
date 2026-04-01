@@ -43,8 +43,8 @@ $HD2 = "Magenta"
 
 # Required applications and validation commands.
 $requiredApps = @(
-    [PSCustomObject]@{Name = "Azure CLI"; Command = "az"; AuthCheck = "az account show --only-show-errors | ConvertFrom-JSON"; }
-    [PSCustomObject]@{Name = "GitHub CLI"; Command = "gh"; AuthCheck = "gh api user | ConvertFrom-JSON"; }
+    [PSCustomObject]@{Name = "Azure CLI"; Command = "az"; AuthCheck = "az account show --only-show-errors | ConvertFrom-JSON"; AuthLogin = "az login" }
+    [PSCustomObject]@{Name = "GitHub CLI"; Command = "gh"; AuthCheck = "gh api user | ConvertFrom-JSON"; AuthLogin = "gh auth login" }
     [PSCustomObject]@{Name = "Terraform"; Command = "terraform"; AuthCheck = "BYPASS"; }
 )
 
@@ -127,6 +127,38 @@ Write-Host
 # MAIN: Stage 1 - Validations & Pre-Checks
 #=============================================#
 
+# Validation: Required Applications and Authentication.
+Write-Host -ForegroundColor $HD1 "[*] Validating required applications... " -NoNewLine
+ForEach ($app in $requiredApps) {
+    if (!(Get-Command $app.Command -ErrorAction SilentlyContinue)) {
+        Write-Host -ForegroundColor $ERR "FAIL"
+        Write-Host -ForegroundColor $ERR "[x] ERROR: Required application '$($app.Name)' is missing. Please install and try again."
+        exit 1
+    }
+    # Authentication checks. 
+    if ($app.AuthCheck -ne "BYPASS") {
+        Try {
+            $session = (Invoke-Expression $app.AuthCheck -ErrorAction SilentlyContinue 2>&1)
+            if ($LASTEXITCODE -eq 0) {
+                New-Variable -Name "$($app.Command)Session" -Value $session -Force # Add app session details to variable.
+            }
+            else {
+                Write-Host -ForegroundColor $ERR "FAIL"
+                Write-Host -ForegroundColor $WRN "[!] WARNING: '$($app.Name)' is not authenticated. Please authenticate and try again."
+                Write-Host -ForegroundColor $WRN "Login Command: '$($app.AuthLogin)'"
+                exit 1
+            }            
+        }
+        Catch {
+            Write-Host -ForegroundColor $ERR "FAIL"
+            Write-Host -ForegroundColor $WRN "[!] WARNING: '$($app.Name)' is not authenticated. Please authenticate and try again. $_"
+            Write-Host -ForegroundColor $WRN "Login Command: '$($app.AuthLogin)'"
+            exit 1
+        }
+    }
+}
+Write-Host -ForegroundColor $PASS "PASS"
+
 # Validation: Confirm required variable files are present. 
 Write-Host -ForegroundColor $HD1 "[*] Performing variable file checks... " -NoNewLine
 Try {
@@ -172,29 +204,6 @@ Catch {
     exit 1  
 }
 
-# Validation: Required Applications and Authentication.
-Write-Host -ForegroundColor $HD1 "[*] Validating required applications... " -NoNewLine
-ForEach ($app in $requiredApps) {
-    if (!(Get-Command $app.Command -ErrorAction SilentlyContinue)) {
-        Write-Host -ForegroundColor $ERR "FAIL"
-        Write-Host -ForegroundColor $ERR "[x] ERROR: Required application '$($app.Name)' is missing. Please install and try again."
-        exit 1
-    }
-    # Authentication checks. 
-    if ($app.AuthCheck -ne "BYPASS") {
-        Try {
-            $session = (Invoke-Expression $app.AuthCheck -ErrorAction SilentlyContinue 2>&1)
-            New-Variable -Name "$($app.Command)Session" -Value $session -Force # Add app session details to variable.
-        }
-        Catch {
-            Write-Host -ForegroundColor $ERR "FAIL"
-            Write-Host -ForegroundColor $WRN "[!] WARNING: '$($app.Name)' is not authenticated. Please authenticate and try again. $_"
-            exit 1
-        }
-    }
-}
-Write-Host -ForegroundColor $PASS "PASS"
-
 if (-not $Remove) {
     # Enables Azure CLI to automatically install missing extensions whenever a command requires them, without asking for confirmation.
     Invoke-Expression "az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors" >$null 2>&1
@@ -222,6 +231,7 @@ if (-not $Remove) {
 #================================================#
 # MAIN: Stage 2 - Display Config / Actions
 #================================================#
+$bootstrap_subs
 
 Write-Host ""
 Write-Host -ForegroundColor $HD2 "==========================================================================================="
