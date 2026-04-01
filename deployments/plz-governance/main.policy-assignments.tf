@@ -42,7 +42,7 @@ resource "azurerm_management_group_policy_assignment" "builtin" {
   name                 = each.key
   display_name         = "[${upper(var.stack.naming.workload_code)}] BuiltIn - ${each.key}"
   policy_definition_id = data.azurerm_policy_set_definition.builtin[each.key].id # Get from resolved initiative data call. 
-  management_group_id  = data.azurerm_app_configuration_key.mg_core_id.value     # Assign directly to core MG. 
+  management_group_id  = azurerm_management_group.core["core"].id                # Assign directly to core MG. 
   enforce              = each.value.enforce                                      # True/False
   location             = azurerm_user_assigned_identity.policy.location          # Must be used when Managed Identity is assigned. 
   identity {

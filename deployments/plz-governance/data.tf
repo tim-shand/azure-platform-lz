@@ -28,3 +28,15 @@ data "azurerm_policy_set_definition" "builtin" {
   for_each     = var.policy_initiatives_builtin # Resolve name of each initiative to ID. 
   display_name = each.key
 }
+
+#data.azurerm_management_group.lookup
+data "azurerm_management_group" "lookup" {
+  for_each     = local.management_groups_all
+  display_name = each.value.display_name
+  depends_on = [
+    azurerm_management_group.core,
+    azurerm_management_group.level1,
+    azurerm_management_group.level2,
+    azurerm_management_group.level3
+  ]
+}

@@ -3,7 +3,8 @@ data "azurerm_management_group" "tenant_root" {
   name = data.azuread_client_config.current.tenant_id # Obtained from current session. 
 }
 
-# Subscriptions: Collect all available subscriptions, to be nested under core management group.  
+# Subscriptions: Collect all available subscriptions.
+# Used to resolve in locals using `var.platform_subscription_identifiers`.
 data "azurerm_subscriptions" "all" {}
 
 # GitHub: Get data for existing GitHub Repository. 

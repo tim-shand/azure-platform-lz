@@ -1,9 +1,9 @@
 output "management_group_core" {
   description = "Map of details for the core (top level) management group."
   value = {
-    id           = azurerm_management_group.core.id
-    name         = azurerm_management_group.core.name
-    display_name = azurerm_management_group.core.display_name
+    id           = azurerm_management_group.core["core"].id
+    name         = azurerm_management_group.core["core"].name
+    display_name = azurerm_management_group.core["core"].display_name
   }
 }
 

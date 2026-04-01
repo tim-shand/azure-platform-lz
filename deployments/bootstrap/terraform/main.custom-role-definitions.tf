@@ -9,7 +9,7 @@
 resource "azurerm_role_definition" "custom_role_iac_deploy" {
   name        = "Custom-IaC-Deploy"
   description = "Custom role for executing automation deployments using IaC service principal."
-  scope       = data.azurerm_management_group.tenant_root.id # Assign at core management group level (azurerm_management_group.core.id). 
+  scope       = data.azurerm_management_group.tenant_root.id
   permissions {
     actions = [
       # General resource control

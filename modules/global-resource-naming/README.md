@@ -4,11 +4,11 @@ This module generates consistent, CAF-aligned Azure resource names for both plat
 
 ## ✅ Features
 
-- Produces multiple name values, both separated by `-` and compact (no separators). 
-- Enforces lower-case for all naming methods. 
-- Compact names are alphanumeric, and truncated to max_length_compact. 
+- Produces multiple name values, both separated by `-` and compact (no separators).
+- Enforces lower-case for all naming methods.
+- Compact names are alphanumeric, and truncated to max_length_compact.
 - Random suffixes ensure unique naming for globally-scoped resources (Storage Accounts and Key Vaults).
-- Suffixes for `sa` and `kv` are automatically appended to relevant outputs for convenience. 
+- Suffixes for `sa` and `kv` are automatically appended to relevant outputs for convenience.
 
 ---
 

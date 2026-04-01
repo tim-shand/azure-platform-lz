@@ -1,6 +1,7 @@
 # General
 .notes/
 .notes.md
+*.notes.md
 .token
 .config
 *.log
@@ -9,6 +10,7 @@
 *.plan
 *packer_cache/
 *.bak
+*.bkp
 
 # Environments
 .env
@@ -38,8 +40,6 @@ crash.log
 crash.*.log
 backend.conf
 backend.tf
-bootstrap.tfvars
-terraform.tfvars
 
 # Ignore override files as they are usually used to override resources locally.
 override.tf

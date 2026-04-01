@@ -51,7 +51,7 @@ $requiredApps = @(
 # Directories, Files and Misc.
 $dir_tf = "$PSScriptRoot/terraform" # Location of Terraform files. 
 $dir_ps_vars = "$PSScriptRoot/../../variables" # Location of Terraform variable files (in relation project root).
-$var_files = @("global.tfvars", "iac-bootstrap.tfvars") # Array of required variable files for bootstrap process. 
+$var_files = @("global.tfvars", "iac-bootstrap.tfvars.json") # Array of required variable files for bootstrap process. 
 
 # Set action attributes. 
 if ($Remove) {
@@ -153,6 +153,18 @@ Try {
         Write-Host -ForegroundColor $ERR "[x] ERROR: Unable to extract repository details from variables file. Abort. $_"
         exit 1
     }
+    Try {
+        # Get subscription names from variables file.
+        $bootstrap_subs = Get-Content "$dir_ps_vars/iac-bootstrap.tfvars.json" | ConvertFrom-Json
+        $plz_sub_mgt = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.mgt)')].{Name:name, ID:id}" | ConvertFrom-Json)
+        $plz_sub_gov = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.gov)')].{Name:name, ID:id}" | ConvertFrom-Json)
+        $plz_sub_con = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.con)')].{Name:name, ID:id}" | ConvertFrom-Json)
+    }
+    Catch {
+        Write-Host -ForegroundColor $ERR "FAIL"
+        Write-Host -ForegroundColor $ERR "[x] ERROR: Unable to extract subscription details from variables file. Abort. $_"
+        exit 1
+    }
 }
 Catch {
     Write-Host -ForegroundColor $ERR "FAIL"
@@ -182,10 +194,30 @@ ForEach ($app in $requiredApps) {
     }
 }
 Write-Host -ForegroundColor $PASS "PASS"
-# Enables Azure CLI to automatically install missing extensions whenever a command requires them, without asking for confirmation.
-Invoke-Expression "az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors" >$null 2>&1
-# Disable auto-creation of Network Watcher. 
-Invoke-Expression "az feature register --namespace Microsoft.Network --name DisableNetworkWatcherAutocreation" >$null 2>&1
+
+if (-not $Remove) {
+    # Enables Azure CLI to automatically install missing extensions whenever a command requires them, without asking for confirmation.
+    Invoke-Expression "az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors" >$null 2>&1
+    # Disable auto-creation of Network Watcher. 
+    Invoke-Expression "az feature register --namespace Microsoft.Network --name DisableNetworkWatcherAutocreation" >$null 2>&1
+
+    # Azure Subscription Confirmation.
+    Write-Host -ForegroundColor $HD1 "[*] Confirming target subscription for IaC backend... "
+    Write-Host -ForegroundColor $HD1 "[*] Current Subscription: " -NoNewline
+    Write-Host "$($azSession.id) ($($azSession.name))"
+    if (!(Get-UserConfirm -prompt "Should this subscription be used for IaC bootstrapping [Y/N]?")) {
+        Write-Host ""
+        Write-Host -ForegroundColor $WRN "[!] WARN: User declined to proceed. Please set the correct subscription as active in the Azure CLI tool."
+        Write-Host -ForegroundColor $WRN "[!] WARN: Please set the correct subscription as active in the Azure CLI tool."
+        Write-Host ""
+        Write-Host -ForegroundColor $HD1 "- List available subscriptions: " -NoNewline
+        Write-Host "az account list"
+        Write-Host -ForegroundColor $HD1 "- Select target subscription:   " -NoNewline
+        Write-Host "az account set --subscription <ID>"
+        Write-Host ""
+        exit 1
+    }
+}
 
 #================================================#
 # MAIN: Stage 2 - Display Config / Actions
@@ -194,9 +226,12 @@ Invoke-Expression "az feature register --namespace Microsoft.Network --name Disa
 Write-Host ""
 Write-Host -ForegroundColor $HD2 "==========================================================================================="
 Write-Host -ForegroundColor $HD1 "Azure"
-Write-Host "- Tenant:       $($azSession.tenantId) ($($azSession.tenantDisplayName))"
-Write-Host "- Subscription: $($azSession.id) ($($azSession.name))"
-Write-Host "- Current User: $($azSession.user.name)"
+Write-Host "- Tenant:                      $($azSession.tenantId) ($($azSession.tenantDisplayName))"
+Write-Host "- Current User:                $($azSession.user.name)"
+Write-Host "- Subscription (IaC Backend):  $($azSession.id) ($($azSession.name))"
+Write-Host "- Subscription (Management):   $($plz_sub_mgt.id) ($($plz_sub_mgt.name))"
+Write-Host "- Subscription (Governance):   $($plz_sub_gov.id) ($($plz_sub_gov.name))"
+Write-Host "- Subscription (Connectivity): $($plz_sub_con.id) ($($plz_sub_con.name))"
 Write-Host ""
 Write-Host -ForegroundColor $HD1 "Repository"
 Write-Host "- Organization: $($repoConfig.org)"

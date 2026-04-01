@@ -38,8 +38,16 @@ jobs: # List jobs to execute.
             TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to use in workflow.
             TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Backend: Resource Group.
             TF_BACKEND_SA: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }} # Backend: Storage Account.
-            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER_GOV }} # Backend: Blob Container.
-            TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY_GOV }} # Backend: State file name.
+            TF_BACKEND_CONTAINER_IAC: ${{ vars.TF_BACKEND_CONTAINER_IAC }} # Backend: Blob Container.
+            TF_BACKEND_KEY_IAC: ${{ vars.TF_BACKEND_KEY_IAC }} # Backend: State file name.
+            # Stack Backend Variables
+            TF_BACKEND_CONTAINER_GOV: ${{ vars.TF_BACKEND_CONTAINER_GOV }} # Backend: Blob Container.
+            TF_BACKEND_KEY_GOV: ${{ vars.TF_BACKEND_KEY_GOV }} # Backend: State file name.
+            TF_BACKEND_CONTAINER_MGT: ${{ vars.TF_BACKEND_CONTAINER_MGT }} # Backend: Blob Container.
+            TF_BACKEND_KEY_MGT: ${{ vars.TF_BACKEND_KEY_MGT }} # Backend: State file name.
+            TF_BACKEND_CONTAINER_CON: ${{ vars.TF_BACKEND_CONTAINER_CON }} # Backend: Blob Container.
+            TF_BACKEND_KEY_CON: ${{ vars.TF_BACKEND_KEY_CON }} # Backend: State file name.
+
             TF_VARS_DIR: "../../variables" # Location of variable files in relation to working directory.
             TF_VARS_FILE: "plz-governance.tfvars" # Variables file for the target stack.
 
@@ -70,8 +78,8 @@ jobs: # List jobs to execute.
                   terraform init \
                   -backend-config="resource_group_name=$TF_BACKEND_RG" \
                   -backend-config="storage_account_name=$TF_BACKEND_SA" \
-                  -backend-config="container_name=$TF_BACKEND_CONTAINER" \
-                  -backend-config="key=$TF_BACKEND_KEY" \
+                  -backend-config="container_name=$TF_BACKEND_CONTAINER_IAC" \
+                  -backend-config="key=$TF_BACKEND_KEY_IAC" \
                   -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID_IAC" \
                   -backend-config="use_azuread_auth=true"
 
@@ -89,12 +97,7 @@ jobs: # List jobs to execute.
                   -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
                   -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
                   -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC" \
-                  -var='remote_state_bootstrap= { \
-                    "resource_group_name":"$TF_BACKEND_RG", \
-                    "storage_account_name":"$TF_BACKEND_SA", \
-                    "blob_container":"${{ vars.ARM_SUBSCRIPTION_ID_IAC }}", \
-                    "state_key":"${{ vars.TF_BACKEND_KEY_IAC }}" \
-                  }'
+                  -var='remote_state_bootstrap={"resource_group_name"="$TF_BACKEND_RG","storage_account_name"="$TF_BACKEND_SA","blob_container"="$ARM_SUBSCRIPTION_ID_IAC","state_key"="$TF_BACKEND_KEY_IAC"}'
 
             - name: "Terraform: Apply"
               if: env.RUN_APPLY == 'true'

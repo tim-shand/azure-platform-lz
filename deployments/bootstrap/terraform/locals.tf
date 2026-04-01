@@ -1,50 +1,57 @@
 locals {
-  tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
+  # Merge global tags with stack tags.
+  tags_merged = merge(var.global.tags, var.stack.tags)
 
-  # Define backend categories used for Resource Groups and Storage Accounts.
-  backend_categories = {
-    platform = "platform" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA. 
-    workload = "workload" # WARNING: Changing this value will force re-creation of resources. Used by RG and SA.
-  }
+  # Backend Resource Group naming. 
+  backend_resource_group_name_part = "backend"
 
-  # Merge both bootstrap and platform stacks into 'deployment stacks'.
-  deployment_stacks = merge(
-    var.bootstrap_stacks,
-    var.platform_stacks
-  )
+  # Define backend categories is a list, used for Storage Accounts.
+  backend_categories = ["platform", "workload"]
 }
 
 locals {
+  # RBAC roles to assign to the Service Principal at the data plane level.
   rbac_roles_builtin = [
     "Key Vault Administrator",
     "Key Vault Secrets Officer",
     "Storage Blob Data Contributor",
   ]
-  # Mapping Backend_Category to RBAC_Builtin_Role matrix. 
-  rbac_assignments_builtin = [
-    for combo in setproduct(keys(azurerm_resource_group.backend), local.rbac_roles_builtin) : { # setproduct(A, B) --> all pairs of elements from A and B.
-      rg_key = combo[0]                                                                         # Each element combo is a tuple [rg_key, role].
-      role   = combo[1]
-      rg_id  = azurerm_resource_group.backend[combo[0]].id # Add rg_id for the Terraform resource reference.
-    }
-  ]
 }
 
-
 locals {
-  # Map deployment stacks to relevant subscriptions, by data call using 'key' as identifier.
-  deployment_stack_subscriptions = {
-    for stack_key, stack in local.deployment_stacks :
-    stack_key => {
-      stack_name = stack.stack_name # Full stack name.
-      stack_code = stack.stack_code # Short code for stack.
+  # Deployment Stacks: Map of objects representing the platform workloads to provision. 
+  deployment_stacks = {
+    "bootstrap" = {
+      stack_name       = "iac-bootstrap"     # Name of stack directory and GitHub environment.
+      stack_code       = "iac"               # Short code for the stack name.
+      subscription_id  = var.subscription_id # Subscription ID dedicated to stack (current).
+      backend_category = "platform"
+    },
+    "management" = {
+      stack_name       = "plz-management"
+      stack_code       = "mgt"
+      backend_category = "platform"
+      subscription_id = one([ # Match subscription ID from data call with name part value in TFVARS.
+        for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
+        if strcontains(lower(sub.display_name), lower(var.platform_subscription_identifiers.mgt))
+      ])
+    },
+    "governance" = {
+      stack_name       = "plz-governance"
+      stack_code       = "gov"
+      backend_category = "platform"
       subscription_id = one([
         for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
-        if startswith(sub.subscription_id, stack.subscription_identifier)
+        if strcontains(lower(sub.display_name), lower(var.platform_subscription_identifiers.gov))
       ])
-      subscription_name = one([
-        for sub in data.azurerm_subscriptions.all.subscriptions : sub.display_name
-        if startswith(sub.subscription_id, stack.subscription_identifier)
+    },
+    "connectivity" = {
+      stack_name       = "plz-connectivity"
+      stack_code       = "con"
+      backend_category = "platform"
+      subscription_id = one([
+        for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
+        if strcontains(lower(sub.display_name), lower(var.platform_subscription_identifiers.con))
       ])
     }
   }
