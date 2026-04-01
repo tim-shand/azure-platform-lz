@@ -1,8 +1,10 @@
 # ☁️ Azure Platform Landing Zone (Custom)
 
-This project contains a custom Azure platform landing zone (PLZ), inspired by enterprise-scale architecture and based on CAF guidelines.  
-Designed to be light-weight and cost-efficient, utilizing free or minimum pricing SKU options where possible.  
+This project contains a custom Azure platform landing zone (PLZ), inspired by enterprise-scale architecture and based on CAF guidelines.
+Designed to be light-weight and cost-efficient, utilizing free or minimum pricing SKU options where possible.
 Ideal for a small organization, personal tenant, light production or development/training purposes.
+
+## ✨ Features
 
 - **Infrastructure as Code (IaC) + CI/CD**
   - Git-driven workflow, with a merge or commit to the `main` branch triggering automation pipelines.
@@ -23,23 +25,24 @@ TBC
 
 ---
 
-## ✨ Deployment Stacks
+## 🚀 Deployment Stacks
 
-### 🚀 [Bootstrapping](./deployments/bootstrap)
+### 🥾 [Bootstrapping](./deployments/bootstrap)
 
 Automates the **initial bootstrapping** process, preparing both Azure and GitHub for platform landing zone deployments.
 
-- Locally executed Powershell script performs the initial setup process, configuring Azure and GitHub for automation.
+- **Locally executed Powershell script:**
+  - Performs the initial setup process, configuring Azure and GitHub for automation.
   - Performs pre-flight checks, validates authentication and confirms intentions.
-- Executes pre-defined Terraform module to deploy base resources.
-- Creates Entra ID Service Principal:
-  - Secured with Federated Credentials (OIDC) for GitHub repository and environments.
-  - Custom RBAC role assigned at core management group level.
-- Deploys backend resources **per stack** into a dedicated IaC subscription:
-  - Resource Groups and Storage Accounts per category (platform, workloads).
+  - Executes pre-defined Terraform module to deploy base resources.
+  - Adds stack variables and secrets into the provided GitHub repository.
+  - Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
+- **Service Principal + OIDC:**
+  - Providing a secure authentication method for workflows within GitHub repository.
+  - Custom RBAC role assigned providing required permissions for resource management.
+- **Backend Resources --> Dedicated IaC Subscription:**
+  - Resource Group and Storage Accounts per category (platform, workloads).
   - Maintaining isolation and independence, using separate state files per stack (governance, connectivity, management).
-- Adds stack variables and secrets into the provided GitHub repository.
-- Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 
 ### 📜 [Governance](./deployments/plz-governance)
 
@@ -154,10 +157,12 @@ Stacks are deployed using GitHub Actions workflows located in `.github/workflows
 Workflows are designed to be run in the order provided below for the **initial deployment** only.  
 Once the full stack list has been deployed, changes can be made, with individual workflows executed when required.
 
-1. **Bootstrap:** Execute [bootstrap script](./deployments/bootstrap) to begin deployment process.
-2. **Management:** Create monitoring and observability resources, policy assignments using initiatives from Governance stack.
-3. **Governance:** Assign base policies at defined management group and subscription structure.
-4. **Connectivity:** Deploy networking resources using a hub-spoke architecture for centralized flow control.
+1. Update variables file in `./variables` with desired inputs.
+2. Add subscription name part values to the `iac-bootstrap.tfvars.json` file for each stack reference.
+3. **Bootstrap:** Execute [bootstrap script](./deployments/bootstrap) to begin initial configuration process.
+4. **Management:** Deploy monitoring and observability resources.
+5. **Governance:** Deploy management group structure, policy definitions and initiatives.
+6. **Connectivity:** Deploy networking resources using a hub-spoke architecture.
 
 ---
 
@@ -166,46 +171,28 @@ Once the full stack list has been deployed, changes can be made, with individual
 This project uses a semi-opinionated naming format for resources to ensure consistency, readability, and CAF alignment.  
 Resource names are provided using a custom [naming module](./modules/global-resource-naming/) that produces multiple naming outputs.
 
-**Template:** `<prefix>-<workload>-<stack_or_env>-<category>-<resource_type>-<instance>`  
+**Template:** `<resource_type>-<prefix>-<workload>-<stack_or_env>-<category>-<instance>`  
 
 | Segment         | Purpose / Description                                                                                        |
 | --------------- | ------------------------------------------------------------------------------------------------------------ |
+| `resource_type` | Azure resource type abbreviation: `rg`, `vnet`, `snet`, `app`, `sql`, `api`, etc.                            |
 | `prefix`        | Tenant or project identifier, `abc` (Animal Balloon Company)                                                 |
 | `workload`      | `plz` for platform, workload name for apps/services (`mywebapp`)                                             |
 | `stack_or_env`  | Platform stack (`gov`, `con`, `mgt`, `idn`) **or** environment (`dev`, `tst`, `stg`, `prd`)                  |
 | `category`      | Optional category grouping: `hub`, `fwl`, `bas` (used mainly for PLZ resources, optional for workloads)      |
-| `resource_type` | Azure resource type abbreviation: `rg`, `vnet`, `snet`, `app`, `sql`, `api`, etc.                            |
 | `instance`      | Numeric identifier: `01`, `02`, `03` (for multiple similar resources)                                        |
 
 ### Examples: Platform
 
-| Resource                    | Name Example           | Notes                               |
-| --------------------------- | ---------------------- | ----------------------------------- |
-| Connectivity Resource Group | `abc-plz-con-rg-01`    | Resource Group for hub connectivity |
-| Azure Firewall              | `abc-plz-con-fwl-01`   | Azure Firewall or NVA appliance     |
-| Hub VNet                    | `abc-plz-con-hub-vnet` | Central hub virtual network         |
-| Bastion Subnet              | `abc-plz-con-bas-snet` | Subnet for Azure Bastion            |
-| VPN Gateway Subnet          | `abc-plz-con-gwy-snet` | Subnet for VPN Gateway              |
-| Firewall Subnet             | `abc-plz-con-fwl-snet` | Subnet for Azure Firewall           |
-| Management Subnet           | `abc-plz-con-mgt-snet` | Subnet for monitoring/management    |
-
-### Examples: Workload
-
-| Resource     | Name Example              | Notes                            |
-| ------------ | ------------------------- | -------------------------------- |
-| Web App      | `abc-mywebapp-prd-app-01` | Category omitted for simplicity  |
-| SQL Database | `abc-mywebapp-prd-sql-01` | Environment identifies lifecycle |
-| API Function | `abc-mywebapp-prd-api-01` | Category omitted, optional       |
-
-### Abbreviation Reference: Categories
-
-| Abbreviation | Meaning                   |
-| ------------ | ------------------------- |
-| hub          | Hub network               |
-| bas          | Bastion subnet            |
-| gwy          | VPN Gateway subnet        |
-| fwl          | Firewall / Azure Firewall |
-| mgt          | Management subnet         |
+| Resource           | Name Example              |
+| ------------------ | ------------------------- |
+| Resource Group     | `rg-abc-plz-con-01`       |
+| Azure Firewall     | `afw-abc-plz-con-01`      |
+| Hub VNet           | `vnet-abc-plz-con-hub`    |
+| Firewall Subnet    | `snet-abc-plz-con-afw`    |
+| Web App            | `app-abc-mywebapp-prd-01` |
+| SQL Database       | `sql-abc-mywebapp-prd-01` |
+| Virtual Machine    | `vm-abc-mywebapp-prd-01`  |
 
 ---
 
