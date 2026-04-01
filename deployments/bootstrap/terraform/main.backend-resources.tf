@@ -12,7 +12,7 @@ module "naming_iac" {
   source        = "../../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
   workload      = var.stack.naming.workload_code
-  stack_or_env  = local.backend_resource_group
+  stack_or_env  = local.backend_resource_group_name_part
   ensure_unique = true
 }
 
