@@ -1,4 +1,4 @@
-# Outputs
+# GENERAL ---------------------------------------- #
 
 output "full_name" {
   description = "Full length name separated by dashes."
@@ -27,72 +27,19 @@ output "compact_name_unique" {
 
 # RESOURCES -------------------------------------- #
 
-output "resource_group" {
-  description = "Full length name separated by dashes."
-  value       = "rg-${local.full_name}"
-}
-
-output "storage_account" {
-  description = "Pre-determined name for Storage Account."
-  value       = "sa${local.compact_name_unique}"
-}
-
-output "key_vault" {
-  description = "Pre-determined name for Key Vault."
-  value       = "kv-${local.compact_name_unique}"
-}
-
-output "virtual_network" {
-  description = "Full length name separated by dashes."
-  value       = "vnet-${local.full_name}"
-}
-
-output "subnet" {
-  description = "Full length name separated by dashes."
-  value       = "snet-${local.full_name}"
-}
-
-output "log_analytics_workspace" {
-  description = "Full length name separated by dashes."
-  value       = "law-${local.full_name}"
-}
-
-output "user_assigned_managed_identity" {
-  description = "Full length name separated by dashes."
-  value       = "uai-${local.full_name}"
-}
-
-output "azure_firewall" {
-  description = "Full length name separated by dashes."
-  value       = "afw-${local.full_name}"
-}
-
-output "azure_firewall_policy" {
-  description = "Full length name separated by dashes."
-  value       = "afwp-${local.full_name}"
-}
-
-output "bastion" {
-  description = "Full length name separated by dashes."
-  value       = "bas-${local.full_name}"
-}
-
-output "gateway_vpn" {
-  description = "Full length name separated by dashes."
-  value       = "vpng-${local.full_name}"
-}
-
-output "gateway_express_route" {
-  description = "Full length name separated by dashes."
-  value       = "ergw-${local.full_name}"
-}
-
-output "public_ip" {
-  description = "Full length name separated by dashes."
-  value       = "pip-${local.full_name}"
-}
-
-output "service_principal" {
-  description = "Full length name separated by dashes."
-  value       = "sp-${local.full_name}"
-}
+output "resource_group" { value = "rg-${local.full_name}" }
+output "storage_account" { value = "sa${local.compact_name_unique}" }
+output "key_vault" { value = "kv-${local.compact_name_unique}" }
+output "virtual_network" { value = "vnet-${local.full_name}" }
+output "subnet" { value = "snet-${local.full_name}" }
+output "log_analytics_workspace" { value = "law-${local.full_name}" }
+output "user_assigned_managed_identity" { value = "uai-${local.full_name}" }
+output "azure_firewall" { value = "afw-${local.full_name}" }
+output "azure_firewall_policy" { value = "afwp-${local.full_name}" }
+output "bastion" { value = "bas-${local.full_name}" }
+output "gateway_vpn" { value = "vpng-${local.full_name}" }
+output "gateway_express_route" { value = "ergw-${local.full_name}" }
+output "public_ip" { value = "pip-${local.full_name}" }
+output "service_principal" { value = "sp-${local.full_name}" }
+output "data_collection_endpoint" { value = "dce-${local.full_name}" }
+output "data_collection_rule" { value = "dcr-${local.full_name}" }
