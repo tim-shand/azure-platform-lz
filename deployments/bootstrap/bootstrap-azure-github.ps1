@@ -171,10 +171,7 @@ Try {
     }  
     Try {
         $repoConfig = Get-RepoConfig "$dir_ps_vars/global.tfvars"
-        if ($repoConfig.repo) {
-            Write-Host -ForegroundColor $PASS "PASS"
-        }
-        else {
+        if (-not($repoConfig.repo)) {
             Write-Host -ForegroundColor $ERR "FAIL"
             Write-Host -ForegroundColor $ERR "[x] ERROR: Unable to extract repository details from variables file. Abort."
             exit 1
@@ -191,7 +188,7 @@ Try {
         $plz_sub_mgt = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.mgt)')].{Name:name, ID:id}" | ConvertFrom-Json)
         $plz_sub_gov = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.gov)')].{Name:name, ID:id}" | ConvertFrom-Json)
         $plz_sub_con = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.con)')].{Name:name, ID:id}" | ConvertFrom-Json)
-        if (-not($LASTEXITCODE -eq 0)) {
+        if (-not($plz_sub_mgt) -and (-not($plz_sub_gov)) -and (-not($plz_sub_con))) {
             Write-Host -ForegroundColor $ERR "FAIL"
             Write-Host -ForegroundColor $ERR "[x] ERROR: Failed to resolve platform subscriptions. Abort."
             exit 1
@@ -208,6 +205,7 @@ Catch {
     Write-Host -ForegroundColor $ERR "[x] ERROR: Failure occurred during variable file check. $_"
     exit 1  
 }
+Write-Host -ForegroundColor $PASS "PASS"
 
 if (-not $Remove) {
     # Enables Azure CLI to automatically install missing extensions whenever a command requires them, without asking for confirmation.
