@@ -2,8 +2,12 @@ locals {
   # Merge global tags with stack tags.
   tags_merged = merge(var.global.tags, var.stack.tags)
 
-  # Platform Subscriptions.
-  platform_subscriptions = []
+  # Filter active subscriptions only.
+  active_subscriptions = {
+    for sub in data.azurerm_subscriptions.all.subscriptions :
+    sub.subscription_id => sub
+    if sub.state == "Enabled"
+  }
 }
 
 locals {

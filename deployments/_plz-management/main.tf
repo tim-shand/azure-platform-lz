@@ -129,14 +129,15 @@ resource "azurerm_monitor_data_collection_rule" "mgt" {
 
 # Security Center: Send to Log Insights Workspace.
 resource "azurerm_security_center_workspace" "mgt" {
-  for_each     = data.azurerm_subscriptions.all # Enable for all subscriptions.
-  scope        = each.value.subscription_id     # Assign to each subscription.
+  #for_each     = local.active_subscriptions
+  for_each     = local.active_subscriptions # Enable for all active subscriptions. 
+  scope        = each.value.id              # Assign to each subscription.
   workspace_id = azurerm_log_analytics_workspace.mgt.id
 }
 
 # Defender for Cloud (CSPM): Virtual Machines
 resource "azurerm_security_center_subscription_pricing" "cspm" {
-  for_each      = local.mdfc_cspm_resources_enabled # Only create if CSPM is enabled, and each resource is enabled.
+  for_each      = toset(local.mdfc_cspm_resources_enabled) # Only create if CSPM is enabled, and each resource is enabled.
   tier          = "Standard"
   resource_type = each.value
 }
@@ -167,7 +168,7 @@ resource "azurerm_monitor_activity_log_alert" "resource_health" {
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
   description         = "Fires when any resource in the management resource group becomes unavailable."
-  scopes              = data.azurerm_subscriptions.all.subscription_id # Enable for all subscriptions.  
+  scopes              = [for v in local.active_subscriptions : v.id] # Enable for all active subscriptions.  
   enabled             = var.enable_resource_health_alerts
   criteria {
     category = "ResourceHealth"
@@ -182,12 +183,12 @@ resource "azurerm_monitor_activity_log_alert" "resource_health" {
 }
 
 # Service Health Alerts: Covers Azure-side incidents, planned maintenance, health advisories, and security advisories.
-resource "azurerm_monitor_activity_log_alert" "service_health_incident" {
+resource "azurerm_monitor_activity_log_alert" "service_health" {
   name                = "${module.naming.activity_log_alert}-srv"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
-  scopes              = data.azurerm_subscriptions.all.subscription_id # Enable for all subscriptions. 
+  scopes              = [for v in local.active_subscriptions : v.id] # Enable for all active subscriptions. 
   description         = "Fires when Azure reports an active service incident affecting this subscription."
   enabled             = var.enable_service_health_alerts
   criteria {
@@ -196,6 +197,25 @@ resource "azurerm_monitor_activity_log_alert" "service_health_incident" {
       locations = []
       events    = ["Incident", "Maintenance", "Security"]
     }
+  }
+  action {
+    action_group_id = azurerm_monitor_action_group.platform.id
+  }
+}
+
+# Administrative Alerts: 
+resource "azurerm_monitor_activity_log_alert" "diagnostic_setting_delete" {
+  name                = "${module.naming.activity_log_alert}-adm"
+  resource_group_name = azurerm_resource_group.mgt.name
+  location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
+  tags                = local.tags_merged
+  scopes              = [for v in local.active_subscriptions : v.id] # Enable for all active subscriptions. 
+  description         = "Fires when any diagnostic setting is deleted within the subscription."
+  enabled             = var.enable_administrative_alerts
+  criteria {
+    category       = "Administrative"
+    operation_name = "microsoft.insights/diagnosticSettings/delete"
+    statuses       = ["Succeeded", "Failed"]
   }
   action {
     action_group_id = azurerm_monitor_action_group.platform.id

@@ -88,6 +88,12 @@ variable "enable_service_health_alerts" {
   default     = true
 }
 
+variable "enable_administrative_alerts" {
+  description = "Enable alerting for administrative actions."
+  type        = bool
+  default     = true
+}
+
 # DEFENDER FOR CLOUD ----------------------------------------------- #
 
 variable "mdfc_enable_defender_cspm" {
