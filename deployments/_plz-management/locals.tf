@@ -11,9 +11,10 @@ locals {
 
   # Flat list of locations. 
   locations_all = flatten([ # Flatten the map of strings and list (approved) into a single list.
-    var.location.primary,
-    var.location.secondary,
-    var.location.approved
+    var.global.location.primary,
+    var.global.location.secondary,
+    var.global.location.approved1,
+    var.global.location.approved1
   ])
 }
 
