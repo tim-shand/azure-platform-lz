@@ -44,3 +44,4 @@ output "service_principal" { value = "sp-${local.full_name}" }
 output "data_collection_endpoint" { value = "dce-${local.full_name}" }
 output "data_collection_rule" { value = "dcr-${local.full_name}" }
 output "action_group" { value = "ag-${local.full_name}" }
+output "activity_log_alert" { value = "alrt-${local.full_name}" }
