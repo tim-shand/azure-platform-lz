@@ -8,6 +8,13 @@ locals {
     sub.subscription_id => sub
     if sub.state == "Enabled"
   }
+
+  # Flat list of locations. 
+  locations_all = flatten([ # Flatten the map of strings and list (approved) into a single list.
+    var.location.primary,
+    var.location.secondary,
+    var.location.approved
+  ])
 }
 
 locals {

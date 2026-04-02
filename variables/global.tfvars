@@ -7,7 +7,11 @@ global = {
   }
   location = {
     primary   = "newzealandnorth" # Default, preferred location. 
-    secondary = "australiaeast"   # Secondary location for resources not available in primary region. 
+    secondary = "australiaeast"   # Secondary location for resources not available in primary region.
+    approved = [
+      "westus2",
+      "australiasoutheast"
+    ]
   }
   tags = {
     Organization = "TShandCom"           # Name or abbreviation used to identify the organisation.  

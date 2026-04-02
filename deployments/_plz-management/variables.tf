@@ -94,6 +94,16 @@ variable "enable_administrative_alerts" {
   default     = true
 }
 
+variable "alert_on_resource_deletion" {
+  description = "List of resource types to alert on if deletion is attempted."
+  type        = list(string)
+  default = [
+    "/providers/Microsoft.KeyVault/vaults/*",
+    "/providers/Microsoft.OperationalInsights/workspaces/*",
+    "/providers/Microsoft.Insights/diagnosticSettings/*"
+  ]
+}
+
 # DEFENDER FOR CLOUD ----------------------------------------------- #
 
 variable "mdfc_enable_defender_cspm" {

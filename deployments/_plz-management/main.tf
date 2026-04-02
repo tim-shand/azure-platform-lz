@@ -163,7 +163,7 @@ resource "azurerm_monitor_action_group" "platform" {
 
 # Resource Health Alerts: Monitor individual resource availability.
 resource "azurerm_monitor_activity_log_alert" "resource_health" {
-  name                = "${module.naming.activity_log_alert}-res"
+  name                = "${module.naming.activity_log_alert}-hth-res"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
@@ -184,7 +184,7 @@ resource "azurerm_monitor_activity_log_alert" "resource_health" {
 
 # Service Health Alerts: Covers Azure-side incidents, planned maintenance, health advisories, and security advisories.
 resource "azurerm_monitor_activity_log_alert" "service_health" {
-  name                = "${module.naming.activity_log_alert}-srv"
+  name                = "${module.naming.activity_log_alert}-hth-srv"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
@@ -194,7 +194,7 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
   criteria {
     category = "ServiceHealth"
     service_health {
-      locations = []
+      locations = local.locations_all # Flattened list.
       events    = ["Incident", "Maintenance", "Security"]
     }
   }
@@ -203,19 +203,22 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
   }
 }
 
-# Administrative Alerts: 
-resource "azurerm_monitor_activity_log_alert" "diagnostic_setting_delete" {
-  name                = "${module.naming.activity_log_alert}-adm"
+# Administrative Alerts: Delete Attempts.
+resource "azurerm_monitor_activity_log_alert" "delete_attempt_all" {
+  name                = "${module.naming.activity_log_alert}-del-res"
   resource_group_name = azurerm_resource_group.mgt.name
-  location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
+  location            = "global"
   tags                = local.tags_merged
-  scopes              = [for v in local.active_subscriptions : v.id] # Enable for all active subscriptions. 
-  description         = "Fires when any diagnostic setting is deleted within the subscription."
+  scopes              = [for sub in local.active_subscriptions : sub.id]
+  description         = "Fires when specified resource types are attempted to be deleted (Succeeded or Failed)."
   enabled             = var.enable_administrative_alerts
   criteria {
     category       = "Administrative"
-    operation_name = "microsoft.insights/diagnosticSettings/delete"
+    operation_name = "*/delete"
     statuses       = ["Succeeded", "Failed"]
+    resource_id = [ # Filter by resource types in resource_id using wildcard match.
+      for v in var.alert_on_resource_deletion : v
+    ]
   }
   action {
     action_group_id = azurerm_monitor_action_group.platform.id
