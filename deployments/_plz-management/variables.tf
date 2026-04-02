@@ -70,10 +70,22 @@ variable "alert_email_addresses" {
   default     = []
 }
 
-variable "enable_log_alerts" {
-  description = "Enable log-based alert rules."
+variable "enable_alerts" {
+  description = "Master switch to enable/disable log-based alert rules."
   type        = bool
   default     = false
+}
+
+variable "enable_resource_health_alerts" {
+  description = "Enable alerting for resource health."
+  type        = bool
+  default     = true
+}
+
+variable "enable_service_health_alerts" {
+  description = "Enable alerting for service health."
+  type        = bool
+  default     = true
 }
 
 # DEFENDER FOR CLOUD ----------------------------------------------- #

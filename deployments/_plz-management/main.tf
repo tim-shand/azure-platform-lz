@@ -129,8 +129,8 @@ resource "azurerm_monitor_data_collection_rule" "mgt" {
 
 # Security Center: Send to Log Insights Workspace.
 resource "azurerm_security_center_workspace" "mgt" {
-  for_each     = data.azurerm_subscriptions.all
-  scope        = each.value.subscription_id # Assign to each subscription.
+  for_each     = data.azurerm_subscriptions.all # Enable for all subscriptions.
+  scope        = each.value.subscription_id     # Assign to each subscription.
   workspace_id = azurerm_log_analytics_workspace.mgt.id
 }
 
@@ -158,3 +158,46 @@ resource "azurerm_monitor_action_group" "platform" {
   }
 }
 
+# ALERTS ------------------------------------------------------------------------- #
+
+# Resource Health Alerts: Monitor individual resource availability.
+resource "azurerm_monitor_activity_log_alert" "resource_health" {
+  name                = "${module.naming.activity_log_alert}-res"
+  resource_group_name = azurerm_resource_group.mgt.name
+  location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
+  tags                = local.tags_merged
+  description         = "Fires when any resource in the management resource group becomes unavailable."
+  scopes              = data.azurerm_subscriptions.all.subscription_id # Enable for all subscriptions.  
+  enabled             = var.enable_resource_health_alerts
+  criteria {
+    category = "ResourceHealth"
+    resource_health {
+      current  = ["Unavailable", "Degraded"]
+      previous = ["Available", "Unknown"]
+    }
+  }
+  action {
+    action_group_id = azurerm_monitor_action_group.platform.id
+  }
+}
+
+# Service Health Alerts: Covers Azure-side incidents, planned maintenance, health advisories, and security advisories.
+resource "azurerm_monitor_activity_log_alert" "service_health_incident" {
+  name                = "${module.naming.activity_log_alert}-srv"
+  resource_group_name = azurerm_resource_group.mgt.name
+  location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
+  tags                = local.tags_merged
+  scopes              = data.azurerm_subscriptions.all.subscription_id # Enable for all subscriptions. 
+  description         = "Fires when Azure reports an active service incident affecting this subscription."
+  enabled             = var.enable_service_health_alerts
+  criteria {
+    category = "ServiceHealth"
+    service_health {
+      locations = []
+      events    = ["Incident", "Maintenance", "Security"]
+    }
+  }
+  action {
+    action_group_id = azurerm_monitor_action_group.platform.id
+  }
+}

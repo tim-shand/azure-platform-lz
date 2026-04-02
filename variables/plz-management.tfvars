@@ -24,8 +24,10 @@ log_analytics_sku                    = "PerGB2018"
 
 # ALERTING -------------------------------------------------------- #
 
-alert_email_addresses = ["alerts@tshand.com"]
-enable_log_alerts     = true
+alert_email_addresses          = ["alerts@tshand.com"]
+enable_alerts                  = true # Master switch for all alerting.
+enabled_resource_health_alerts = true
+enabled_service_health_alerts  = true
 
 # DEFENDER FOR CLOUD ----------------------------------------------- #
 
