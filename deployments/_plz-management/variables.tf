@@ -20,7 +20,7 @@ variable "subscription_id" {
   nullable    = false
 }
 
-# LOG ANALYTICS ---------------------------------------------------- #
+# LOGGING ---------------------------------------------------- #
 
 variable "log_retention_days" {
   description = "Number of days to retain logs in Log Analytics."
@@ -42,6 +42,12 @@ variable "log_analytics_sku" {
   description = "The SKU to use for Log Analytics Workspace (PerGB2018, PerNode, Premium, Standalone, Standard, CapacityReservation, LACluster, Unlimited)."
   type        = string
   default     = "PerGB2018"
+}
+
+variable "log_archive_retention_days" {
+  description = "Number of days until deletion from archive."
+  type        = number
+  default     = 180
 }
 
 # KEY VAULT -------------------------------------------------------- #

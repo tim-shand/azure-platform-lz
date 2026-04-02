@@ -23,7 +23,7 @@ resource "azurerm_resource_group" "mgt" {
   tags     = local.tags_merged
 }
 
-# Key Vault: Stores platform secrets and certificates.
+# Key Vault: Stores platform secrets and certificates (for future usage).
 resource "azurerm_key_vault" "mgt" {
   name                       = module.naming.key_vault
   resource_group_name        = azurerm_resource_group.mgt.name
@@ -47,6 +47,7 @@ resource "azurerm_log_analytics_workspace" "mgt" {
   tags                = local.tags_merged
   sku                 = var.log_analytics_sku
   retention_in_days   = var.log_retention_days
+  daily_quota_gb      = var.log_daily_quota_gb
 }
 
 # Storage Account: Archive logs.
@@ -61,6 +62,27 @@ resource "azurerm_storage_account" "mgt" {
   https_traffic_only_enabled      = true        # Enforce secure file transfer. 
   allow_nested_items_to_be_public = false       # Prevent anonymous/public access to Storage Accounts. 
   shared_access_key_enabled       = false       # SECURITY: Disable Shared Key Access in favour of Entra ID authorization.
+}
+
+resource "azurerm_storage_management_policy" "mgt" {
+  storage_account_id = azurerm_storage_account.mgt.id
+  rule {
+    name    = "archive-and-expire-logs"
+    enabled = true
+    filters {
+      blob_types = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        tier_to_cool_after_days_since_modification_greater_than    = 30
+        tier_to_archive_after_days_since_modification_greater_than = 90
+        delete_after_days_since_modification_greater_than          = var.log_archive_retention_days
+      }
+      snapshot {
+        delete_after_days_since_creation_greater_than = 30
+      }
+    }
+  }
 }
 
 # Data Collection Endpoint: Required for Azure Monitor Agent-based data collection (modern, agentless-friendly).
@@ -147,7 +169,6 @@ resource "azurerm_security_center_subscription_pricing" "cspm" {
 resource "azurerm_monitor_action_group" "platform" {
   name                = module.naming.action_group
   resource_group_name = azurerm_resource_group.mgt.name
-  location            = azurerm_resource_group.mgt.location
   tags                = local.tags_merged
   short_name          = "alerts-plz"
   dynamic "email_receiver" {
@@ -204,7 +225,7 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
 }
 
 # Administrative Alerts: Delete Attempts.
-resource "azurerm_monitor_activity_log_alert" "delete_attempt_all" {
+resource "azurerm_monitor_activity_log_alert" "delete_attempt_resources" {
   name                = "${module.naming.activity_log_alert}-del-res"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global"
@@ -216,9 +237,7 @@ resource "azurerm_monitor_activity_log_alert" "delete_attempt_all" {
     category       = "Administrative"
     operation_name = "*/delete"
     statuses       = ["Succeeded", "Failed"]
-    resource_id = [ # Filter by resource types in resource_id using wildcard match.
-      for v in var.alert_on_resource_deletion : v
-    ]
+    resource_id    = local.alert_deletion_resource_id
   }
   action {
     action_group_id = azurerm_monitor_action_group.platform.id

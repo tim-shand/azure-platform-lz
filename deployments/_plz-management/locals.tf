@@ -25,3 +25,8 @@ locals {
     if v == true && var.mdfc_enable_defender_cspm == true
   ]
 }
+
+locals {
+  # Convert list of resource types into a single wildcard string for resource_id.
+  alert_deletion_resource_id = "/subscriptions/*/providers/{${join(",", var.alert_on_resource_deletion)}}/*"
+}

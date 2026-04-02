@@ -11,10 +11,11 @@ stack = {
   }
 }
 
-# LOG ANALYTICS ---------------------------------------------------- #
+# LOGGING ---------------------------------------------------- #
 
-log_retention_days = 30 # Free tier: first 5 GB/day ingestion free, 30-day retention free.
-log_daily_quota_gb = 1  # Daily quota cap is set to prevent unexpected cost spikes.
+log_retention_days         = 30  # Free tier: first 5 GB/day ingestion free, 30-day retention free.
+log_daily_quota_gb         = 1   # Daily quota cap is set to prevent unexpected cost spikes.
+log_archive_retention_days = 120 # Number of days until deletion from archive.
 
 # KEY VAULT -------------------------------------------------------- #
 
@@ -29,10 +30,16 @@ enable_alerts                 = true # Master switch for all alerting.
 enable_resource_health_alerts = true
 enable_service_health_alerts  = true
 enable_administrative_alerts  = true
-alert_on_resource_deletion = [ # Resource types to alert on if deletion is attempted.
-  "/providers/Microsoft.KeyVault/vaults/*",
-  "/providers/Microsoft.OperationalInsights/workspaces/*",
-  "/providers/Microsoft.Insights/diagnosticSettings/*"
+# alert_on_resource_deletion = [ # Resource types to alert on if deletion is attempted.
+#   "/providers/Microsoft.KeyVault/vaults/*",
+#   "/providers/Microsoft.OperationalInsights/workspaces/*",
+#   "/providers/Microsoft.Insights/diagnosticSettings/*"
+# ]
+
+alert_on_resource_deletion = [
+  "Microsoft.KeyVault/vaults",
+  "Microsoft.OperationalInsights/workspaces",
+  "Microsoft.Insights/diagnosticSettings"
 ]
 
 # DEFENDER FOR CLOUD ----------------------------------------------- #
