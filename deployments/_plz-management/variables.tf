@@ -20,7 +20,7 @@ variable "subscription_id" {
   nullable    = false
 }
 
-# Log Analytics ---------------------------------------------------- #
+# LOG ANALYTICS ---------------------------------------------------- #
 
 variable "log_retention_days" {
   description = "Number of days to retain logs in Log Analytics."
@@ -44,12 +44,10 @@ variable "log_analytics_sku" {
   default     = "PerGB2018"
 }
 
-
-
-# Key Vault -------------------------------------------------------- #
+# KEY VAULT -------------------------------------------------------- #
 
 variable "key_vault_soft_delete_retention_days" {
-  description = "Numver of soft delete retention in days."
+  description = "Number of soft delete retention in days."
   type        = number
   default     = 30
   validation {
@@ -58,7 +56,13 @@ variable "key_vault_soft_delete_retention_days" {
   }
 }
 
-# Alerting -------------------------------------------------------- #
+variable "key_vault_soft_purge_protection" {
+  description = "Enable purge protection on Key Vault (true/false)."
+  type        = bool
+  default     = false
+}
+
+# ALERTING -------------------------------------------------------- #
 
 variable "alert_email_addresses" {
   description = "List of email addresses for platform alert notifications."
@@ -70,4 +74,17 @@ variable "enable_log_alerts" {
   description = "Enable log-based alert rules."
   type        = bool
   default     = false
+}
+
+# DEFENDER FOR CLOUD ----------------------------------------------- #
+
+variable "mdfc_enable_defender_cspm" {
+  description = "Enable the paid tier of Defender for Cloud for extended security, comprehensive security assessments."
+  type        = bool
+  default     = false
+}
+
+variable "mdfc_cspm_resources" {
+  description = "Enable or disable specific resource types for MDfC CSPM."
+  type        = map(bool)
 }

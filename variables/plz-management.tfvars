@@ -15,3 +15,25 @@ stack = {
 
 log_retention_days = 30 # Free tier: first 5 GB/day ingestion free, 30-day retention free.
 log_daily_quota_gb = 1  # Daily quota cap is set to prevent unexpected cost spikes.
+
+# DEFENDER FOR CLOUD ----------------------------------------------- #
+
+mdfc_enable_defender_cspm = false # Enable/disable the paid tier for MDfC CSPM.
+mdfc_cspm_resources = {
+  AI                            = "true"
+  Api                           = "true"
+  AppServices                   = "true"
+  ContainerRegistry             = "true"
+  KeyVaults                     = "true"
+  KubernetesService             = "true"
+  SqlServers                    = "true"
+  SqlServerVirtualMachines      = "true"
+  StorageAccounts               = "true"
+  VirtualMachines               = "true"
+  Arm                           = "false"
+  Dns                           = "false"
+  OpenSourceRelationalDatabases = "true"
+  Containers                    = "true"
+  CosmosDbs                     = "false"
+  CloudPosture                  = "true"
+}
