@@ -134,30 +134,9 @@ resource "azurerm_security_center_workspace" "mgt" {
 }
 
 # Defender for Cloud (CSPM): Virtual Machines
-resource "azurerm_security_center_subscription_pricing" "mdfc_vms" {
-  count         = var.mdfc_enable_defender_cspm ? 1 : 0
+resource "azurerm_security_center_subscription_pricing" "cspm" {
+  for_each      = local.mdfc_cspm_resources_enabled # Only create if CSPM is enabled, and each resource is enabled.
   tier          = "Standard"
-  resource_type = "VirtualMachines"
-}
-
-# Defender for Cloud (CSPM): Storage Accounts
-resource "azurerm_security_center_subscription_pricing" "mdfc_storage" {
-  count         = var.mdfc_enable_defender_cspm ? 1 : 0
-  tier          = "Standard"
-  resource_type = "StorageAccounts"
-}
-
-# Defender for Cloud (CSPM): Key Vaults
-resource "azurerm_security_center_subscription_pricing" "mdfc_keyvault" {
-  count         = var.mdfc_enable_defender_cspm ? 1 : 0
-  tier          = "Standard"
-  resource_type = "KeyVaults"
-}
-
-# Defender for Cloud (CSPM): App Services
-resource "azurerm_security_center_subscription_pricing" "mdfc_appservices" {
-  count         = var.mdfc_enable_defender_cspm ? 1 : 0
-  tier          = "Standard"
-  resource_type = "AppServices"
+  resource_type = each.value
 }
 
