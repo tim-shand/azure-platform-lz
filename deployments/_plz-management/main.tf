@@ -129,7 +129,8 @@ resource "azurerm_monitor_data_collection_rule" "mgt" {
 
 # Security Center: Send to Log Insights Workspace.
 resource "azurerm_security_center_workspace" "mgt" {
-  scope        = "/subscriptions/00000000-0000-0000-0000-000000000000"
+  for_each     = data.azurerm_subscriptions.all
+  scope        = each.value.subscription_id # Assign to each subscription.
   workspace_id = azurerm_log_analytics_workspace.mgt.id
 }
 
@@ -138,5 +139,22 @@ resource "azurerm_security_center_subscription_pricing" "cspm" {
   for_each      = local.mdfc_cspm_resources_enabled # Only create if CSPM is enabled, and each resource is enabled.
   tier          = "Standard"
   resource_type = each.value
+}
+
+# ACTION GROUPS ------------------------------------------------------------------ #
+# Notification target for all platform alerts. Email receivers are free.
+resource "azurerm_monitor_action_group" "platform" {
+  name                = module.naming.action_group
+  resource_group_name = azurerm_resource_group.mgt.name
+  location            = azurerm_resource_group.mgt.location
+  tags                = local.tags_merged
+  short_name          = "alerts-plz"
+  dynamic "email_receiver" {
+    for_each = var.alert_email_addresses
+    content {
+      name          = "email-${index(var.alert_email_addresses, email_receiver.value)}"
+      email_address = email_receiver.value
+    }
+  }
 }
 

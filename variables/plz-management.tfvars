@@ -16,10 +16,21 @@ stack = {
 log_retention_days = 30 # Free tier: first 5 GB/day ingestion free, 30-day retention free.
 log_daily_quota_gb = 1  # Daily quota cap is set to prevent unexpected cost spikes.
 
+# KEY VAULT -------------------------------------------------------- #
+
+key_vault_soft_delete_retention_days = 30
+key_vault_soft_purge_protection      = false
+log_analytics_sku                    = "PerGB2018"
+
+# ALERTING -------------------------------------------------------- #
+
+alert_email_addresses = ["alerts@tshand.com"]
+enable_log_alerts     = true
+
 # DEFENDER FOR CLOUD ----------------------------------------------- #
 
 mdfc_enable_defender_cspm = false # Enable/disable the paid tier for MDfC CSPM.
-mdfc_cspm_resources = {
+mdfc_cspm_resources = {           # Will only be enabled if `mdfc_enable_defender_cspm` = true
   AI                            = "true"
   Api                           = "true"
   AppServices                   = "true"
@@ -37,3 +48,4 @@ mdfc_cspm_resources = {
   CosmosDbs                     = "false"
   CloudPosture                  = "true"
 }
+
