@@ -20,5 +20,13 @@ output "bootstrap_backend" {
 
 output "management_group_core" {
   description = "Core management group object."
-  value       = azurerm.management_group_core
+  value       = azurerm_management_group.core
+}
+
+output "platform_subscription_ids" {
+  description = "Map of platform subscriptions IDs per stack."
+  value = {
+    for k, v in local.deployment_stacks :
+    k => v.subscription_id
+  }
 }
