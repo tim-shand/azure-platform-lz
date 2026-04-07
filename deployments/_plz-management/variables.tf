@@ -30,6 +30,7 @@ variable "remote_state_bootstrap" {
     storage_account_name = ""
     container_name       = ""
     key                  = ""
+    use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
   }
 }
 

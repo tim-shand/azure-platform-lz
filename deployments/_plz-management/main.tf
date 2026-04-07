@@ -229,9 +229,10 @@ resource "azurerm_monitor_activity_log_alert" "delete_attempt_resources" {
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global"
   tags                = local.tags_merged
-  scopes              = [for sub in local.active_subscriptions : sub.id]
-  description         = "Fires when specified resource types are attempted to be deleted (Succeeded or Failed)."
-  enabled             = var.enable_administrative_alerts
+  #scopes              = [for sub in local.active_subscriptions : sub.id]
+  scopes      = data.terraform_remote_state.bootstrap.outputs.management_group_core.id # Remote state data call.
+  description = "Fires when specified resource types are attempted to be deleted (Succeeded or Failed)."
+  enabled     = var.enable_administrative_alerts
   criteria {
     category       = "Administrative"
     operation_name = "*/delete"
