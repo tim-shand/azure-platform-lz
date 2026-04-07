@@ -27,6 +27,7 @@ output "compact_name_unique" {
 
 # RESOURCES -------------------------------------- #
 
+output "management_group" { value = "mg-${local.full_name}" }
 output "resource_group" { value = "rg-${local.full_name}" }
 output "storage_account" { value = "sa${local.compact_name_unique}" }
 output "key_vault" { value = "kv-${local.compact_name_unique}" }
