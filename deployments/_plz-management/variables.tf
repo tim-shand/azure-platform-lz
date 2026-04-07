@@ -22,7 +22,7 @@ variable "subscription_id" {
 
 # REMOTE STATE ------------------------------------------------------------- #
 
-variable "remote_state_bootstrap" {
+variable "remote_state_iac" {
   description = "Map of values used to call the remote state data."
   type        = map(string)
   default = {

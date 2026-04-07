@@ -1,19 +1,39 @@
 locals {
   # Merge global tags with stack tags.
   tags_merged = merge(var.global.tags, var.stack.tags)
+}
 
-  # Filter active subscriptions only.
+locals {
+  # Flat list of locations. 
+  locations_all = flatten([ # Flatten the map of strings and list (approved) into a single list.
+    var.global.location.primary,
+    var.global.location.secondary
+  ])
+}
+
+locals {
+  # Filter all active subscriptions.
   active_subscriptions = {
     for sub in data.azurerm_subscriptions.all.subscriptions :
     sub.subscription_id => sub
     if sub.state == "Enabled"
   }
 
-  # Flat list of locations. 
-  locations_all = flatten([ # Flatten the map of strings and list (approved) into a single list.
-    var.global.location.primary,
-    var.global.location.secondary
-  ])
+  # Flatten list of platform subscription IDs from remote bootstrap state and remove any duplicates.
+  platform_subscription_ids = tolist(toset(values(
+    data.terraform_remote_state.iac.outputs.platform_subscription_ids
+  )))
+
+  # Build list of subscription objects using platform subscription ID list. 
+  # platform_subscriptions = [
+  #   for sub in data.azurerm_subscriptions.all.subscriptions : sub
+  #   if contains(local.platform_subscription_ids, sub.subscription_id)
+  # ]
+  platform_subscriptions = {
+    for sub in data.azurerm_subscriptions.all.subscriptions :
+    sub.subscription_id => sub
+    if contains(local.platform_subscription_ids, sub.subscription_id)
+  }
 }
 
 locals {
