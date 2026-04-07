@@ -20,6 +20,19 @@ variable "subscription_id" {
   nullable    = false
 }
 
+# REMOTE STATE ------------------------------------------------------------- #
+
+variable "remote_state_bootstrap" {
+  description = "Map of values used to call the remote state data."
+  type        = map(string)
+  default = {
+    resource_group_name  = ""
+    storage_account_name = ""
+    container_name       = ""
+    key                  = ""
+  }
+}
+
 # LOGGING ---------------------------------------------------- #
 
 variable "log_retention_days" {
