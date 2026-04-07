@@ -30,11 +30,6 @@ enable_alerts                 = true # Master switch for all alerting.
 enable_resource_health_alerts = true
 enable_service_health_alerts  = true
 enable_administrative_alerts  = true
-# alert_on_resource_deletion = [ # Resource types to alert on if deletion is attempted.
-#   "/providers/Microsoft.KeyVault/vaults/*",
-#   "/providers/Microsoft.OperationalInsights/workspaces/*",
-#   "/providers/Microsoft.Insights/diagnosticSettings/*"
-# ]
 
 alert_on_resource_deletion = [
   "Microsoft.KeyVault/vaults",

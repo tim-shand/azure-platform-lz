@@ -151,7 +151,6 @@ resource "azurerm_monitor_data_collection_rule" "mgt" {
 
 # Security Center: Send to Log Insights Workspace.
 resource "azurerm_security_center_workspace" "mgt" {
-  #for_each     = local.active_subscriptions
   for_each     = local.active_subscriptions # Enable for all active subscriptions. 
   scope        = each.value.id              # Assign to each subscription.
   workspace_id = azurerm_log_analytics_workspace.mgt.id
