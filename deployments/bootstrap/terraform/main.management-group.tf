@@ -14,8 +14,8 @@ module "naming_mg_core" {
 
 # Management Group: Core
 resource "azurerm_management_group" "core" {
-  name         = module.naming_mg_core.full_name               # Use naming module to produce MG name format. 
-  display_name = title(var.management_group_core.display_name) # Use map key for MG display name.   
+  name         = module.naming_mg_core.management_group # Use naming module to produce MG name format. 
+  display_name = title(var.management_group_core.display_name)
   subscription_ids = [
     for v in data.azurerm_subscriptions.all.subscriptions : # Loop and select each subscriptions ID.
     v.subscription_id
