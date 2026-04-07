@@ -7,10 +7,9 @@
 
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_mg_core" {
-  source       = "../../../modules/global-resource-naming"
-  prefix       = var.global.naming.org_prefix
-  workload     = var.management_group_core.short_name
-  stack_or_env = ""
+  source   = "../../../modules/global-resource-naming"
+  prefix   = var.global.naming.org_prefix
+  workload = var.management_group_core.short_name
 }
 
 # Management Group: Core
