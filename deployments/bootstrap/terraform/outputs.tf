@@ -17,3 +17,8 @@ output "bootstrap_backend" {
     state_key       = "${lower(var.stack.naming.workload_code)}-${lower(var.stack.naming.workload_name)}.tfstate"
   }
 }
+
+output "management_group_core" {
+  description = "Core management group object."
+  value       = azurerm.management_group_core
+}
