@@ -5,10 +5,18 @@
 # - Move all subscriptions under this new management group. 
 #====================================================================================#
 
+# Naming: Generate naming convention, pre-determined values and format. 
+module "naming_mg_core" {
+  source       = "../../../modules/global-resource-naming"
+  prefix       = var.global.naming.org_prefix
+  workload     = var.management_group_core.short_name
+  stack_or_env = ""
+}
+
 # Management Group: Core
 resource "azurerm_management_group" "core" {
-  name         = module.naming_mg[each.key].full_name                    # Use naming module to produce MG name format. 
-  display_name = title(var.management_group_core[each.key].display_name) # Use map key for MG display name.   
+  name         = module.naming_mg_core.full_name               # Use naming module to produce MG name format. 
+  display_name = title(var.management_group_core.display_name) # Use map key for MG display name.   
   subscription_ids = [
     for v in data.azurerm_subscriptions.all.subscriptions : # Loop and select each subscriptions ID.
     v.subscription_id
