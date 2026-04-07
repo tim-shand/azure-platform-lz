@@ -7,6 +7,7 @@ Used to produce Terraform module information, such as required providers, inputs
 ```shell
 # Use existing configuration files, and provide path to perform task. 
 terraform-docs --config docs/templates/tfdocs-modules.yml modules/my_module_path
+terraform-docs --config docs/templates/tfdocs-modules.yml modules/global-resource-naming
 
 # STACKS:
 terraform-docs --config docs/templates/tfdocs-root.yml deployments/plz-governance
