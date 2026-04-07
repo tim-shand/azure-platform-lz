@@ -50,3 +50,10 @@ variable "platform_subscription_identifiers" {
     error_message = "The subscription display name must not be empty."
   }
 }
+
+# Managment Group: Core (Top-Level)
+variable "management_group_core" {
+  description = "Map defining the core management group used as the top-level MG."
+  type        = map(string)
+  nullable    = false
+}
