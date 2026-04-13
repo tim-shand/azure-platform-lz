@@ -25,10 +25,6 @@ locals {
   )))
 
   # Build list of subscription objects using platform subscription ID list. 
-  # platform_subscriptions = [
-  #   for sub in data.azurerm_subscriptions.all.subscriptions : sub
-  #   if contains(local.platform_subscription_ids, sub.subscription_id)
-  # ]
   platform_subscriptions = {
     for sub in data.azurerm_subscriptions.all.subscriptions :
     sub.subscription_id => sub
