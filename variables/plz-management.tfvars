@@ -38,7 +38,7 @@ log_analytics_sku                    = "PerGB2018"
 security_center_contact = {
   name = "PlatformTeam"
   email_address = "alerts@tshand.com" # Email of the Security Center Contact.
-  phone = ""
+  phone = null
   alert_notifications = true # Send security alerts notifications to the security contact.
   alerts_to_admins    = false # Send security alerts notifications to subscription admins.
 }

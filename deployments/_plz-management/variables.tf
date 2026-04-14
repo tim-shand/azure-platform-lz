@@ -99,8 +99,8 @@ variable "security_center_contact" {
   description = "Map of details to use as the Security Center contact."
   type = object({
     name = string
-    email_address = string
-    phone = string
+    email_address = optional(string)
+    phone = optional(string)
     alert_notifications = bool
     alerts_to_admins = bool
   })
