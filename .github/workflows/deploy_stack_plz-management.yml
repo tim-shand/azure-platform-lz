@@ -42,7 +42,7 @@ jobs:
     apply:
         needs: plan # REQUIRES the plan job to succeed before running.
         if: github.event.inputs.action == 'Apply'
-        uses: ./.github/workflows/terraform_apply.yml
+        uses: ./.github/workflows/terraform-apply.yml
         with: # Inputs passed to template job.
             stack_name: plz-management
             working_directory: ./deployments/plz-management
@@ -52,7 +52,7 @@ jobs:
     # DESTROY -------------------------------------------- #
     destroy:
         if: github.event.inputs.action == 'Destroy'
-        uses: ./.github/workflows/terraform_destroy.yml
+        uses: ./.github/workflows/terraform-destroy.yml
         with: # Inputs passed to template job.
             stack_name: plz-management
             working_directory: ./deployments/plz-management
