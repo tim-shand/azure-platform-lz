@@ -70,3 +70,48 @@ mdfc_cspm_resources = {           # Will only be enabled if `mdfc_enable_defende
   CloudPosture                  = "true"
 }
 
+# Entra ID: Groups (Privilaged RBAC) 
+entra_groups_prefix = "GRP_ADM_" # GRP_ADM_NetworkAdmins
+entra_groups_privilaged = {
+  "NetworkAdmins" = {
+    description       = "RBAC - Privilaged Group: Network Administrators"
+    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+  }
+  "SecurityAdmins" = {
+    description       = "RBAC - Privilaged Group: Security Administrators"
+    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+  }
+  "PlatformAdmins" = {
+    description       = "RBAC - Privilaged Group: Platform Administrators"
+    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+  }
+  "UserAccessAdmins" = {
+    description       = "RBAC - Privilaged Group: User Access Administrators"
+    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+  }
+}
+
+# Diagnostic Logs: Entra ID - [True/False]: Enable or disable logging for category.
+entraid_log_types = {
+  "AuditLogs"                           = true
+  "SignInLogs"                          = true 
+  "NonInteractiveUserSignInLogs"        = true 
+  "ServicePrincipalSignInLogs"          = true 
+  "ManagedIdentitySignInLogs"           = true 
+  "ProvisioningLogs"                    = true 
+  "ADFSSignInLogs"                      = true 
+  "RiskyUsers"                          = true
+  "UserRiskEvents"                      = true 
+  "NetworkAccessTrafficLogs"            = false
+  "RiskyServicePrincipals"              = true 
+  "ServicePrincipalRiskEvents"          = true 
+  "EnrichedOffice365AuditLogs"          = false 
+  "MicrosoftGraphActivityLogs"          = true 
+  "RemoteNetworkHealthLogs"             = false
+  "NetworkAccessAlerts"                 = false 
+  "NetworkAccessConnectionEvents"       = false 
+  "MicrosoftServicePrincipalSignInLogs" = false
+  "AzureADGraphActivityLogs"            = true 
+  "NetworkAccessGenerativeAIInsights"   = false 
+  "GraphNotificationsActivityLogs"      = false 
+}

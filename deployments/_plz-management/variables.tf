@@ -142,3 +142,24 @@ variable "mdfc_cspm_resources" {
   description = "Enable or disable specific resource types for MDfC CSPM."
   type        = map(bool)
 }
+
+# ENTRA ID GROUPS ----------------------------------------------- #
+
+variable "entra_groups_prefix" {
+  description = "String value to use for Entra ID group naming prefix."
+  type = string
+  default = "GRP_ADM_"
+}
+
+variable "entra_groups_privilaged" {
+  description = "Map of objects containing privilaged Entra ID groups to create."
+  type = map(object({
+    description = string
+    active = bool
+  }))
+}
+
+variable "entraid_log_types" {
+  description = "Map of Entra ID log categories with enable status."
+  type = map(bool)
+}
