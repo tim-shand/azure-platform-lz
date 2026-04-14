@@ -23,6 +23,7 @@ resource "azuread_group" "grp_adm" {
 # Diagnostic Settings: Entra ID - Logging
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_aad_diagnostic_setting
 resource "azurerm_monitor_aad_diagnostic_setting" "mgt" {
+  count = var.enable_resource_deployment.logs_log_analytics ? 1 : 0 # Only deploy if enabled.
   name                       = "mgt-diag-entra-logs"
   log_analytics_workspace_id = azurerm_log_analytics_workspace.mgt[0].id
   dynamic "enabled_log" {
