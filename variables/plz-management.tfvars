@@ -11,6 +11,16 @@ stack = {
   }
 }
 
+# GENERAL ---------------------------------------------------- #
+# Enable/disable resource deployment.
+enable_resource_deployment = {
+  alerts = true
+  defender_for_cloud = true
+  key_vault = true
+  logs_storage_account = true
+  logs_log_analytics = true
+}
+
 # LOGGING ---------------------------------------------------- #
 
 log_retention_days         = 30  # Free tier: first 5 GB/day ingestion free, 30-day retention free.
@@ -25,8 +35,9 @@ log_analytics_sku                    = "PerGB2018"
 
 # ALERTING -------------------------------------------------------- #
 
-alert_email_addresses         = ["alerts@tshand.com"]
-enable_alerts                 = true # Master switch for all alerting.
+alert_email_addresses         = [
+  "alerts@tshand.com"
+]
 enable_resource_health_alerts = true
 enable_service_health_alerts  = true
 enable_administrative_alerts  = true

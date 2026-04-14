@@ -9,7 +9,8 @@
 
 # Notification target for all platform alerts.
 resource "azurerm_monitor_action_group" "platform" {
-  name                = "${module.naming.action_group}-support"
+  count = var.enable_resource_deployment.alerts ? 1 : 0 # Only deploy if enabled.
+  name                = "${module.naming.action_group}-platform"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
   short_name          = "alerts-plz"
@@ -26,6 +27,7 @@ resource "azurerm_monitor_action_group" "platform" {
 
 # Resource Health Alerts: Monitor individual resource availability.
 resource "azurerm_monitor_activity_log_alert" "resource_health" {
+  count = var.enable_resource_deployment.alerts ? 1 : 0 # Only deploy if enabled.
   name                = "${module.naming.activity_log_alert}-hth-res"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
@@ -41,12 +43,13 @@ resource "azurerm_monitor_activity_log_alert" "resource_health" {
     }
   }
   action {
-    action_group_id = azurerm_monitor_action_group.platform.id
+    action_group_id = azurerm_monitor_action_group.platform[0].id
   }
 }
 
 # Service Health Alerts: Covers Azure-side incidents, planned maintenance, health advisories, and security advisories.
 resource "azurerm_monitor_activity_log_alert" "service_health" {
+  count = var.enable_resource_deployment.alerts ? 1 : 0 # Only deploy if enabled.
   name                = "${module.naming.activity_log_alert}-hth-srv"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
@@ -62,12 +65,13 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
     }
   }
   action {
-    action_group_id = azurerm_monitor_action_group.platform.id
+    action_group_id = azurerm_monitor_action_group.platform[0].id
   }
 }
 
 # Administrative Alerts: Delete Attempts.
 resource "azurerm_monitor_activity_log_alert" "delete_attempt_resources" {
+  count = var.enable_resource_deployment.alerts ? 1 : 0 # Only deploy if enabled.
   name                = "${module.naming.activity_log_alert}-del-res"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global"
@@ -82,6 +86,6 @@ resource "azurerm_monitor_activity_log_alert" "delete_attempt_resources" {
     resource_id    = local.alert_deletion_resource_id
   }
   action {
-    action_group_id = azurerm_monitor_action_group.platform.id
+    action_group_id = azurerm_monitor_action_group.platform[0].id
   }
 }

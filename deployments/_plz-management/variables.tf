@@ -20,6 +20,18 @@ variable "subscription_id" {
   nullable    = false
 }
 
+variable "enable_resource_deployment" {
+  description = "Enable/disable specific resources for deployment."
+  type = map(string)
+  default = {
+    alerts = true
+    defender_for_cloud = true
+    key_vault = true
+    logs_storage_account = true
+    logs_log_analytics = true
+  }
+}
+
 # REMOTE STATE ------------------------------------------------------------- #
 
 variable "remote_state_iac" {
@@ -88,12 +100,6 @@ variable "alert_email_addresses" {
   description = "List of email addresses for platform alert notifications."
   type        = list(string)
   default     = []
-}
-
-variable "enable_alerts" {
-  description = "Master switch to enable/disable log-based alert rules."
-  type        = bool
-  default     = false
 }
 
 variable "enable_resource_health_alerts" {
