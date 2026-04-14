@@ -14,11 +14,11 @@ stack = {
 # GENERAL ---------------------------------------------------- #
 # Enable/disable resource deployment.
 enable_resource_deployment = {
-  alerts = true
+  alerting = true
   defender_for_cloud = true
   key_vault = true
-  logs_storage_account = true
-  logs_log_analytics = true
+  logging = true
+  entra_id_privilaged_groups = true
 }
 
 # LOGGING ---------------------------------------------------- #

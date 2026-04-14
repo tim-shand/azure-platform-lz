@@ -9,7 +9,7 @@
 
 # Log Analytics Workspace
 resource "azurerm_log_analytics_workspace" "mgt" {
-  count = var.enable_resource_deployment.logs_log_analytics ? 1 : 0 # Only deploy if enabled.
+  count = var.enable_resource_deployment.logging ? 1 : 0 # Only deploy if enabled.
   name                = module.naming.log_analytics_workspace
   resource_group_name = azurerm_resource_group.mgt.name
   location            = azurerm_resource_group.mgt.location
@@ -21,7 +21,7 @@ resource "azurerm_log_analytics_workspace" "mgt" {
 
 # Storage Account: Archive logs.
 resource "azurerm_storage_account" "mgt" {
-  count = var.enable_resource_deployment.logs_storage_account ? 1 : 0 # Only deploy if enabled.
+  count = var.enable_resource_deployment.logging ? 1 : 0 # Only deploy if enabled.
   name                            = module.naming.storage_account
   resource_group_name             = azurerm_resource_group.mgt.name
   location                        = azurerm_resource_group.mgt.location
@@ -35,7 +35,7 @@ resource "azurerm_storage_account" "mgt" {
 }
 
 resource "azurerm_storage_management_policy" "mgt" {
-  count = var.enable_resource_deployment.logs_storage_account ? 1 : 0 # Only deploy if enabled.
+  count = var.enable_resource_deployment.logging ? 1 : 0 # Only deploy if enabled.
   storage_account_id = azurerm_storage_account.mgt[0].id
   rule {
     name    = "archive-and-expire-logs"
@@ -58,7 +58,7 @@ resource "azurerm_storage_management_policy" "mgt" {
 
 # Data Collection Endpoint: Required for Azure Monitor Agent-based data collection (modern, agentless-friendly).
 resource "azurerm_monitor_data_collection_endpoint" "mgt" {
-  count = var.enable_resource_deployment.logs_log_analytics ? 1 : 0 # Only deploy if enabled.
+  count = var.enable_resource_deployment.logging ? 1 : 0 # Only deploy if enabled.
   name                = module.naming.data_collection_endpoint
   resource_group_name = azurerm_resource_group.mgt.name
   location            = azurerm_resource_group.mgt.location
@@ -67,7 +67,7 @@ resource "azurerm_monitor_data_collection_endpoint" "mgt" {
 
 # Data Collection Rule: Defines what data is collected and where it is sent.
 resource "azurerm_monitor_data_collection_rule" "mgt" {
-  count = var.enable_resource_deployment.logs_log_analytics ? 1 : 0 # Only deploy if enabled.
+  count = var.enable_resource_deployment.logging ? 1 : 0 # Only deploy if enabled.
   name                        = "${module.naming.data_collection_rule}-vms"
   resource_group_name         = azurerm_resource_group.mgt.name
   location                    = azurerm_resource_group.mgt.location

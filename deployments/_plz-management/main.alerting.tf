@@ -9,7 +9,7 @@
 
 # Notification target for all platform alerts.
 resource "azurerm_monitor_action_group" "platform" {
-  count = var.enable_resource_deployment.alerts ? 1 : 0 # Only deploy if enabled.
+  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
   name                = "${module.naming.action_group}-platform"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
@@ -27,7 +27,7 @@ resource "azurerm_monitor_action_group" "platform" {
 
 # Resource Health Alerts: Monitor individual resource availability.
 resource "azurerm_monitor_activity_log_alert" "resource_health" {
-  count = var.enable_resource_deployment.alerts ? 1 : 0 # Only deploy if enabled.
+  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
   name                = "${module.naming.activity_log_alert}-hth-res"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
@@ -49,7 +49,7 @@ resource "azurerm_monitor_activity_log_alert" "resource_health" {
 
 # Service Health Alerts: Covers Azure-side incidents, planned maintenance, health advisories, and security advisories.
 resource "azurerm_monitor_activity_log_alert" "service_health" {
-  count = var.enable_resource_deployment.alerts ? 1 : 0 # Only deploy if enabled.
+  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
   name                = "${module.naming.activity_log_alert}-hth-srv"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
@@ -71,7 +71,7 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
 
 # Administrative Alerts: Delete Attempts.
 resource "azurerm_monitor_activity_log_alert" "delete_attempt_resources" {
-  count = var.enable_resource_deployment.alerts ? 1 : 0 # Only deploy if enabled.
+  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
   name                = "${module.naming.activity_log_alert}-del-res"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global"
