@@ -75,6 +75,14 @@ variable "log_archive_retention_days" {
   default     = 180
 }
 
+variable "log_archiving_storage_account" {
+  description = "Configuration for log archiving to storage account."
+  type = object({
+    enabled = bool
+    tables = map(bool) 
+  })
+}
+
 # KEY VAULT -------------------------------------------------------- #
 
 variable "key_vault_soft_delete_retention_days" {

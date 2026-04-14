@@ -56,6 +56,19 @@ resource "azurerm_storage_management_policy" "mgt" {
   }
 }
 
+# Data Export: Archive Log Analytics logs to Storage Account. 
+resource "azurerm_log_analytics_data_export_rule" "mgt" {
+  name                    = "der-${module.naming.full_name}" # Data Export Rule
+  resource_group_name     = azurerm_resource_group.mgt.name
+  workspace_resource_id   = azurerm_log_analytics_workspace.mgt[0].id
+  destination_resource_id = azurerm_storage_account.mgt[0].id
+  table_names = [
+    for k, v in var.log_archiving_storage_account.tables : k
+    if v
+  ]
+  enabled                 = var.log_archiving_storage_account.enabled      # True/False
+}
+
 # Data Collection Endpoint: Required for Azure Monitor Agent-based data collection (modern, agentless-friendly).
 resource "azurerm_monitor_data_collection_endpoint" "mgt" {
   count = var.enable_resource_deployment.logging ? 1 : 0 # Only deploy if enabled.

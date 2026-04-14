@@ -26,6 +26,19 @@ enable_resource_deployment = {
 log_retention_days         = 30  # Free tier: first 5 GB/day ingestion free, 30-day retention free.
 log_daily_quota_gb         = 1   # Daily quota cap is set to prevent unexpected cost spikes.
 log_archive_retention_days = 120 # Number of days until deletion from archive.
+log_archiving_storage_account = {
+  enabled = true
+  tables = {
+    "Alert" = true
+    "Operation" = true
+    "Metrics" = true
+    "SecurityEvent" = true
+    "Syslog" = true
+    "Perf" = true
+    "Heartbeat" = true
+    "AzureDiagnostics" = true
+  }
+}
 
 # KEY VAULT -------------------------------------------------------- #
 
