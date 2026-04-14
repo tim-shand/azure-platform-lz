@@ -76,5 +76,5 @@ jobs:
               uses: actions/upload-artifact@v4 # Upload Terraform plan file produced during the job for use by apply step.
               with:
                   name: "${{ inputs.stack_name }}.plan" # Artifact name.
-                  path: "${{ inputs.working_directory }}//${{ inputs.stack_name }}.plan" # Path to the saved plan file produced in the plan step.
+                  path: "${{ inputs.working_directory }}/${{ inputs.stack_name }}.plan" # Path to the saved plan file produced in the plan step.
                   retention-days: 1 # Auto-delete after 'x' days. Plan artifacts should not be reused across runs.
