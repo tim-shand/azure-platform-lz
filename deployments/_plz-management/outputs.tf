@@ -24,3 +24,17 @@ output "mgt_action_group" {
     resource_group = try(azurerm_monitor_action_group.platform[0].resource_group_name, null)
   } : null # Only if enabled.
 }
+
+# Entra ID Groups
+output "mgt_entra_groups" {
+  description = "Map of privilaged Entra ID groups."
+  value = {
+    for k, v in azuread_group.grp_adm :
+    k => {
+      id           = v.id
+      object_id    = v.object_id
+      display_name = v.display_name
+      description  = v.description
+    }
+  }
+}
