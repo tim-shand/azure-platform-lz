@@ -49,8 +49,7 @@ jobs:
 
             - name: "Terraform: Initialize"
               timeout-minutes: 5 # Fail this step if it exceeds 'x' minutes.
-              run:
-                  | # Configure the Azure remote backend, values injected from env vars set above.
+              run: |
                   terraform init \
                     -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID_IAC" \
                     -backend-config="resource_group_name=$TF_BACKEND_RG" \
