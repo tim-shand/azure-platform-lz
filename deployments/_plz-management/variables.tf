@@ -95,6 +95,18 @@ variable "key_vault_soft_purge_protection" {
 
 # ALERTING -------------------------------------------------------- #
 
+variable "security_center_contact" {
+  description = "Map of details to use as the Security Center contact."
+  type = object({
+    name = string
+    email_address = string
+    phone = string
+    alert_notifications = bool
+    alerts_to_admins = bool
+  })
+  nullable = false
+}
+
 variable "alert_email_addresses" {
   description = "List of email addresses for platform alert notifications."
   type        = list(string)

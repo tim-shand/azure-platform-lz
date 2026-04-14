@@ -17,6 +17,15 @@ resource "azurerm_security_center_workspace" "mgt" {
   workspace_id = azurerm_log_analytics_workspace.mgt[0].id
 }
 
+# Security Center: Contact Details
+resource "azurerm_security_center_contact" "mgt" {
+  name  = var.security_center_contact.name
+  email = var.security_center_contact.email_address
+  phone = try(var.security_center_contact.phone, null)
+  alert_notifications = var.security_center_contact.alert_notifications # Send security alerts notifications to the security contact.
+  alerts_to_admins    = var.security_center_contact.alerts_to_admins # Send security alerts notifications to subscription admins.
+}
+
 # Defender for Cloud (CSPM): Virtual Machines
 # Only create if CSPM is enabled, and each resource is enabled.
 resource "azurerm_security_center_subscription_pricing" "cspm" {

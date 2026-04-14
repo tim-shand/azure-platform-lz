@@ -35,9 +35,17 @@ log_analytics_sku                    = "PerGB2018"
 
 # ALERTING -------------------------------------------------------- #
 
-alert_email_addresses         = [
+security_center_contact = {
+  name = "PlatformTeam"
+  email_address = "alerts@tshand.com" # Email of the Security Center Contact.
+  phone = ""
+  alert_notifications = true # Send security alerts notifications to the security contact.
+  alerts_to_admins    = false # Send security alerts notifications to subscription admins.
+}
+alert_email_addresses = [
   "alerts@tshand.com"
 ]
+
 enable_resource_health_alerts = true
 enable_service_health_alerts  = true
 enable_administrative_alerts  = true
