@@ -9,6 +9,9 @@ on: # Define workflow triggers.
             stack_name: # String used with plan and variable file naming.
                 type: string
                 required: true
+            run_mode: # Pass in 'run_mode' to use as parameter in plan command (plan -destroy).
+                type: string
+                required: true
         secrets: # Secrets must be declared separately from inputs.
             ARM_CLIENT_ID: # Azure Service Principal ID for OIDC authentication.
                 required: true
@@ -23,6 +26,22 @@ jobs:
                 working-directory: ${{ inputs.working_directory }} # All 'run' steps execute from this directory by default.
 
         env: # Environment variables available to all steps in this job.
+            # CHANGE BELOW PER STACK ============================= #
+            #
+            ARM_SUBSCRIPTION_ID: ${{ vars.SUBSCRIPTION_ID_MGT }} # Target subscription for the stack resources.
+            #
+            # ==================================================== #
+
+            # General ----------------------------------- #
+            STACK_NAME: ${{ inputs.stack_name }} # Current stack name used for plan file and artifact naming.
+            RUN_MODE: ${{ inputs.run_mode == 'destroy' && '-destroy' || '' }}
+
+            # Azure OIDC Authentication  ----------------------------------- #
+            ARM_USE_OIDC: true # Force Terraform AzureRM provider to authenticate via OIDC.
+            ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure tenant ID, get from GitHub environment variable.
+            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure Service Principal ID, sourced from GitHub secret.
+            ARM_SUBSCRIPTION_ID_IAC: ${{ vars.SUBSCRIPTION_ID_IAC }} # Subscription containing the Terraform backend Storage Account.
+
             # Terraform Backend Config ----------------------------------- #
             TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to install, from GitHub environment variable.
             TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Azure Resource Group containing the backend Storage Account.
@@ -31,14 +50,14 @@ jobs:
             TF_BACKEND_KEY: "${{ inputs.stack_name }}.tfstate" # Filename of the state file within the container for the stack.
             TF_VARS_DIR: "../../variables" # Relative path from working_directory to the variables folder.
             TF_VARS_FILE: "${{ inputs.stack_name }}.tfvars" # Stack-specific filename, passed in from the parent workflow.
-            # Stack Specific ----------------------------------- #
-            STACK_NAME: ${{ inputs.stack_name }} # Stack name used for plan file and artifact naming.
-            # Azure OIDC Authentication  ----------------------------------- #
-            ARM_USE_OIDC: true # Force Terraform AzureRM provider to authenticate via OIDC.
-            ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure tenant ID, get from GitHub environment variable.
-            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure Service Principal ID, sourced from GitHub secret.
-            ARM_SUBSCRIPTION_ID_IAC: ${{ vars.SUBSCRIPTION_ID_IAC }} # Subscription containing the Terraform backend Storage Account.
-            ARM_SUBSCRIPTION_ID: ${{ vars.SUBSCRIPTION_ID_MGT }} # Target subscription for the stack resources.
+            TF_BACKEND_CONTAINER_IAC: ${{ vars.TF_BACKEND_CONTAINER_IAC }} # Used to access remote backend (if required).
+            TF_BACKEND_CONTAINER_MGT: ${{ vars.TF_BACKEND_CONTAINER_MGT }} # Used to access remote backend (if required).
+            TF_BACKEND_CONTAINER_GOV: ${{ vars.TF_BACKEND_CONTAINER_GOV }} # Used to access remote backend (if required).
+            TF_BACKEND_CONTAINER_CON: ${{ vars.TF_BACKEND_CONTAINER_CON }} # Used to access remote backend (if required).
+            TF_BACKEND_KEY_IAC: ${{ vars.TF_BACKEND_KEY_IAC }} # Used to access remote backend (if required).
+            TF_BACKEND_KEY_MGT: ${{ vars.TF_BACKEND_KEY_MGT }} # Used to access remote backend (if required).
+            TF_BACKEND_KEY_GOV: ${{ vars.TF_BACKEND_KEY_GOV }} # Used to access remote backend (if required).
+            TF_BACKEND_KEY_CON: ${{ vars.TF_BACKEND_KEY_CON }} # Used to access remote backend (if required).
 
         steps:
             - uses: actions/checkout@v4 # Clone the repository onto the runner.
@@ -65,11 +84,17 @@ jobs:
             - name: "Terraform: Plan"
               timeout-minutes: 10 # Fail this step if it exceeds 'x' minutes.
               run: |
-                  terraform plan -out=$STACK_NAME.plan \
+                  terraform plan ${RUN_MODE} -out=$STACK_NAME.plan \
                    -var-file="$TF_VARS_DIR/global.tfvars" \
                    -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
                    -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-                   -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC"
+                   -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC" \
+                   -var="remote_state_resource_group=$TF_BACKEND_RG" \
+                   -var="remote_state_storage_account=$TF_BACKEND_SA" \
+                   -var='remote_state_iac={"container_name":"$TF_BACKEND_CONTAINER_IAC","key":"$TF_BACKEND_KEY_IAC"})' \
+                   -var='remote_state_mgt={"container_name":"$TF_BACKEND_CONTAINER_MGT","key":"$TF_BACKEND_KEY_MGT"})' \
+                   -var='remote_state_gov={"container_name":"$TF_BACKEND_CONTAINER_GOV","key":"$TF_BACKEND_KEY_GOV"})' \
+                   -var='remote_state_con={"container_name":"$TF_BACKEND_CONTAINER_CON","key":"$TF_BACKEND_KEY_CON"})'
 
             - name: "Upload Plan Artifact"
               uses: actions/upload-artifact@v4 # Upload Terraform plan file produced during the job for use by apply step.

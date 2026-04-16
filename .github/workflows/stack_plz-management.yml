@@ -6,12 +6,12 @@ on:
             action:
                 description: "Action: Plan, Apply, Destroy"
                 required: true
-                default: "Plan"
+                default: plan
                 type: choice
                 options:
-                    - "Plan"
-                    - "Apply"
-                    - "Destroy"
+                    - plan
+                    - apply
+                    - destroy
     pull_request:
         paths:
             - ".github/workflows/stack_plz_management.yml"
@@ -27,21 +27,18 @@ permissions:
 jobs:
     # PLAN -------------------------------------------- #
     plan:
-        if: |
-            github.event_name == 'pull_request' ||
-            github.event.inputs.action == 'Plan' ||
-            github.event.inputs.action == 'Apply'
         uses: ./.github/workflows/terraform-plan.yml
         with: # Inputs passed to template job.
             stack_name: plz-management
             working_directory: ./deployments/plz-management
+            run_mode: ${{ inputs.action }}
         secrets: # Secrets must be declared separately from inputs and passed explicitly.
             ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
 
     # APPLY -------------------------------------------- #
     apply:
         needs: plan # REQUIRES the plan job to succeed before running.
-        if: github.event.inputs.action == 'Apply'
+        if: github.event.inputs.action == 'apply'
         uses: ./.github/workflows/terraform-apply.yml
         with: # Inputs passed to template job.
             stack_name: plz-management
@@ -51,7 +48,8 @@ jobs:
 
     # DESTROY -------------------------------------------- #
     destroy:
-        if: github.event.inputs.action == 'Destroy'
+        needs: plan # REQUIRES the plan job to succeed before running.
+        if: github.event.inputs.action == 'destroy'
         uses: ./.github/workflows/terraform-destroy.yml
         with: # Inputs passed to template job.
             stack_name: plz-management

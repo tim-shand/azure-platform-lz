@@ -20,6 +20,12 @@ variable "subscription_id" {
   nullable    = false
 }
 
+variable "subscription_id_iac" {
+  description = "Subscription ID for the IaC backend deployment."
+  type        = string
+  nullable    = false
+}
+
 variable "enable_resource_deployment" {
   description = "Enable/disable specific resources for deployment."
   type = map(string)
@@ -32,17 +38,40 @@ variable "enable_resource_deployment" {
 }
 
 # REMOTE STATE ------------------------------------------------------------- #
+# Used to access state files of other stacks.
+
+variable "remote_state_resource_group" {
+  description = "Name of the Resource Group containing remote states."
+  type = string
+}
+
+variable "remote_state_storage_account" {
+  description = "Name of the Storage Account containing remote states."
+  type = string
+}
 
 variable "remote_state_iac" {
-  description = "Map of values used to call the remote state data."
-  type        = map(string)
-  default = {
-    resource_group_name  = ""
-    storage_account_name = ""
-    container_name       = ""
-    key                  = ""
-    use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
-  }
+  description = "Object of values used to call the remote state data for IAC stack."
+  type        = object({
+    container_name = optional(string)
+    key = optional(string)
+  })
+}
+
+variable "remote_state_gov" {
+  description = "Object of values used to call the remote state data for GOV stack."
+  type        = object({
+    container_name = optional(string)
+    key = optional(string)
+  })
+}
+
+variable "remote_state_con" {
+  description = "Object of values used to call the remote state data for CON stack."
+  type        = object({
+    container_name = optional(string)
+    key = optional(string)
+  })
 }
 
 # LOGGING ---------------------------------------------------- #
