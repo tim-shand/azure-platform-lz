@@ -40,46 +40,11 @@ variable "enable_resource_deployment" {
 # REMOTE STATE ------------------------------------------------------------- #
 # Used to access state files of other stacks.
 
-variable "remote_state_resource_group" {
-  description = "Name of the Resource Group containing remote states."
-  type = string
-}
-
-variable "remote_state_storage_account" {
-  description = "Name of the Storage Account containing remote states."
-  type = string
-}
-
-variable "remote_state_iac" {
-  description = "Object of values used to call the remote state data for IAC stack."
-  type        = object({
-    container_name = optional(string)
-    key = optional(string)
-  })
-}
-
-variable "remote_state_mgt" {
-  description = "Object of values used to call the remote state data for MGT stack."
-  type        = object({
-    container_name = optional(string)
-    key = optional(string)
-  })
-}
-
-variable "remote_state_gov" {
-  description = "Object of values used to call the remote state data for GOV stack."
-  type        = object({
-    container_name = optional(string)
-    key = optional(string)
-  })
-}
-
-variable "remote_state_con" {
-  description = "Object of values used to call the remote state data for CON stack."
-  type        = object({
-    container_name = optional(string)
-    key = optional(string)
-  })
+variable "remote_state" {
+  type = map(object({
+    container_name = string
+    key            = string
+  }))
 }
 
 # LOGGING ---------------------------------------------------- #

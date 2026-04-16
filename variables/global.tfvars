@@ -20,3 +20,25 @@ global = {
     branch = "main"              # Name of the default repository branch. 
   }
 }
+
+# REMOTE STATES ------------------------------------------------------------- #
+# Used to access resources in state files across other stacks.
+
+remote_state = {
+  iac = {
+    container_name = "tfstate-iac-platform"
+    key = "iac-bootstrap.tfstate"
+  }
+  mgt = {
+    container_name = "tfstate-plz-management"
+    key = "plz-management.tfstate"
+  }
+  gov = {
+    container_name = "tfstate-plz-governance"
+    key = "plz-governance.tfstate"
+  }
+  con = {
+    container_name = "tfstate-plz-connectivity"
+    key = "plz-connectivity.tfstate"
+  }
+}
