@@ -26,12 +26,12 @@ Automates the **initial bootstrapping** process of both Azure and GitHub, in pre
 
 - GitHub account with a existing repository for the Azure platform landing zone project.
   - **Roles:** Read/Write access to `actions`, `actions variables`, `administration`, `code`, `environments`, and `secrets`.
-- Existing Azure tenant with required roles assigned to a _dedicated_ IaC subscription (can also be used with a single platform subscription).
-- **Built-in Roles:** Bootstrap process requires:
+- Existing Azure tenant with a _dedicated_ IaC subscription (can also use single `platform` subscription).
+- **Built-in Roles:**
   - `Global Administrator` (preferred): Required to approve MSGraph application API permissions assigned to the Service Principal.
   - `Contributor`: Required to deploy initial resources.
   - `User Access Administrator`: Required to assign RBAC roles.
-- Applications installed locally (during bootstrap process):
+- Applications (installed locally):
   - **[Terraform](https://developer.hashicorp.com/terraform/install):** IaC tool used to deploy resources into the target Azure and GitHub tenancies.
   - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):** CLI tool required by Terraform provider (`AzureRM`) to connect to Azure.
   - **[GitHub CLI](https://cli.github.com/):** CLI tool used to interact with GitHub, connected and authenticated to the target GitHub organisation.
@@ -45,11 +45,13 @@ This design is intended to be used with a **dedicated IaC subscription**, contai
 - The subscription provided will be used to contain **all** backend resources for the platform landing zone and future workloads.
 - Separate subscriptions can be used per deployment stack if required; however, using the same subscription is also possible.
 
-### Example
+### Example Usage
 
+Subscription IDs are resolved via a data call using the value provided in `platform_subscription_identifiers` variable.
 Using the same value will result in the **same subscription ID** being used for both stacks.  
-Subscription IDs are resolved via a data call using the value provided in `platform_subscription_identifiers` variable.  
-This value represents either the full name or a string segment extracted from the subscription display name.  
+
+> [!TIP]
+> The value represents either the full name, or a string segment extracted from the subscription display name.
 
 The variable file `iac-bootstrap.tfvars.json` is in JSON format, in order to be read natively by both Terraform and Powershell.
 

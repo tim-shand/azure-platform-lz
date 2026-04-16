@@ -1,14 +1,4 @@
-variable "subscription_id_iac" {
-  description = "Subscription ID of the dedicated IaC subscription."
-  type        = string
-  nullable    = false
-}
-
-variable "subscription_id" {
-  description = "Subscription ID for the stack resources."
-  type        = string
-  nullable    = false
-}
+# GENERAL ----------------------------------------------------------- #
 
 variable "global" {
   description = "Map of global variables used across multiple deployment stacks."
@@ -24,82 +14,200 @@ variable "stack" {
   default     = {}
 }
 
-# MANAGEMENT: General
-# ------------------------------------------------------------- #
+variable "subscription_id" {
+  description = "Subscription ID for the stack deployment."
+  type        = string
+  nullable    = false
+}
 
-variable "law_retenion_days" {
-  description = "Number of days to retain logs in Log Analytics Workspace."
-  type        = number
-  default     = 30
-  validation {
-    condition     = var.law_retenion_days >= 7 && var.law_retenion_days <= 180
-    error_message = "Number of days to retain logs must be between 7 and 180 days."
+variable "subscription_id_iac" {
+  description = "Subscription ID for the IaC backend deployment."
+  type        = string
+  nullable    = false
+}
+
+variable "enable_resource_deployment" {
+  description = "Enable/disable specific resources for deployment."
+  type = map(string)
+  default = {
+    alerting = true
+    defender_for_cloud = true
+    key_vault = true
+    logging = true
   }
 }
 
-variable "law_archive_logs" {
-  description = "Boolean value, enable to archive Log Analytics logs to Storage Account."
+# REMOTE STATE ------------------------------------------------------------- #
+# Used to access state files of other stacks.
+
+variable "remote_state_resource_group" {
+  description = "Name of the Resource Group containing remote states."
+  type = string
+}
+
+variable "remote_state_storage_account" {
+  description = "Name of the Storage Account containing remote states."
+  type = string
+}
+
+variable "remote_state_iac" {
+  description = "Object of values used to call the remote state data for IAC stack."
+  type        = object({
+    container_name = optional(string)
+    key = optional(string)
+  })
+}
+
+variable "remote_state_gov" {
+  description = "Object of values used to call the remote state data for GOV stack."
+  type        = object({
+    container_name = optional(string)
+    key = optional(string)
+  })
+}
+
+variable "remote_state_con" {
+  description = "Object of values used to call the remote state data for CON stack."
+  type        = object({
+    container_name = optional(string)
+    key = optional(string)
+  })
+}
+
+# LOGGING ---------------------------------------------------- #
+
+variable "log_retention_days" {
+  description = "Number of days to retain logs in Log Analytics."
+  type        = number
+  default     = 30
+}
+
+variable "log_daily_quota_gb" {
+  description = "Daily quota cap to prevent unexpected cost spikes. Using '-1' disables the cap (not recommended)."
+  type        = number
+  default     = 1
+  validation {
+    condition     = var.log_daily_quota_gb == -1 || var.log_daily_quota_gb >= 0.023
+    error_message = "Daily quota must be -1 (unlimited) or >= 0.023 GB."
+  }
+}
+
+variable "log_analytics_sku" {
+  description = "The SKU to use for Log Analytics Workspace (PerGB2018, PerNode, Premium, Standalone, Standard, CapacityReservation, LACluster, Unlimited)."
+  type        = string
+  default     = "PerGB2018"
+}
+
+variable "log_archive_retention_days" {
+  description = "Number of days until deletion from archive."
+  type        = number
+  default     = 180
+}
+
+variable "log_archiving_storage_account" {
+  description = "Configuration for log archiving to storage account."
+  type = object({
+    enabled = bool
+    tables = map(bool) 
+  })
+}
+
+# KEY VAULT -------------------------------------------------------- #
+
+variable "key_vault_soft_delete_retention_days" {
+  description = "Number of soft delete retention in days."
+  type        = number
+  default     = 30
+  validation {
+    condition     = var.key_vault_soft_delete_retention_days >= 7 && var.key_vault_soft_delete_retention_days <= 90
+    error_message = "Soft delete retention must be between 7 and 90 days."
+  }
+}
+
+variable "key_vault_soft_purge_protection" {
+  description = "Enable purge protection on Key Vault (true/false)."
   type        = bool
   default     = false
 }
 
-variable "law_export_log_tables" {
-  description = "List of table names to export to Storage Account."
+# ALERTING -------------------------------------------------------- #
+
+variable "security_center_contact" {
+  description = "Map of details to use as the Security Center contact."
+  type = object({
+    name = string
+    email_address = optional(string)
+    phone = optional(string)
+    alert_notifications = bool
+    alerts_to_admins = bool
+  })
+  nullable = false
+}
+
+variable "alert_email_addresses" {
+  description = "List of email addresses for platform alert notifications."
   type        = list(string)
-  default     = ["Alert", "Operation", "Metrics"]
+  default     = []
 }
 
-variable "policy_diagnostic_settings_effect" {
-  description = "Determines the effect mode when assigning policy to deploy diagnostic settings (DiagSettings)."
-  type        = string
-  default     = "Disabled"
+variable "enable_resource_health_alerts" {
+  description = "Enable alerting for resource health."
+  type        = bool
+  default     = true
 }
 
-variable "policy_activity_logs_effect" {
-  description = "Determines the effect mode when assigning policy to deploy diagnostic settings (AzureActivity)."
-  type        = string
-  default     = "Disabled"
+variable "enable_service_health_alerts" {
+  description = "Enable alerting for service health."
+  type        = bool
+  default     = true
 }
 
-# MANAGEMENT: Action Groups
-# ------------------------------------------------------------- #
-
-variable "action_groups" {
-  description = "Map of objects containing the action group definitions."
-  type = map(object({
-    email_address = list(string)
-  }))
+variable "enable_administrative_alerts" {
+  description = "Enable alerting for administrative actions."
+  type        = bool
+  default     = true
 }
 
-# MANAGEMENT: Alerts
-# ------------------------------------------------------------- #
-
-variable "activity_log_alerts" {
-  description = "Map of alert group priorities."
-  type        = any
+variable "alert_on_resource_deletion" {
+  description = "List of resource types to alert on if deletion is attempted."
+  type        = list(string)
+  default = [
+    "/providers/Microsoft.KeyVault/vaults/*",
+    "/providers/Microsoft.OperationalInsights/workspaces/*",
+    "/providers/Microsoft.Insights/diagnosticSettings/*"
+  ]
 }
 
-# MANAGEMENT: Entra ID
-# ------------------------------------------------------------- #
+# DEFENDER FOR CLOUD ----------------------------------------------- #
 
-variable "entraid_log_types" {
-  description = "Map of Entra ID logging categories, boolean value to enable/disable."
+variable "mdfc_enable_defender_cspm" {
+  description = "Enable the paid tier of Defender for Cloud for extended security, comprehensive security assessments."
+  type        = bool
+  default     = false
+}
+
+variable "mdfc_cspm_resources" {
+  description = "Enable or disable specific resource types for MDfC CSPM."
   type        = map(bool)
 }
 
-variable "entra_groups_admins_prefix" {
-  description = "Prefix value to append to administrator group naming format."
-  type        = string
-  default     = "GRP_ADM_"
+# ENTRA ID GROUPS ----------------------------------------------- #
+
+variable "entra_groups_prefix" {
+  description = "String value to use for Entra ID group naming prefix."
+  type = string
+  default = "GRP_ADM_"
 }
 
-variable "entra_groups_admins" {
-  description = "Map of objects defining the base groups for privilaged administrator roles."
+variable "entra_groups_privilaged" {
+  description = "Map of objects containing privilaged Entra ID groups to create."
   type = map(object({
-    description       = string
-    active            = bool
-    owner_employee_id = string
+    description = string
+    active = bool
   }))
 }
 
-# ------------------------------------------------------------- #
+variable "entraid_log_types" {
+  description = "Map of Entra ID log categories with enable status."
+  type = map(bool)
+}

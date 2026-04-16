@@ -13,7 +13,7 @@ Ideal for a small organization, personal tenant, light production or development
 - **State Segmentation**
   - Utilizes a dedicated subscription, containing state files remotely in Azure Blob storage.
   - Separate state files per deployment stack, reducing blast radius in case of corruption or loss.
-- **Powershell Bootstrapping**
+- **Automated Powershell Bootstrapping**
   - Locally executed [Powershell script](./deployments/bootstrap) automates initial setup process.
   - Prepares both Azure tenant and GitHub repository for automated deployments using Terraform.
 

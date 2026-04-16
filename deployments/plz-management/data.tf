@@ -1,30 +1,20 @@
-# GLOBAL / SHARED SERVICES
-# ------------------------------------------------------------- #
+# GENERAL ------------------------------------------------------------------ #
 
-# IaC: Get IaC subscription for aliased provider. 
-data "azurerm_subscription" "iac_sub" {
-  subscription_id = var.subscription_id_iac # Pass in the IaC subscription variable. 
-}
+data "azuread_client_config" "current" {} # Get current user session data.
+data "azurerm_subscription" "current" {}  # Get current Azure subscription.
+data "azurerm_subscriptions" "all" {}     # Collect all available subscriptions.
 
-data "terraform_remote_state" "governance" {
+# REMOTE STATE ------------------------------------------------------------- #
+
+data "terraform_remote_state" "iac" {
   backend = "azurerm"
   config = {
-    resource_group_name  = "${var.remote_state_governance.resource_group}"
-    storage_account_name = "${var.remote_state_governance.storage_account}"
-    container_name       = "${var.remote_state_governance.blob_container}"
-    key                  = "${var.remote_state_governance.state_key}"
+    resource_group_name  = var.remote_state_resource_group
+    storage_account_name = var.remote_state_storage_account
+    container_name       = var.remote_state_iac.container_name
+    key                  = var.remote_state_iac.key
+    use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
   }
 }
 
-data "azurerm_management_group" "platform" {
-  name = "my-management-group-id"
-}
-
-# ------------------------------------------------------------- #
-
-# ENTRA ID: Groups
-data "azuread_user" "group_owners_adm" {
-  for_each    = var.entra_groups_admins
-  employee_id = each.value.owner_employee_id
-}
-
+# STACK -------------------------------------------------------------------- #

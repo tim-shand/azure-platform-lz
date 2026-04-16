@@ -40,6 +40,7 @@ crash.log
 crash.*.log
 backend.conf
 backend.tf
+terraform.tfvars
 
 # Ignore override files as they are usually used to override resources locally.
 override.tf

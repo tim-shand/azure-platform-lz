@@ -12,6 +12,7 @@ variable "workload" {
 
 variable "stack_or_env" {
   type        = string
+  default     = ""
   description = "Deployment stack or environment. Example: con, gov, prd, dev, tst."
 }
 

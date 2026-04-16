@@ -1,21 +1,37 @@
-# MANAGEMENT: General
-# ------------------------------------------------------------- #
-
-# Log Analytics Workspace
-output "mgt_law_name" {
-  description = "Log Analytics Workspace name."
-  value       = azurerm_log_analytics_workspace.mgt_logs.name
+output "mgt_log_analytics_workspace" {
+  description = "Object of resource properties for Log Analytics Workspace."
+  value = var.enable_resource_deployment.logging ? {
+    id             = try(azurerm_log_analytics_workspace.mgt[0].id, null)
+    name           = try(azurerm_log_analytics_workspace.mgt[0].name, null)
+    resource_group = try(azurerm_log_analytics_workspace.mgt[0].resource_group_name, null)
+  } : null # Only if enabled.
 }
 
-output "mgt_law_rg" {
-  description = "Log Analytics Workspace resource group."
-  value       = azurerm_log_analytics_workspace.mgt_logs.resource_group_name
+output "mgt_storage_account" {
+  description = "Object of resource properties for Storage Account."
+  value = var.enable_resource_deployment.logging ? {
+    id             = try(azurerm_storage_account.mgt[0].id, null)
+    name           = try(azurerm_storage_account.mgt[0].name, null)
+    resource_group = try(azurerm_storage_account.mgt[0].resource_group_name, null)
+  } : null # Only if enabled.
+}
+
+output "mgt_action_group" {
+  description = "Object of resource properties for Action Group."
+  value = var.enable_resource_deployment.alerting ? {
+    id             = try(azurerm_monitor_action_group.platform[0].id, null)
+    name           = try(azurerm_monitor_action_group.platform[0].name, null)
+    resource_group = try(azurerm_monitor_action_group.platform[0].resource_group_name, null)
+    email_recipients = [
+      for v in azurerm_monitor_action_group.platform[0].email_receiver : v.email_address
+    ]
+  } : null # Only if enabled.
 }
 
 # Entra ID Groups
-output "azuread_groups_adm" {
+output "mgt_entra_groups" {
   description = "Map of privilaged Entra ID groups."
-  value = {
+  value = var.enable_resource_deployment.entra_id_privilaged_groups ? {
     for k, v in azuread_group.grp_adm :
     k => {
       id           = v.id
@@ -23,5 +39,5 @@ output "azuread_groups_adm" {
       display_name = v.display_name
       description  = v.description
     }
-  }
+  } : null
 }

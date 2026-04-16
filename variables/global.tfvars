@@ -7,13 +7,12 @@ global = {
   }
   location = {
     primary   = "newzealandnorth" # Default, preferred location. 
-    secondary = "australiaeast"   # Secondary location for resources not available in primary region. 
+    secondary = "australiaeast"   # Secondary location for resources not available in primary region.
   }
   tags = {
     Organization = "TShandCom"           # Name or abbreviation used to identify the organisation.  
     CreatedBy    = "IaC-Terraform"       # Name of the user or service that created the resources. 
     Project      = "PlatformLandingZone" # Workload/project name, used to group and identify related resources.
-    Environment  = "prd"                 # Workload environment: dev, tst, stg, prd 
   }
   repo_config = {
     org    = "tim-shand"         # Name of the repository organization owner. 
