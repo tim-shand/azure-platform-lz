@@ -58,6 +58,14 @@ variable "remote_state_iac" {
   })
 }
 
+variable "remote_state_mgt" {
+  description = "Object of values used to call the remote state data for MGT stack."
+  type        = object({
+    container_name = optional(string)
+    key = optional(string)
+  })
+}
+
 variable "remote_state_gov" {
   description = "Object of values used to call the remote state data for GOV stack."
   type        = object({
