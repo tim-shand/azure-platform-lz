@@ -33,6 +33,15 @@ locals {
 }
 
 locals {
+  # Map of enabled Action Groups.
+  action_groups_enabled = {
+    for k, v in var.mdfc_cspm_resources : 
+    k => v
+    if v.enabled == true
+  }
+}
+
+locals {
   # Define list of resources to enable for MDfC CSPM.
   mdfc_cspm_resources_enabled = [
     for k, v in var.mdfc_cspm_resources : k

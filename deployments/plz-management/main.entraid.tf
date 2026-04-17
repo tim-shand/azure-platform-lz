@@ -22,14 +22,13 @@ resource "azuread_group" "grp_adm" {
 
 # Diagnostic Settings: Entra ID - Logging
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_aad_diagnostic_setting
-resource "azurerm_monitor_aad_diagnostic_setting" "mgt" {
-  count = var.enable_resource_deployment.logging ? 1 : 0 # Only deploy if enabled.
-  name                       = "mgt-diag-entra-logs"
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.mgt[0].id
-  dynamic "enabled_log" {
-    for_each = local.entraid_log_types_enabled # Loop dynamic for each enabled category log type. 
-    content {
-      category = enabled_log.key # Must use name of dynamic object as the "each". 
-    }
-  }
-}
+# resource "azurerm_monitor_aad_diagnostic_setting" "mgt" {
+#   name                       = "mgt-diag-entra-logs"
+#   log_analytics_workspace_id = azurerm_log_analytics_workspace.mgt.id
+#   dynamic "enabled_log" {
+#     for_each = local.entraid_log_types_enabled # Loop dynamic for each enabled category log type. 
+#     content {
+#       category = enabled_log.key # Must use name of dynamic object as the "each". 
+#     }
+#   }
+# }
