@@ -15,9 +15,11 @@ resource "azurerm_role_definition" "custom_role_iac_deploy" {
       # General resource control
       "Microsoft.Resources/*",
       "Microsoft.Resources/deployments/*",
-      # App Configuration
       "Microsoft.AppConfiguration/*",
       "Microsoft.AppConfiguration/configurationStores/*",
+      "Microsoft.KeyVault/*",
+      "Microsoft.Storage/*",
+      "Microsoft.Network/*",
       # Resource Groups
       "Microsoft.Resources/subscriptions/resourceGroups/*",
       # Management Groups
@@ -26,15 +28,20 @@ resource "azurerm_role_definition" "custom_role_iac_deploy" {
       "Microsoft.Authorization/policyAssignments/*",
       "Microsoft.Authorization/policyDefinitions/*",
       "Microsoft.Authorization/policySetDefinitions/*",
+      "Microsoft.Authorization/policyExemptions/*",
+      "Microsoft.PolicyInsights/*",
       # RBAC
+      "Microsoft.Authorization/locks/*",
       "Microsoft.Authorization/roleAssignments/*",
       "Microsoft.Authorization/roleDefinitions/read",
-      # Locks
-      "Microsoft.Authorization/locks/*",
       # Monitoring
       "Microsoft.Insights/*",
+      "Microsoft.OperationalInsights/*",
+      "Microsoft.OperationsManagement/*",
       # Managed Identities
       "Microsoft.ManagedIdentity/*",
+      # Security
+      "Microsoft.Security/*",
       # Entra ID
       "Microsoft.AADIAM/diagnosticSettings/*"
     ]
