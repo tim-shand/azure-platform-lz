@@ -24,7 +24,6 @@ resource "azurerm_resource_group" "mgt" {
 
 # Key Vault: Stores platform secrets and certificates (for future usage).
 resource "azurerm_key_vault" "mgt" {
-  count = var.enable_resource_deployment.key_vault ? 1 : 0 # Only deploy if enabled.
   name                       = module.naming.key_vault
   resource_group_name        = azurerm_resource_group.mgt.name
   location                   = azurerm_resource_group.mgt.location

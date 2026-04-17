@@ -33,16 +33,20 @@ locals {
 }
 
 locals {
+  # Map of enabled Action Groups.
+  action_groups_enabled = {
+    for k, v in var.action_groups : 
+    k => v
+    if v.enabled == true
+  }
+}
+
+locals {
   # Define list of resources to enable for MDfC CSPM.
   mdfc_cspm_resources_enabled = [
     for k, v in var.mdfc_cspm_resources : k
     if v == true && var.mdfc_enable_defender_cspm == true
   ]
-}
-
-locals {
-  # Convert list of resource types into a single wildcard string for resource_id.
-  alert_deletion_resource_id = "/subscriptions/*/providers/{${join(",", var.alert_on_resource_deletion)}}/*"
 }
 
 locals {

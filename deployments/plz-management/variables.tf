@@ -125,50 +125,32 @@ variable "key_vault_soft_purge_protection" {
 
 # ALERTING -------------------------------------------------------- #
 
-variable "security_center_contact" {
-  description = "Map of details to use as the Security Center contact."
-  type = object({
-    name = string
-    email_address = optional(string)
-    phone = optional(string)
-    alert_notifications = bool
-    alerts_to_admins = bool
-  })
-  nullable = false
+variable "action_groups" {
+  description = "Map of Action Groups to receive alerts."
+  type = map(object({
+    name = string 
+    email = string
+    enabled = bool
+  }))
 }
 
-variable "alert_email_addresses" {
-  description = "List of email addresses for platform alert notifications."
-  type        = list(string)
-  default     = []
+variable "enabled_alerts" {
+  description = "Enable or disable alert categories."
+  type = map(bool)
+  default = {
+    resource_health = true
+    service_health  = true
+    administrative  = true
+  }
 }
 
-variable "enable_resource_health_alerts" {
-  description = "Enable alerting for resource health."
-  type        = bool
-  default     = true
-}
-
-variable "enable_service_health_alerts" {
-  description = "Enable alerting for service health."
-  type        = bool
-  default     = true
-}
-
-variable "enable_administrative_alerts" {
-  description = "Enable alerting for administrative actions."
-  type        = bool
-  default     = true
-}
-
-variable "alert_on_resource_deletion" {
-  description = "List of resource types to alert on if deletion is attempted."
-  type        = list(string)
-  default = [
-    "/providers/Microsoft.KeyVault/vaults/*",
-    "/providers/Microsoft.OperationalInsights/workspaces/*",
-    "/providers/Microsoft.Insights/diagnosticSettings/*"
-  ]
+variable "mdfc_alerts" {
+  description = "Map of bools to control MDFC alerting."
+  type = map(bool)
+  default = {
+    alert_notifications = true # Send security alerts notifications to the security contact.
+    alerts_to_admins    = false # Send security alerts notifications to subscription admins.
+  }
 }
 
 # DEFENDER FOR CLOUD ----------------------------------------------- #

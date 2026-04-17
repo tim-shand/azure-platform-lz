@@ -1,39 +1,19 @@
 #====================================================================================#
-# Management: Alerting Resources
+# Management: Alerts
 # Description: 
-# - Deploy Action Group to receive alerts when triggered. 
 # - Deploy Azure Monitor activity alerts per category.
 #====================================================================================#
 
-# ACTION GROUPS ------------------------------------------------------------------ #
-
-# Notification target for all platform alerts.
-resource "azurerm_monitor_action_group" "platform" {
-  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
-  name                = "${module.naming.action_group}-platform"
-  resource_group_name = azurerm_resource_group.mgt.name
-  tags                = local.tags_merged
-  short_name          = "alerts-plz"
-  dynamic "email_receiver" {
-    for_each = var.alert_email_addresses
-    content {
-      name          = "email-${index(var.alert_email_addresses, email_receiver.value)}"
-      email_address = email_receiver.value
-    }
-  }
-}
-
-# ALERTS ------------------------------------------------------------------------- #
+# ALERTS (HEALTH) ------------------------------------------------------------------------- #
 
 # Resource Health Alerts: Monitor individual resource availability.
 resource "azurerm_monitor_activity_log_alert" "resource_health" {
-  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
   name                = "${module.naming.activity_log_alert}-hth-res"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
   description         = "Fires when any resource in the management resource group becomes unavailable or degraded."
-  enabled             = var.enable_resource_health_alerts
+  enabled             = var.enabled_alerts.resource_health
   scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   criteria {
     category = "ResourceHealth"
@@ -43,19 +23,18 @@ resource "azurerm_monitor_activity_log_alert" "resource_health" {
     }
   }
   action {
-    action_group_id = azurerm_monitor_action_group.platform[0].id
+    action_group_id = azurerm_monitor_action_group.mgt["platform"].id
   }
 }
 
 # Service Health Alerts: Covers Azure-side incidents, planned maintenance, health advisories, and security advisories.
 resource "azurerm_monitor_activity_log_alert" "service_health" {
-  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
   name                = "${module.naming.activity_log_alert}-hth-srv"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global" # Resources are only supported in the following regions: [global, westeurope, northeurope, eastus2euap]. 
   tags                = local.tags_merged
   description         = "Fires when Azure reports an active service incident affecting this subscription."
-  enabled             = var.enable_service_health_alerts
+  enabled             = var.enabled_alerts.service_health
   scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   criteria {
     category = "ServiceHealth"
@@ -65,27 +44,92 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
     }
   }
   action {
-    action_group_id = azurerm_monitor_action_group.platform[0].id
+    action_group_id = azurerm_monitor_action_group.mgt["platform"].id
   }
 }
 
-# Administrative Alerts: Delete Attempts.
-resource "azurerm_monitor_activity_log_alert" "delete_attempt_resources" {
-  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
-  name                = "${module.naming.activity_log_alert}-del-res"
+# ALERTS (ADMINISTRATIVE) ------------------------------------------------------------------------- #
+
+module "alert_rg_delete" {
+  source = "../../modules/activity-log-alert"
+  name                = "${module.naming.activity_log_alert}-delrg"
   resource_group_name = azurerm_resource_group.mgt.name
-  location            = "global"
   tags                = local.tags_merged
-  description         = "Fires when specified resource types are attempted to be deleted (Succeeded or Failed)."
-  enabled             = var.enable_administrative_alerts
   scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  criteria {
-    category       = "Administrative"
-    operation_name = "*/delete"
-    statuses       = ["Succeeded", "Failed"]
-    resource_id    = local.alert_deletion_resource_id
-  }
-  action {
-    action_group_id = azurerm_monitor_action_group.platform[0].id
-  }
+  operation_name      = "Microsoft.Resources/subscriptions/resourceGroups/delete"
+  action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
+  statuses            = ["Succeeded", "Failed"]
+  enabled             = var.enabled_alerts.administrative
+}
+
+module "alert_rbac_add" {
+  source = "../../modules/activity-log-alert"
+  name                = "${module.naming.activity_log_alert}-rbacadd"
+  resource_group_name = azurerm_resource_group.mgt.name
+  tags                = local.tags_merged
+  scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
+  operation_name      = "Microsoft.Authorization/roleAssignments/write"
+  action_group_id     = azurerm_monitor_action_group.mgt["security"].id
+  statuses            = ["Succeeded", "Failed"]
+  enabled             = var.enabled_alerts.administrative
+}
+
+module "alert_rbac_del" {
+  source = "../../modules/activity-log-alert"
+  name                = "${module.naming.activity_log_alert}-rbacdel"
+  resource_group_name = azurerm_resource_group.mgt.name
+  tags                = local.tags_merged
+  scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
+  operation_name      = "Microsoft.Authorization/roleAssignments/delete"
+  action_group_id     = azurerm_monitor_action_group.mgt["security"].id
+  statuses            = ["Succeeded", "Failed"]
+  enabled             = var.enabled_alerts.administrative
+}
+
+module "alert_policy_add" {
+  source = "../../modules/activity-log-alert"
+  name                = "${module.naming.activity_log_alert}-policyadd"
+  resource_group_name = azurerm_resource_group.mgt.name
+  tags                = local.tags_merged
+  scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
+  operation_name      = "Microsoft.Authorization/policyAssignments/write"
+  action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
+  statuses            = ["Succeeded", "Failed"]
+  enabled             = var.enabled_alerts.administrative
+}
+
+module "alert_policy_del" {
+  source = "../../modules/activity-log-alert"
+  name                = "${module.naming.activity_log_alert}-policydel"
+  resource_group_name = azurerm_resource_group.mgt.name
+  tags                = local.tags_merged
+  scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
+  operation_name      = "Microsoft.Authorization/policyAssignments/delete"
+  action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
+  statuses            = ["Succeeded", "Failed"]
+  enabled             = var.enabled_alerts.administrative
+}
+
+module "alert_vnet_del" {
+  source = "../../modules/activity-log-alert"
+  name                = "${module.naming.activity_log_alert}-vnetdel"
+  resource_group_name = azurerm_resource_group.mgt.name
+  tags                = local.tags_merged
+  scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
+  operation_name      = "Microsoft.Network/virtualNetworks/delete"
+  action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
+  statuses            = ["Succeeded", "Failed"]
+  enabled             = var.enabled_alerts.administrative
+}
+
+module "alert_pip_add" {
+  source = "../../modules/activity-log-alert"
+  name                = "${module.naming.activity_log_alert}-pipadd"
+  resource_group_name = azurerm_resource_group.mgt.name
+  tags                = local.tags_merged
+  scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
+  operation_name      = "Microsoft.Network/publicIPAddresses/write"
+  action_group_id     = azurerm_monitor_action_group.mgt["security"].id
+  statuses            = ["Succeeded", "Failed"]
+  enabled             = var.enabled_alerts.administrative
 }

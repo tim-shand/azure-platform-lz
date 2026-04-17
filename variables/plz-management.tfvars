@@ -47,28 +47,35 @@ key_vault_soft_delete_retention_days = 30
 key_vault_soft_purge_protection      = false
 log_analytics_sku                    = "PerGB2018"
 
+# ACTION GROUPS -------------------------------------------------------- #
+
+action_groups = {
+  "platform" = {
+    name           = "Platform Team"
+    email          = "alerts@tshand.com"
+    enabled = true
+  }
+  "security" = {
+    name           = "Security Team"
+    email          = "alerts@tshand.com"
+    enabled = true
+  }
+}
+
 # ALERTING -------------------------------------------------------- #
 
-security_center_contact = {
-  name = "PlatformTeam"
-  email_address = "alerts@tshand.com" # Email of the Security Center Contact.
-  phone = null
+# Enabled/disable alerts by category.
+enabled_alerts = {
+  resource_health = true
+  service_health  = true
+  administrative  = true
+}
+
+# Alert controls for MDFC.
+mdfc_alerts = {
   alert_notifications = true # Send security alerts notifications to the security contact.
   alerts_to_admins    = false # Send security alerts notifications to subscription admins.
 }
-alert_email_addresses = [
-  "alerts@tshand.com"
-]
-
-enable_resource_health_alerts = true
-enable_service_health_alerts  = true
-enable_administrative_alerts  = true
-
-alert_on_resource_deletion = [
-  "Microsoft.KeyVault/vaults",
-  "Microsoft.OperationalInsights/workspaces",
-  "Microsoft.Insights/diagnosticSettings"
-]
 
 # DEFENDER FOR CLOUD ----------------------------------------------- #
 
