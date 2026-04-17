@@ -35,7 +35,7 @@ Automates the **initial bootstrapping** process, preparing both Azure and GitHub
   - Performs the initial setup process, configuring Azure and GitHub for automation.
   - Performs pre-flight checks, validates authentication and confirms intentions.
   - Executes pre-defined Terraform module to deploy base resources.
-  - Adds stack variables and secrets into the provided GitHub repository.
+  - Adds stack variables and secrets into the provided GitHub repository and environments.
   - Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 - **Service Principal + OIDC:**
   - Providing a secure authentication method for workflows within GitHub repository.

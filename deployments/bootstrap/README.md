@@ -2,17 +2,18 @@
 
 Automates the **initial bootstrapping** process of both Azure and GitHub, in preparation for executing platform landing zone deployment workflows.
 
-- Locally executed Powershell script performs the initial setup process, configuring Azure and GitHub for automation.
+- **Locally executed Powershell script:**
+  - Performs the initial setup process, configuring Azure and GitHub for automation.
   - Performs pre-flight checks, validates authentication and confirms intentions.
-- Executes pre-defined Terraform module to deploy base resources.
-- Creates Entra ID Service Principal:
-  - Secured with Federated Credentials (OIDC) for GitHub repository and environments.
-  - Custom RBAC role assigned at core management group level.
-- Deploys backend resources **per stack** into a dedicated IaC subscription:
-  - Global Resource Group with dedicated Storage Accounts per category (platform, workloads).
+  - Executes pre-defined Terraform module to deploy base resources.
+  - Adds stack variables and secrets into the provided GitHub repository and environments.
+  - Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
+- **Service Principal + OIDC:**
+  - Providing a secure authentication method for workflows within GitHub repository.
+  - Custom RBAC role assigned providing required permissions for resource management.
+- **Backend Resources --> Dedicated IaC Subscription:**
+  - Resource Group and Storage Accounts per category (platform, workloads).
   - Maintaining isolation and independence, using separate state files per stack (governance, connectivity, management).
-- Adds stack variables and secrets into the provided GitHub repository.
-- Automates the post-deployment migration process of local state file to Azure blob storage providing remote state.
 
 ---
 
@@ -47,21 +48,38 @@ This design is intended to be used with a **dedicated IaC subscription**, contai
 
 ### Example Usage
 
-Subscription IDs are resolved via a data call using the value provided in `platform_subscription_identifiers` variable.
+Subscription IDs are resolved via a data call using the value provided in the `subscription_identifier` field.
 Using the same value will result in the **same subscription ID** being used for both stacks.  
 
 > [!TIP]
 > The value represents either the full name, or a string segment extracted from the subscription display name.
 
-The variable file `iac-bootstrap.tfvars.json` is in JSON format, in order to be read natively by both Terraform and Powershell.
-
-```json
-{
-  "platform_subscription_identifiers": {
-    "mgt": "platform-plz-sub",
-    "gov": "platform-plz-sub",
-    "con": "platform-plz-sub"
-  }
+```hcl
+deployment_stacks = {
+    "bootstrap" = {
+      stack_name              = "iac-bootstrap"       # Name of stack directory and GitHub environment.
+      stack_code              = "iac"                 # Short code for the stack name.
+      subscription_identifier = "platform-iac-sub"    # String value used with lookup matching for subscription display name (full or partial).
+      enable_github_env       = false                 # NOT REQUIRED FOR BOOTSTRAP.
+    },
+    "management" = {
+      stack_name              = "plz-management"
+      stack_code              = "mgt"
+      subscription_identifier = "platform-dev-sub"
+      enable_github_env       = true                  # Create GitHub environment for stack (true/false).
+    },
+    "governance" = {
+      stack_name              = "plz-governance"
+      stack_code              = "gov"
+      subscription_identifier = "platform-dev-sub"
+      enable_github_env       = true
+    },
+    "connectivity" = {
+      stack_name              = "plz-connectivity"
+      stack_code              = "con"
+      subscription_identifier = "platform-dev-sub"
+      enable_github_env       = true
+    }
 }
 ```
 
@@ -84,14 +102,13 @@ The variable file `iac-bootstrap.tfvars.json` is in JSON format, in order to be 
 - **Storage Accounts:**
   - Created per deployment category (`platform` and `workload`) to hold the Blob Containers used by each deployment stack.
 - **Blob Containers:**
-  - Created per deployment stack (`mgt`, `gov`, `con`) to hold the remote Terraform state files.
-  - Additional container created to hold the `bootstrap` state file post-deployment.
+  - Created per deployment stack (`iac`, `mgt`, `gov`, `con`) to hold the remote Terraform state files.
 
 ### 👜 GitHub
 
 - Code repository, version control and automation workflows.
 - Entra ID Service Principal details added as repository secrets.
-- Azure remote backend resources and subscription details added per deployment stack as secrets and variables.
+- Azure remote backend resources and subscription details added per deployment stack as environment variables.
 - Workflows read individual stack variables/secrets and pass securely to Terraform during workflow run-time.
 
 ---
@@ -117,15 +134,18 @@ rg-org-iac-global
     └── tfstate-plz-connectivity
 ```
 
-| Object                  | Created Per  | Example Name             | Purpose                                                      |
-| ----------------------- | ------------ | ------------------------ | ------------------------------------------------------------ |
-| Resource Group          |              | rg-org-iac-global        | Resource group used for all remote state backend resources.  |
-| Storage Account         | **Category** | saorgiacplatform12345    | Holds blob containers per platform deployment stack.         |
-| Storage Account         | **Category** | saorgiacworkload12345    | Holds blob containers per workload deployment.               |
-| Blob Container          | **Stack**    | tfstate-iac-bootstrap    | Contains remote state file, created during initial setup.    |
-| Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow.    |
-| Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow.    |
-| Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow.    |
+| Object                  | Created Per  | Example Name             | Purpose                                                        |
+| ----------------------- | ------------ | ------------------------ | -------------------------------------------------------------- |
+| Resource Group          |              | rg-org-iac-global        | Resource group used for all remote state backend resources.    |
+| Storage Account         | **Category** | saorgiacplatform12345    | Holds blob containers per platform deployment stack.           |
+| Storage Account         | **Category** | saorgiacworkload12345    | Holds blob containers per workload deployment.                 |
+| Blob Container          | **Stack**    | tfstate-iac-bootstrap    | Contains remote state file, created during initial setup.      |
+| Blob Container          | **Stack**    | tfstate-plz-management   | Contains remote state file, referenced by stack workflow.      |
+| Blob Container          | **Stack**    | tfstate-plz-governance   | Contains remote state file, referenced by stack workflow.      |
+| Blob Container          | **Stack**    | tfstate-plz-connectivity | Contains remote state file, referenced by stack workflow.      |
+| GitHub Environment      | **Stack**    | plz-management           | GitHub repository environment, used to contain stack variables.|
+| GitHub Environment      | **Stack**    | plz-governance           | GitHub repository environment, used to contain stack variables.|
+| GitHub Environment      | **Stack**    | plz-connectivity         | GitHub repository environment, used to contain stack variables.|
 
 ---
 
