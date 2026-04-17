@@ -19,14 +19,7 @@ output "storage_account" {
 
 output "mgt_action_group" {
   description = "Object of resource properties for Action Group."
-  value = {
-    id             = azurerm_monitor_action_group.platform.id
-    name           = azurerm_monitor_action_group.platform.name
-    resource_group = azurerm_monitor_action_group.platform.resource_group_name
-    email_recipients = [
-      for v in azurerm_monitor_action_group.platform.email_receiver : v.email_address
-    ]
-  }
+  value = azurerm_monitor_action_group.mgt
 }
 
 # Entra ID Groups
