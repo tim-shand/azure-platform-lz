@@ -129,7 +129,7 @@ variable "action_groups" {
   description = "Map of Action Groups to receive alerts."
   type = map(object({
     name = string 
-    email = list(string)
+    email = string
     enabled = bool
   }))
 }

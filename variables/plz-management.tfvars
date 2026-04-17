@@ -52,12 +52,12 @@ log_analytics_sku                    = "PerGB2018"
 action_groups = {
   "platform" = {
     name           = "Platform Team"
-    email          = ["alerts@tshand.com"]
+    email          = "alerts@tshand.com"
     enabled = true
   }
   "security" = {
     name           = "Security Team"
-    email          = ["alerts@tshand.com"]
+    email          = "alerts@tshand.com"
     enabled = true
   }
 }

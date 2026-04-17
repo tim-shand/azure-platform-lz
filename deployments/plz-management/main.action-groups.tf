@@ -13,11 +13,8 @@ resource "azurerm_monitor_action_group" "mgt" {
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
   short_name          = "alerts-plz"
-  dynamic "email_receiver" {
-    for_each = each.value.email
-    content {
-      name          = "email-${email_receiver.key}"
-      email_address = email_receiver.value
-    }
+  email_receiver {
+    name = each.value.name
+    email_address = each.value.email
   }
 }
