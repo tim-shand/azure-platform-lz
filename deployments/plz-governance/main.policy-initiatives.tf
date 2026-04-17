@@ -28,7 +28,7 @@ resource "azurerm_management_group_policy_set_definition" "custom" {
     for_each = each.value.policyDefinitions # Generate dynamic object for each policy definition added in initiative.
     content {
       policy_definition_id = replace(
-        policy_definition_reference.value.policyDefinitionId, "PLACEHOLDER", "${data.azurerm_app_configuration_key.mg_core_name.value}"
+        policy_definition_reference.value.policyDefinitionId, "PLACEHOLDER", "${azurerm_management_group.core["core"].name}"
       )
       reference_id       = policy_definition_reference.value.policyDefinitionReferenceId
       parameter_values   = jsonencode(try(policy_definition_reference.value.parameters, {}))

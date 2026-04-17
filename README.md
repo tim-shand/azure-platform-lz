@@ -44,15 +44,32 @@ Automates the **initial bootstrapping** process, preparing both Azure and GitHub
   - Resource Group and Storage Accounts per category (platform, workloads).
   - Maintaining isolation and independence, using separate state files per stack (governance, connectivity, management).
 
+### 🔍 [Management](./deployments/plz-management)
+
+Deploys and configures the core shared operational services required to run and monitor the Azure Platform Landing Zone.
+This stack provides centralized logging, monitoring and alerting for all platform subscriptions.
+
+- **Centralized Logging:**
+  - Log Analytics workspace for monitoring and observability of platform resources.
+  - Activity, audit and metric logs sent to Log Analytics Workspace for review and retention.
+  - Storage Account for long term log archiving.
+- **Alerting & Action Groups:**
+  - Activity, Service and Health alerting, with severity-based notifications.
+- **Entra ID Administrative Groups:**
+  - Create base administrative groups in Entra ID, to be used with RBAC assignments.
+- **Microsoft Defender for Cloud**:
+  - Foundational CSPM automatically enabled, free of charge, offering basic security posture management.
+  - Optional deployment of Cloud Security Posture Management (CSPM).
+
 ### 📜 [Governance](./deployments/plz-governance)
 
 The Governance stack provides structure and policy enforcement, combining Management Groups with Azure Policy assignments.
 This stack lays the ground work for policy assignments and remediation to enforce resource configuration.
 
 - **Management Groups:**
-  - Deploy multi-level Management Group structure, defined within the `plz-governance.tfvars` file, allowing for expansion.
+  - Deploy multi-level Management Group structure, as defined within the `plz-governance.tfvars` file.
   - Management Groups are assigned to a "Level", determining the layer of depth at which each Management Group sits (parent/child).
-  - Automated mapping of subscriptions to parent management groups using a subscription ID prefix identifier value.
+  - Automated mapping of subscriptions to parent management groups using a subscription ID identifier value.
 - **Azure Policy:**
   - Custom policy definitions and initiatives, defined in JSON files and created using Terraform.
   - Policy Initiative Assignments are mapped to Management Groups using the `policy_initiatives` field in the Management Group structure.
@@ -63,49 +80,31 @@ This stack lays the ground work for policy assignments and remediation to enforc
 
 ```text
 TENANT_ROOT
-└── abc-core-mg               (Core Management Group)
-    ├── abc-platform-mg       (L1: Platform subscriptions)
-    ├── abc-workload-mg       (L1: Workload subscriptions)
-        ├── abc-online-mg     (L2: Online/Internet-facing workload subscriptions)
-        └── abc-corporate-mg  (L2: Internal/business workload subscriptions)
-    ├── abc-sandbox-mg        (L1: Dev/test/sandbox subscriptions)
-    └── abc-decom-mg          (L1: Holding group for decommissioned subscriptions)
+└── mg-abc-core               (Core Management Group)
+    ├── mg-abc-platform       (L1: Platform subscriptions)
+    ├── mg-abc-workload       (L1: Workload subscriptions)
+        ├── mg-abc-online     (L2: Online/Internet-facing workload subscriptions)
+        └── mg-abc-corporate  (L2: Internal/business workload subscriptions)
+    ├── mg-abc-sandbox        (L1: Dev/test/sandbox subscriptions)
+    └── mg-abc-decom          (L1: Holding group for decommissioned subscriptions)
 ```
 
 ```hcl
 management_groups_level1 = {
   "platform" = {
-    display_name             = "Platform"                                   # Contains all platform subscriptions. 
-    parent_mg_name           = "core"                                       # Key ID of the parent Management Group. 
-    subscription_identifiers = ["12345678-0000-0000", "12345678-1111-1111"] # List of subscription identifiers, first 3 segments used to resolve full ID.
-    policy_initiatives       = [core_baseline]                              # Assign Policy Initiatives directly to MGs. 
+    display_name             = "Platform"                                # Contains all platform subscriptions. 
+    parent_mg_name           = "core"                                    # Key ID of the parent Management Group. 
+    subscription_identifiers = ["platform-dev-sub", "platform-iac-sub"]  # List of subscription identifiers, first 3 segments used to resolve full ID.
+    policy_initiatives       = [core_baseline]                           # Assign Policy Initiatives directly to MGs. 
   }
   "workload" = {
     display_name             = "Workload"
     parent_mg_name           = "core"
-    subscription_identifiers = ["12345678-2222-2222]
+    subscription_identifiers = ["app-myapp01-sub"]
     policy_initiatives       = ["cost_controls"] 
   }
 }
 ```
-
-### 🔍 [Management](./deployments/plz-management)
-
-The Management stack deploys and configures the core shared operational services required to run and monitor the Azure Platform Landing Zone.
-This stack provides centralized logging, monitoring, alerting, and policy-driven diagnostic configuration for all platform subscriptions.
-
-- **Centralized Logging:**
-  - Log Analytics workspace for monitoring and observability of platform resources.
-  - Activity, audit and metric logs sent to Log Analytics Workspace for review and retention.
-  - Storage Account for long term log archiving.
-- **Policy-Driven Diagnostics:**
-  - Diagnostic settings applied to resources via Azure Policy assignments.
-- **Alerting & Action Groups:**
-  - Activity, Service and Health alerting, with category-based action groups.
-  - Severity-based notification routing using Action Groups, targeting required support teams.
-- **Entra ID Administrative Groups:**
-  - Create base administrative groups in Entra ID, to be used with RBAC assignments.
-  - Group owners are assigned and resolved dynamically using employee ID lookups.
 
 ### 🌐 [Connectivity](./deployments/plz-connectivity)
 
@@ -157,8 +156,8 @@ Stacks are deployed using GitHub Actions workflows located in `.github/workflows
 Workflows are designed to be run in the order provided below for the **initial deployment** only.  
 Once the full stack list has been deployed, changes can be made, with individual workflows executed when required.
 
-1. Update variables file in `./variables` with desired inputs.
-2. Add subscription name part values to the `iac-bootstrap.tfvars.json` file for each stack reference.
+1. Update variable files in `./variables` with desired inputs for each stack.
+2. Add subscription identifier values to the `deployment_stacks` variable for stack referenced.
 3. **Bootstrap:** Execute [bootstrap script](./deployments/bootstrap) to begin initial configuration process.
 4. **Management:** Deploy monitoring and observability resources.
 5. **Governance:** Deploy management group structure, policy definitions and initiatives.

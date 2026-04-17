@@ -1,13 +1,14 @@
-output "mgt_log_analytics_workspace" {
+output "log_analytics_workspace" {
   description = "Object of resource properties for Log Analytics Workspace."
   value = var.enable_resource_deployment.logging ? {
     id             = try(azurerm_log_analytics_workspace.mgt[0].id, null)
+    workspace_id   = try(azurerm_log_analytics_workspace.mgt[0].workspace_id, null)
     name           = try(azurerm_log_analytics_workspace.mgt[0].name, null)
     resource_group = try(azurerm_log_analytics_workspace.mgt[0].resource_group_name, null)
   } : null # Only if enabled.
 }
 
-output "mgt_storage_account" {
+output "storage_account" {
   description = "Object of resource properties for Storage Account."
   value = var.enable_resource_deployment.logging ? {
     id             = try(azurerm_storage_account.mgt[0].id, null)
