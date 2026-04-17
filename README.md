@@ -55,6 +55,7 @@ This stack provides centralized logging, monitoring and alerting for all platfor
   - Storage Account for long term log archiving.
 - **Alerting & Action Groups:**
   - Activity, Service and Health alerting, with severity-based notifications.
+  - High-risk operations (resource group deletion, RBAC changes, policy modifications) are monitored using Azure Activity Log Alerts.
 - **Entra ID Administrative Groups:**
   - Create base administrative groups in Entra ID, to be used with RBAC assignments.
 - **Microsoft Defender for Cloud**:
