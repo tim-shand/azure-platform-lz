@@ -138,9 +138,9 @@ variable "enabled_alerts" {
   description = "Enable or disable alert categories."
   type = map(bool)
   default = {
-    resource_health = bool
-    service_health  = bool
-    administrative  = bool
+    resource_health = true
+    service_health  = true
+    administrative  = true
   }
 }
 
@@ -148,8 +148,8 @@ variable "mdfc_alerts" {
   description = "Map of bools to control MDFC alerting."
   type = map(bool)
   default = {
-    alert_notifications = bool # Send security alerts notifications to the security contact.
-    alerts_to_admins    = bool # Send security alerts notifications to subscription admins.
+    alert_notifications = true # Send security alerts notifications to the security contact.
+    alerts_to_admins    = false # Send security alerts notifications to subscription admins.
   }
 }
 

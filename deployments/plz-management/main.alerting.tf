@@ -51,7 +51,7 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
 # ALERTS (ADMINISTRATIVE) ------------------------------------------------------------------------- #
 
 module "alert_rg_delete" {
-  source = "../../modules/monitoring/activity-log-alert"
+  source = "../../modules/activity-log-alert"
   name                = "${module.naming.activity_log_alert}-delrg"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
@@ -63,7 +63,7 @@ module "alert_rg_delete" {
 }
 
 module "alert_rbac_add" {
-  source = "../../modules/monitoring/activity-log-alert"
+  source = "../../modules/activity-log-alert"
   name                = "${module.naming.activity_log_alert}-rbacadd"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
@@ -75,7 +75,7 @@ module "alert_rbac_add" {
 }
 
 module "alert_rbac_del" {
-  source = "../../modules/monitoring/activity-log-alert"
+  source = "../../modules/activity-log-alert"
   name                = "${module.naming.activity_log_alert}-rbacdel"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
@@ -87,7 +87,7 @@ module "alert_rbac_del" {
 }
 
 module "alert_policy_add" {
-  source = "../../modules/monitoring/activity-log-alert"
+  source = "../../modules/activity-log-alert"
   name                = "${module.naming.activity_log_alert}-policyadd"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
@@ -99,7 +99,7 @@ module "alert_policy_add" {
 }
 
 module "alert_policy_del" {
-  source = "../../modules/monitoring/activity-log-alert"
+  source = "../../modules/activity-log-alert"
   name                = "${module.naming.activity_log_alert}-policydel"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
@@ -111,7 +111,7 @@ module "alert_policy_del" {
 }
 
 module "alert_vnet_del" {
-  source = "../../modules/monitoring/activity-log-alert"
+  source = "../../modules/activity-log-alert"
   name                = "${module.naming.activity_log_alert}-vnetdel"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
@@ -123,7 +123,7 @@ module "alert_vnet_del" {
 }
 
 module "alert_pip_add" {
-  source = "../../modules/monitoring/activity-log-alert"
+  source = "../../modules/activity-log-alert"
   name                = "${module.naming.activity_log_alert}-pipadd"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
