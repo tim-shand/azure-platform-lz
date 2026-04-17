@@ -1,19 +1,27 @@
 name: "Terraform: Apply" # Display name shown in the GitHub Actions UI.
 
-on: # Define workflow triggers.
-    workflow_call: # Allows this workflow to be called by a parent workflow.
-        inputs: # Define input parameters accepted from the calling workflow.
-            working_directory: # Path to the Terraform stack root module.
+on:
+    # Define workflow triggers.
+    workflow_call:
+        # Allows this workflow to be called by a parent workflow.
+        inputs:
+            # Define input parameters accepted from the calling workflow.
+            working_directory:
+                # Path to the Terraform stack root module.
                 type: string
                 required: true
-            stack_name: # String used with plan and variable file naming.
+            stack_name:
+                # String used with plan and variable file naming.
                 type: string
                 required: true
-            run_mode: # Pass in 'run_mode' to use as parameter in plan command (plan -destroy).
+            run_mode:
+                # Pass in 'run_mode' to use as parameter in plan command (plan -destroy).
                 type: string
                 required: true
-        secrets: # Secrets must be declared separately from inputs.
-            ARM_CLIENT_ID: # Azure Service Principal ID for OIDC authentication.
+        secrets:
+            # Secrets must be declared separately from inputs.
+            ARM_CLIENT_ID:
+                # Azure Service Principal ID for OIDC authentication.
                 required: true
 
 jobs:
@@ -21,25 +29,29 @@ jobs:
         name: "Terraform: Apply" # Display name for this job in the GitHub Actions UI.
         runs-on: ubuntu-latest # Use the latest GitHub-hosted Ubuntu runner.
         timeout-minutes: 45 # Fail the entire job if it exceeds this duration.
+        environment: ${{ inputs.stack_name }} # Use stack name matching GitHub environment.
         defaults:
             run:
                 working-directory: ${{ inputs.working_directory }} # All 'run' steps execute from this directory by default.
 
-        env: # Environment variables available to all steps in this job.
-            # Terraform Backend Config ----------------------------------- #
-            TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to install, from GitHub environment variable.
-            TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Azure Resource Group containing the backend Storage Account.
-            TF_BACKEND_SA: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }} # Azure Storage Account used for Terraform remote states.
-            TF_BACKEND_CONTAINER: "tfstate-${{ inputs.stack_name }}" # Blob container within the Storage Account holding state files.
-            TF_BACKEND_KEY: "${{ inputs.stack_name }}.tfstate" # Filename of the state file within the container for the stack.
-            # Stack Specific ----------------------------------- #
-            STACK_NAME: ${{ inputs.stack_name }} # Stack name used for plan file and artifact naming.
+        env:
+            # Environment variables available to all steps in this job.
+
             # Azure OIDC Authentication  ----------------------------------- #
             ARM_USE_OIDC: true # Force Terraform AzureRM provider to authenticate via OIDC.
             ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure tenant ID, get from GitHub environment variable.
             ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure Service Principal ID, sourced from GitHub secret.
-            ARM_SUBSCRIPTION_ID_IAC: ${{ vars.SUBSCRIPTION_ID_IAC }} # Subscription containing the Terraform backend Storage Account.
-            ARM_SUBSCRIPTION_ID: ${{ vars.SUBSCRIPTION_ID_MGT }} # Target subscription for the stack resources.
+            ARM_SUBSCRIPTION_ID_IAC: ${{ vars.ARM_SUBSCRIPTION_ID_IAC }} # Subscription containing the Terraform backend Storage Account.
+            ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }} # Target subscription for the stack resources.
+
+            # Terraform Backend Config ----------------------------------- #
+            TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to install, from GitHub environment variable.
+            TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Azure Resource Group containing the backend Storage Account.
+            TF_BACKEND_SA: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }} # Azure Storage Account used for Terraform remote states.
+            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }} # Blob container within the Storage Account holding state files.
+            TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Filename of the state file within the container for the stack.
+            TF_VARS_DIR: "../../variables" # Relative path from working_directory to the variables folder.
+            TF_VARS_FILE: "${{ inputs.stack_name }}.tfvars" # Stack-specific filename, passed in from the parent workflow.
 
         steps:
             - uses: actions/checkout@v4 # Clone the repository onto the runner.
@@ -66,4 +78,6 @@ jobs:
                   path: "${{ inputs.working_directory }}" # Path to the saved plan file produced in the plan step.
 
             - name: "Terraform: Apply"
-              run: terraform apply --auto-approve "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
+              env:
+                  PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
+              run: terraform apply --auto-approve "$PLAN_FILE"

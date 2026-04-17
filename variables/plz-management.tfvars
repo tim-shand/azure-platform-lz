@@ -1,3 +1,5 @@
+# GENERAL ---------------------------------------------------- #
+
 # Stack: Map of stack specific variables for use within current deployment. 
 stack = {
   naming = {                     # Map of name related variables (merge with "global.naming")
@@ -11,7 +13,6 @@ stack = {
   }
 }
 
-# GENERAL ---------------------------------------------------- #
 # Enable/disable resource deployment.
 enable_resource_deployment = {
   alerting = true
@@ -90,6 +91,8 @@ mdfc_cspm_resources = {           # Will only be enabled if `mdfc_enable_defende
   CosmosDbs                     = "false"
   CloudPosture                  = "true"
 }
+
+# ENTRA ID ----------------------------------------------- #
 
 # Entra ID: Groups (Privilaged RBAC) 
 entra_groups_prefix = "GRP_ADM_" # GRP_ADM_NetworkAdmins

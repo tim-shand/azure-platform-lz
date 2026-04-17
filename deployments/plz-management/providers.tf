@@ -17,6 +17,7 @@ terraform {
 }
 
 provider "random" {}
+provider "azuread" {} # Tenant ID is read from environment variable 'ARM_TENANT_ID' in workflow.
 
 # Primary provider for AzureRM - target subscription.
 provider "azurerm" {

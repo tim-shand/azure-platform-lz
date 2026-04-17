@@ -21,7 +21,7 @@ locals {
 
   # Flatten list of platform subscription IDs from remote bootstrap state and remove any duplicates.
   platform_subscription_ids = tolist(toset(values(
-    data.terraform_remote_state.iac.outputs.platform_subscription_ids
+    data.terraform_remote_state.iac.outputs.platform_subscriptions
   )))
 
   # Build list of subscription objects using platform subscription ID list. 
