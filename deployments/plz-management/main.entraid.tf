@@ -6,11 +6,6 @@
 
 # Entra ID: Groups [ADMIN] - Create per definition in TFVARS. 
 resource "azuread_group" "grp_adm" {
-  # for_each = {
-  #   for k, v in var.entra_groups_privilaged :
-  #   k => v
-  #   if v.active == true # Only create groups that are set to be active. 
-  # }
   for_each = var.enable_resource_deployment.entra_id_privilaged_groups ? {
     for k, v in var.entra_groups_privilaged :
     k => v

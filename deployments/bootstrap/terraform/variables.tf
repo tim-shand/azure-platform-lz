@@ -33,34 +33,3 @@ variable "deployment_stacks" {
     enable_github_env       = bool
   }))
 }
-
-# # Subscription IDs for deployment stacks.
-# variable "platform_subscription_identifiers" {
-#   description = "Object containing string values unique to each stack subscription. Used ONCE to get ID values using data call."
-#   type = object({
-#     mgt = string
-#     gov = string
-#     con = string
-#   })
-#   nullable = false
-#   validation {
-#     condition     = length(trimspace(var.platform_subscription_identifiers.mgt)) > 0
-#     error_message = "The subscription display name must not be empty."
-#   }
-#   validation {
-#     condition     = length(trimspace(var.platform_subscription_identifiers.gov)) > 0
-#     error_message = "The subscription display name must not be empty."
-#   }
-#   validation {
-#     condition     = length(trimspace(var.platform_subscription_identifiers.con)) > 0
-#     error_message = "The subscription display name must not be empty."
-#   }
-# }
-
-# # Managment Group: Core (Top-Level)
-# variable "management_group_core" {
-#   description = "Map defining the core management group used as the top-level MG."
-#   type        = map(string)
-#   nullable    = false
-# }
-

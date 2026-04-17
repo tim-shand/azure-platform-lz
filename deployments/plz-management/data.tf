@@ -11,8 +11,8 @@ data "terraform_remote_state" "iac" {
   config = {
     resource_group_name  = var.remote_state_resource_group
     storage_account_name = var.remote_state_storage_account
-    container_name       = var.remote_state_iac.container_name
-    key                  = var.remote_state_iac.key
+    container_name       = "tfstate-${var.deployment_stacks.bootstrap.stack_name}"
+    key                  = "${var.deployment_stacks.bootstrap.stack_name}.tfstate"
     use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
   }
 }

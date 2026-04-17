@@ -31,7 +31,7 @@ resource "github_actions_variable" "tenant_id" {
 # GitHub: Repo [VARIABLE] - Azure Subscription ID (IaC Backend)
 resource "github_actions_variable" "subscription_id" {
   repository    = data.github_repository.repo.name
-  variable_name = "ARM_SUBSCRIPTION_ID"
+  variable_name = "ARM_SUBSCRIPTION_ID_IAC"
   value         = var.subscription_id # IaC Subscription.
 }
 

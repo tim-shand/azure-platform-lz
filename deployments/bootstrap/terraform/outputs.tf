@@ -8,8 +8,13 @@ output "service_principal" {
   }
 }
 
-output "bootstrap_backend" {
+output "platform_subscriptions" {
   description = "Map of bootstrap backend details for state file migration."
+  value = local.deployment_stacks_subscriptions
+}
+
+output "bootstrap_backend" {
+  description = "Map of platform subscriptions."
   value = {
     resource_group  = azurerm_resource_group.iac.name
     storage_account = azurerm_storage_account.backend["platform"].name

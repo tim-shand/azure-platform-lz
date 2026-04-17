@@ -1,5 +1,11 @@
 # GENERAL ----------------------------------------------------------- #
 
+variable "terraform_version" {
+  description = "Version of Terraform to pin for use in workflows."
+  type = string
+  default = ""
+}
+
 variable "global" {
   description = "Map of global variables used across multiple deployment stacks."
   type        = map(map(string))
@@ -26,6 +32,30 @@ variable "subscription_id_iac" {
   nullable    = false
 }
 
+variable "remote_state_resource_group" {
+  description = "Name of the Resource Groups that contains remote state backends."
+  type = string
+  default = ""
+}
+
+variable "remote_state_storage_account" {
+  description = "Name of the Storage Account that contains remote state backends."
+  type = string
+  default = ""
+}
+
+variable "deployment_stacks" {
+  description = "Map of objects defining the stacks for each deployment."
+  type = map(object({
+    stack_name              = string
+    stack_code              = string
+    subscription_identifier = string
+    enable_github_env       = bool
+  }))
+}
+
+# RESOURCE SWITCH ------------------------------------------------------------- #
+
 variable "enable_resource_deployment" {
   description = "Enable/disable specific resources for deployment."
   type = map(string)
@@ -35,16 +65,6 @@ variable "enable_resource_deployment" {
     key_vault = true
     logging = true
   }
-}
-
-# REMOTE STATE ------------------------------------------------------------- #
-# Used to access state files of other stacks.
-
-variable "remote_state" {
-  type = map(object({
-    container_name = string
-    key            = string
-  }))
 }
 
 # LOGGING ---------------------------------------------------- #
