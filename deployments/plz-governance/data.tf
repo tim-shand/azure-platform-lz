@@ -1,27 +1,23 @@
-# GLOBAL / SHARED SERVICES
-# ------------------------------------------------------------- #
+# GENERAL ------------------------------------------------------------------ #
 
-# IaC: Get IaC subscription for aliased provider. 
-data "azurerm_subscription" "iac_sub" {
-  subscription_id = var.subscription_id_iac # Pass in the IaC subscription variable. 
-}
+data "azuread_client_config" "current" {} # Get current user session data.
+data "azurerm_subscription" "current" {}  # Get current Azure subscription.
+data "azurerm_subscriptions" "all" {}     # Collect all available subscriptions.
 
-# IaC: Get core management group from bootstrap state.
-data "terraform_remote_state" "bootstrap" {
+# REMOTE STATE ------------------------------------------------------------- #
+
+data "terraform_remote_state" "mgt" {
   backend = "azurerm"
   config = {
-    resource_group_name  = "${var.remote_state_bootstrap.resource_group}"
-    storage_account_name = "${var.remote_state_bootstrap.storage_account}"
-    container_name       = "${var.remote_state_bootstrap.blob_container}"
-    key                  = "${var.remote_state_bootstrap.state_key}"
+    resource_group_name  = var.remote_state_resource_group
+    storage_account_name = var.remote_state_storage_account
+    container_name       = "tfstate-${var.deployment_stacks.management.stack_name}"
+    key                  = "${var.deployment_stacks.management.stack_name}.tfstate"
+    use_azuread_auth     = true # Force Entra ID for authorisation over Shared Access Keys.
   }
 }
 
-# GOVERNANCE: Management Groups
-# ------------------------------------------------------------- #
-
-# Subscriptions: Collect all available subscriptions, to be nested under management groups.  
-data "azurerm_subscriptions" "all" {}
+# STACK -------------------------------------------------------------------- #
 
 # Policy Initiative (Built-in)
 data "azurerm_policy_set_definition" "builtin" {
@@ -29,14 +25,13 @@ data "azurerm_policy_set_definition" "builtin" {
   display_name = each.key
 }
 
-#data.azurerm_management_group.lookup
-data "azurerm_management_group" "lookup" {
-  for_each     = local.management_groups_all
-  display_name = each.value.display_name
-  depends_on = [
-    azurerm_management_group.core,
-    azurerm_management_group.level1,
-    azurerm_management_group.level2,
-    azurerm_management_group.level3
-  ]
-}
+# data "azurerm_management_group" "lookup" {
+#   for_each     = local.management_groups_all
+#   display_name = each.value.display_name
+#   depends_on = [
+#     azurerm_management_group.core,
+#     azurerm_management_group.level1,
+#     azurerm_management_group.level2,
+#     azurerm_management_group.level3
+#   ]
+# }

@@ -1,13 +1,9 @@
-variable "subscription_id_iac" {
-  description = "Subscription ID of the dedicated IaC subscription."
-  type        = string
-  nullable    = false
-}
+# GENERAL ----------------------------------------------------------- #
 
-variable "subscription_id" {
-  description = "Subscription ID for the stack resources."
-  type        = string
-  nullable    = false
+variable "terraform_version" {
+  description = "Version of Terraform to pin for use in workflows."
+  type = string
+  default = ""
 }
 
 variable "global" {
@@ -24,9 +20,38 @@ variable "stack" {
   default     = {}
 }
 
-variable "remote_state_bootstrap" {
-  description = "Map of remote state values used for accessing the Bootstrap state file."
-  type        = map(string)
+variable "subscription_id" {
+  description = "Subscription ID for the stack deployment."
+  type        = string
+  nullable    = false
+}
+
+variable "subscription_id_iac" {
+  description = "Subscription ID for the IaC backend deployment."
+  type        = string
+  nullable    = false
+}
+
+variable "remote_state_resource_group" {
+  description = "Name of the Resource Groups that contains remote state backends."
+  type = string
+  default = ""
+}
+
+variable "remote_state_storage_account" {
+  description = "Name of the Storage Account that contains remote state backends."
+  type = string
+  default = ""
+}
+
+variable "deployment_stacks" {
+  description = "Map of objects defining the stacks for each deployment."
+  type = map(object({
+    stack_name              = string
+    stack_code              = string
+    subscription_identifier = string
+    enable_github_env       = bool
+  }))
 }
 
 # GOVERNANCE: Management Groups

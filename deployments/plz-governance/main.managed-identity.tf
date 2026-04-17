@@ -1,7 +1,7 @@
 #====================================================================================#
 # Governance: Managed Identity
 # Description: 
-# - Create User-Assigned Managed Identity.
+# - Create User-Assigned Managed Identity for identity reuse and centralized governance.
 # - Used to deploy policy configuration to resources via Policy Assignment. 
 #====================================================================================#
 
@@ -15,7 +15,7 @@ module "naming_policy_mi" {
 
 # Managed Identity (User-Assigned)
 resource "azurerm_user_assigned_identity" "policy" {
-  name                = "${module.naming_policy_mi.full_name}-deploy-mi"
+  name                = module.naming_policy_mi.user_assigned_managed_identity
   resource_group_name = azurerm_resource_group.gov.name
   location            = azurerm_resource_group.gov.location
   tags                = local.tags_merged
