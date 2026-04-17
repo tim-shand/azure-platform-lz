@@ -51,7 +51,7 @@ $requiredApps = @(
 # Directories, Files and Misc.
 $dir_tf = "$PSScriptRoot/terraform" # Location of Terraform files. 
 $dir_ps_vars = "$PSScriptRoot/../../variables" # Location of Terraform variable files (in relation project root).
-$var_files = @("global.tfvars", "iac-bootstrap.tfvars.json") # Array of required variable files for bootstrap process. 
+$var_files = @("global.tfvars") # Array of required variable files for bootstrap process. 
 
 # Set action attributes. 
 if ($Remove) {
@@ -182,23 +182,6 @@ Try {
         Write-Host -ForegroundColor $ERR "[x] ERROR: Unable to extract repository details from variables file. Abort. $_"
         exit 1
     }
-    Try {
-        # Get subscription names from variables file.
-        $bootstrap_subs = Get-Content "$dir_ps_vars/iac-bootstrap.tfvars.json" | ConvertFrom-Json
-        $plz_sub_mgt = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.mgt)')].{Name:name, ID:id}" | ConvertFrom-Json)
-        $plz_sub_gov = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.gov)')].{Name:name, ID:id}" | ConvertFrom-Json)
-        $plz_sub_con = (az account list --query "[?contains(name, '$($bootstrap_subs.platform_subscription_identifiers.con)')].{Name:name, ID:id}" | ConvertFrom-Json)
-        if (-not($plz_sub_mgt) -and (-not($plz_sub_gov)) -and (-not($plz_sub_con))) {
-            Write-Host -ForegroundColor $ERR "FAIL"
-            Write-Host -ForegroundColor $ERR "[x] ERROR: Failed to resolve platform subscriptions. Abort."
-            exit 1
-        }
-    }
-    Catch {
-        Write-Host -ForegroundColor $ERR "FAIL"
-        Write-Host -ForegroundColor $ERR "[x] ERROR: Unable to extract subscription details from variables file. Abort. $_"
-        exit 1
-    }
 }
 Catch {
     Write-Host -ForegroundColor $ERR "FAIL"
@@ -241,9 +224,6 @@ Write-Host -ForegroundColor $HD1 "Azure"
 Write-Host "- Tenant:                      $($azSession.tenantId) ($($azSession.tenantDisplayName))"
 Write-Host "- Current User:                $($azSession.user.name)"
 Write-Host "- Subscription (IaC Backend):  $($azSession.id) ($($azSession.name))"
-Write-Host "- Subscription (Management):   $($plz_sub_mgt.id) ($($plz_sub_mgt.name))"
-Write-Host "- Subscription (Governance):   $($plz_sub_gov.id) ($($plz_sub_gov.name))"
-Write-Host "- Subscription (Connectivity): $($plz_sub_con.id) ($($plz_sub_con.name))"
 Write-Host ""
 Write-Host -ForegroundColor $HD1 "Repository"
 Write-Host "- Organization: $($repoConfig.org)"
@@ -294,7 +274,7 @@ if (!($Remove)) {
     Write-Host -ForegroundColor $HD1 "[*] Generating Terraform plan..."
     Try {
         terraform -chdir="$dir_tf" plan --out=bootstrap.plan `
-            -var-file="$dir_ps_vars/$($var_files[0])" -var-file="$dir_ps_vars/$($var_files[1])" `
+            -var-file="$dir_ps_vars/$($var_files[0])" `
             -var="subscription_id=$($azSession.id)" #> $null 2>&1
         if ($LASTEXITCODE -eq 0) {
             if (Test-Path -Path "$dir_tf/bootstrap.plan") {
@@ -479,7 +459,6 @@ if ($Remove) {
     else {
         terraform -chdir="$dir_tf" destroy `
             -var-file="$dir_ps_vars/$($var_files[0])" `
-            -var-file="$dir_ps_vars/$($var_files[1])" `
             -var="subscription_id=$($azSession.id)" `
             -auto-approve
         if ($LASTEXITCODE -eq 0) {

@@ -18,14 +18,6 @@ output "bootstrap_backend" {
   }
 }
 
-# output "platform_subscription_ids" {
-#   description = "Map of platform subscriptions IDs per stack."
-#   value = {
-#     for k, v in local.deployment_stacks_subscriptions :
-#     k => v.subscription_id
-#   }
-# }
-
 output "github_environments" {
   description = "Map of GitHub environments per stack, including subscription ID."
   value = {
