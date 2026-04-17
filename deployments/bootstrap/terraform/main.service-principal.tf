@@ -2,14 +2,14 @@
 # Bootstrap: Azure - Service Principal, OIDC Credentials
 # Description: 
 # - Creates Service Principal in Azure/Entra ID. 
-# - Generates OIDC federated credentials for GitHub repository. 
+# - Generates OIDC federated credentials for GitHub repository and environments. 
 #====================================================================================#
 
 # Naming: Generate naming convention, pre-determined values and format. 
 module "naming_sp" {
   source        = "../../../modules/global-resource-naming"
   prefix        = var.global.naming.org_prefix
-  workload      = var.stack.naming.workload_code
+  workload      = var.deployment_stacks.bootstrap.stack_code
   stack_or_env  = "deploy"
   ensure_unique = true
 }
@@ -53,7 +53,7 @@ resource "azuread_service_principal" "iac_sp" {
 # OIDC: Federated credentials for Service Principal to GitHub repository. 
 resource "azuread_application_federated_identity_credential" "repo_main" {
   application_id = azuread_application.iac_sp.id
-  display_name   = "oidc_MAIN_${replace(data.github_repository.repo.full_name, "/", "_")}"
+  display_name   = lower("oidc_MAIN_${replace(data.github_repository.repo.full_name, "/", "_")}")
   description    = "[REPO_MAIN]: OIDC federated credentials (${var.global.repo_config.branch}). Allows pipeline from main branch."
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
@@ -62,9 +62,19 @@ resource "azuread_application_federated_identity_credential" "repo_main" {
 
 resource "azuread_application_federated_identity_credential" "repo_pr" {
   application_id = azuread_application.iac_sp.id
-  display_name   = "oidc_PR_${replace(data.github_repository.repo.full_name, "/", "_")}"
+  display_name   = lower("oidc_PR_${replace(data.github_repository.repo.full_name, "/", "_")}")
   description    = "[REPO_PR]: OIDC federated credentials (Pull Request). Allows pipeline to execute on pull request."
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
   subject        = "repo:${data.github_repository.repo.full_name}:pull_request"
+}
+
+resource "azuread_application_federated_identity_credential" "repo_env" {
+  for_each = local.deployment_stacks_github_env
+  application_id = azuread_application.iac_sp.id
+  display_name   = lower("oidc_env_${replace(data.github_repository.repo.full_name, "/", "_")}_${each.key}")
+  description    = "[REPO_ENV]: OIDC federated credentials (Environment). Allows pipeline to execute for environment."
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = "repo:${data.github_repository.repo.full_name}:environment:${each.value.stack_name}"
 }

@@ -14,19 +14,29 @@ output "bootstrap_backend" {
     resource_group  = azurerm_resource_group.iac.name
     storage_account = azurerm_storage_account.backend["platform"].name
     blob_container  = azurerm_storage_container.backend["bootstrap"].name
-    state_key       = "${lower(var.stack.naming.workload_code)}-${lower(var.stack.naming.workload_name)}.tfstate"
+    state_key       = "${lower(var.deployment_stacks.bootstrap.stack_name)}.tfstate"
   }
 }
 
-output "management_group_core" {
-  description = "Core management group object."
-  value       = azurerm_management_group.core
-}
+# output "platform_subscription_ids" {
+#   description = "Map of platform subscriptions IDs per stack."
+#   value = {
+#     for k, v in local.deployment_stacks_subscriptions :
+#     k => v.subscription_id
+#   }
+# }
 
-output "platform_subscription_ids" {
-  description = "Map of platform subscriptions IDs per stack."
+output "github_environments" {
+  description = "Map of GitHub environments per stack, including subscription ID."
   value = {
-    for k, v in local.deployment_stacks :
-    k => v.subscription_id
+    for k, v in github_repository_environment.gh_env :
+    #for k,v in var.deployment_stacks :
+    k => {
+      repository = try(github_repository_environment.gh_env[k].repository, "N/A")
+      environment = try(github_repository_environment.gh_env[k].environment, "N/A")
+      subscription_id = try(github_actions_environment_variable.subscription[k].value, "N/A")
+      container = try(github_actions_environment_variable.container[k].value, "N/A")
+      state_key = try(github_actions_environment_variable.key[k].value, "N/A")
+    }
   }
 }
