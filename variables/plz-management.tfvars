@@ -66,9 +66,9 @@ action_groups = {
 
 # Enabled/disable alerts by category.
 enabled_alerts = {
-  resource_health_alerts = true
-  service_health_alerts  = true
-  administrative_alerts  = true
+  resource_health = true
+  service_health  = true
+  administrative  = true
 }
 
 # Alert controls for MDFC.
