@@ -13,15 +13,6 @@ stack = {
   }
 }
 
-# Enable/disable resource deployment.
-enable_resource_deployment = {
-  alerting = true
-  defender_for_cloud = true
-  key_vault = true
-  logging = true
-  entra_id_privilaged_groups = true
-}
-
 # LOGGING ---------------------------------------------------- #
 
 log_retention_days         = 30  # Free tier: first 5 GB/day ingestion free, 30-day retention free.
@@ -110,15 +101,15 @@ entra_groups_privilaged = {
   }
   "SecurityAdmins" = {
     description       = "RBAC - Privilaged Group: Security Administrators"
-    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    active            = true 
   }
   "PlatformAdmins" = {
     description       = "RBAC - Privilaged Group: Platform Administrators"
-    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    active            = true 
   }
   "UserAccessAdmins" = {
     description       = "RBAC - Privilaged Group: User Access Administrators"
-    active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    active            = true
   }
 }
 
