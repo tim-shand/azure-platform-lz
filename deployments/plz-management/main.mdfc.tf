@@ -19,8 +19,8 @@ resource "azurerm_security_center_workspace" "mgt" {
 
 # Security Center: Contact Details
 resource "azurerm_security_center_contact" "mgt" {
-  name  = var.action_groups.mgt.security.name
-  email = var.action_groups.mgt.security.email
+  name  = var.action_groups.security.name
+  email = var.action_groups.security.email
   alert_notifications = var.mdfc_alerts.alert_notifications # Send security alerts notifications to the security contact.
   alerts_to_admins    = var.mdfc_alerts.alerts_to_admins    # Send security alerts notifications to subscription admins.
 
