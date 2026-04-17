@@ -41,11 +41,6 @@ locals {
 }
 
 locals {
-  # Convert list of resource types into a single wildcard string for resource_id.
-  alert_deletion_resource_id = "/subscriptions/*/providers/{${join(",", var.alert_on_resource_deletion)}}/*"
-}
-
-locals {
   entraid_log_types_enabled = {
     for k, v in var.entraid_log_types : k => v
     if v # Filter on category names that are enabled. 

@@ -69,21 +69,60 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
   }
 }
 
-# Administrative Alerts: Delete Attempts.
-resource "azurerm_monitor_activity_log_alert" "delete_attempt_resources" {
+# Administrative Alerts: Delete Attempts for Resource Groups.
+resource "azurerm_monitor_activity_log_alert" "delete_rg" {
   count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
-  name                = "${module.naming.activity_log_alert}-del-res"
+  name                = "${module.naming.activity_log_alert}-delrg"
   resource_group_name = azurerm_resource_group.mgt.name
   location            = "global"
   tags                = local.tags_merged
-  description         = "Fires when specified resource types are attempted to be deleted (Succeeded or Failed)."
+  description         = "Fires when Resource Group deletion is attempted."
   enabled             = var.enable_administrative_alerts
   scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   criteria {
     category       = "Administrative"
-    operation_name = "*/delete"
+    operation_name = "Microsoft.Resources/subscriptions/resourceGroups/delete"
     statuses       = ["Succeeded", "Failed"]
-    resource_id    = local.alert_deletion_resource_id
+  }
+  action {
+    action_group_id = azurerm_monitor_action_group.platform[0].id
+  }
+}
+
+# Administrative Alerts: Changes to RBAC Assignments
+resource "azurerm_monitor_activity_log_alert" "rbac" {
+  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
+  name                = "${module.naming.activity_log_alert}-rbac"
+  resource_group_name = azurerm_resource_group.mgt.name
+  location            = "global"
+  tags                = local.tags_merged
+  description         = "Fires when changesd to RBAC role assignments are made."
+  enabled             = var.enable_administrative_alerts
+  scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
+  criteria {
+    category       = "Administrative"
+    operation_name = "Microsoft.Authorization/roleAssignments/write"
+    statuses       = ["Succeeded", "Failed"]
+  }
+  action {
+    action_group_id = azurerm_monitor_action_group.platform[0].id
+  }
+}
+
+# Administrative Alerts: Policy Assignment Changes
+resource "azurerm_monitor_activity_log_alert" "policy" {
+  count = var.enable_resource_deployment.alerting ? 1 : 0 # Only deploy if enabled.
+  name                = "${module.naming.activity_log_alert}-policy"
+  resource_group_name = azurerm_resource_group.mgt.name
+  location            = "global"
+  tags                = local.tags_merged
+  description         = "Fires when changes to policy assignments are made."
+  enabled             = var.enable_administrative_alerts
+  scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
+  criteria {
+    category       = "Administrative"
+    operation_name = "Microsoft.Authorization/policyAssignments/write"
+    statuses       = ["Succeeded", "Failed"]
   }
   action {
     action_group_id = azurerm_monitor_action_group.platform[0].id
