@@ -14,9 +14,9 @@ resource "azurerm_monitor_action_group" "mgt" {
   tags                = local.tags_merged
   short_name          = "alerts-plz"
   dynamic "email_receiver" {
-    for_each = v.email
+    for_each = each.value.email
     content {
-      name          = "email-${index(v.email, email_receiver.value)}"
+      name          = "email-${email_receiver.key}"
       email_address = email_receiver.value
     }
   }
