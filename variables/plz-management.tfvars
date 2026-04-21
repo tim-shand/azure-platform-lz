@@ -98,18 +98,31 @@ entra_groups_privilaged = {
   "NetworkAdmins" = {
     description       = "RBAC - Privilaged Group: Network Administrators"
     active            = true # Enable/disable group in Entra (setting from 'true' to 'false' will remove the group). 
+    roles = [
+      "Network Contributor",
+      "Private DNS Zone Contributor"
+    ]
   }
   "SecurityAdmins" = {
     description       = "RBAC - Privilaged Group: Security Administrators"
     active            = true 
+    roles = [
+      "Security Admin"
+    ]
   }
   "PlatformAdmins" = {
     description       = "RBAC - Privilaged Group: Platform Administrators"
-    active            = true 
+    active            = true
+    roles = [
+      "Contributor"
+    ]
   }
   "UserAccessAdmins" = {
     description       = "RBAC - Privilaged Group: User Access Administrators"
     active            = true
+    roles = [
+      "User Access Administrator"
+    ]
   }
 }
 

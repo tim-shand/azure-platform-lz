@@ -55,3 +55,12 @@ locals {
     if v # Filter on category names that are enabled. 
   }
 }
+
+locals {
+  # Entra ID: Privilaged Groups (Enabled). 
+  entra_groups_privilaged_enabled = {
+    for k, v in var.entra_groups_privilaged :
+    k => v
+    if v.active == true # Only create groups that are set to be active. 
+  }
+}

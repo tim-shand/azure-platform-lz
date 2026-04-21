@@ -33,7 +33,6 @@ resource "azurerm_storage_account" "mgt" {
 }
 
 resource "azurerm_storage_management_policy" "mgt" {
-  count = var.enable_resource_deployment.logging ? 1 : 0 # Only deploy if enabled.
   storage_account_id = azurerm_storage_account.mgt.id
   rule {
     name    = "archive-and-expire-logs"

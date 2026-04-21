@@ -179,6 +179,7 @@ variable "entra_groups_privilaged" {
   type = map(object({
     description = string
     active = bool
+    roles = list(string)
   }))
 }
 
