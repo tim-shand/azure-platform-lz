@@ -28,7 +28,7 @@ locals {
   platform_subscriptions = {
     for sub in data.azurerm_subscriptions.all.subscriptions :
     sub.subscription_id => sub
-    if contains(local.platform_subscription_ids, sub.subscription_id)
+    if contains(local.platform_subscription_ids, sub.subscription_id) && sub.state == "Enabled"
   }
 }
 

@@ -14,16 +14,7 @@ resource "azurerm_monitor_activity_log_alert" "resource_health" {
   tags                = local.tags_merged
   description         = "Fires when any resource in the management resource group becomes unavailable or degraded."
   enabled             = var.enabled_alerts.resource_health
-  #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  scopes = [
-      # Build list of subscription objects using platform subscription ID list. 
-  # platform_subscriptions = {
-  #   for sub in data.azurerm_subscriptions.all.subscriptions :
-  #   sub.subscription_id => sub
-  #   if contains(local.platform_subscription_ids, sub.subscription_id)
-  # }
-    for sub in local.platform_subscriptions : sub # Add platform subscriptions to scope.
-  ]
+  scopes = [for sub in local.platform_subscriptions : sub.id]
   criteria {
     category = "ResourceHealth"
     resource_health {
@@ -44,10 +35,7 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
   tags                = local.tags_merged
   description         = "Fires when Azure reports an active service incident affecting this subscription."
   enabled             = var.enabled_alerts.service_health
-  #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  scopes = [
-    for sub in local.platform_subscriptions : sub # Add platform subscriptions to scope.
-  ]
+  scopes = [for sub in local.platform_subscriptions : sub.id]
   criteria {
     category = "ServiceHealth"
     service_health {
@@ -67,10 +55,7 @@ module "alert_rg_delete" {
   name                = "${module.naming.activity_log_alert}-delrg"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
-  #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  scopes = [
-    for sub in local.platform_subscriptions : sub # Add platform subscriptions to scope.
-  ]
+  scopes = [for sub in local.platform_subscriptions : sub.id]
   operation_name      = "Microsoft.Resources/subscriptions/resourceGroups/delete"
   action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
   statuses            = ["Succeeded", "Failed"]
@@ -82,10 +67,7 @@ module "alert_rbac_add" {
   name                = "${module.naming.activity_log_alert}-rbacadd"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
-  #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  scopes = [
-    for sub in local.platform_subscriptions : sub # Add platform subscriptions to scope.
-  ]
+  scopes = [for sub in local.platform_subscriptions : sub.id]
   operation_name      = "Microsoft.Authorization/roleAssignments/write"
   action_group_id     = azurerm_monitor_action_group.mgt["security"].id
   statuses            = ["Succeeded", "Failed"]
@@ -97,10 +79,7 @@ module "alert_rbac_del" {
   name                = "${module.naming.activity_log_alert}-rbacdel"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
-  #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  scopes = [
-    for sub in local.platform_subscriptions : sub # Add platform subscriptions to scope.
-  ]
+  scopes = [for sub in local.platform_subscriptions : sub.id]
   operation_name      = "Microsoft.Authorization/roleAssignments/delete"
   action_group_id     = azurerm_monitor_action_group.mgt["security"].id
   statuses            = ["Succeeded", "Failed"]
@@ -112,10 +91,7 @@ module "alert_policy_add" {
   name                = "${module.naming.activity_log_alert}-policyadd"
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
-  #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  scopes = [
-    for sub in local.platform_subscriptions : sub # Add platform subscriptions to scope.
-  ]
+  scopes = [for sub in local.platform_subscriptions : sub.id]
   operation_name      = "Microsoft.Authorization/policyAssignments/write"
   action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
   statuses            = ["Succeeded", "Failed"]
@@ -128,9 +104,7 @@ module "alert_policy_del" {
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  scopes = [
-    for sub in local.platform_subscriptions : sub # Add platform subscriptions to scope.
-  ]
+  scopes = [for sub in local.platform_subscriptions : sub.id]
   operation_name      = "Microsoft.Authorization/policyAssignments/delete"
   action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
   statuses            = ["Succeeded", "Failed"]
@@ -143,9 +117,7 @@ module "alert_vnet_del" {
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  scopes = [
-    for sub in local.platform_subscriptions : sub # Add platform subscriptions to scope.
-  ]
+  scopes = [for sub in local.platform_subscriptions : sub.id]
   operation_name      = "Microsoft.Network/virtualNetworks/delete"
   action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
   statuses            = ["Succeeded", "Failed"]
@@ -158,9 +130,7 @@ module "alert_pip_add" {
   resource_group_name = azurerm_resource_group.mgt.name
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
-  scopes = [
-    for sub in local.platform_subscriptions : sub # Add platform subscriptions to scope.
-  ]
+  scopes = [for sub in local.platform_subscriptions : sub.id]
   operation_name      = "Microsoft.Network/publicIPAddresses/write"
   action_group_id     = azurerm_monitor_action_group.mgt["security"].id
   statuses            = ["Succeeded", "Failed"]
