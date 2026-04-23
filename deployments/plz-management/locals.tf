@@ -20,16 +20,14 @@ locals {
   }
 
   # Flatten list of platform subscription IDs from remote bootstrap state and remove any duplicates.
-  platform_subscription_ids = tolist(toset(values(
-    data.terraform_remote_state.iac.outputs.platform_subscriptions
-  )))
-
-  # Build list of subscription objects using platform subscription ID list. 
-  platform_subscriptions = {
-    for sub in data.azurerm_subscriptions.all.subscriptions :
-    sub.subscription_id => sub
-    if contains(local.platform_subscription_ids, sub.subscription_id)
-  }
+  # Iterates the list of objects and extracts the subscription_id string from each one.
+  platform_subscription_ids = tolist(toset([
+    for sub in data.terraform_remote_state.iac.outputs.platform_subscriptions :
+    lower(trimspace(sub.subscription_id))
+  ]))
+  platform_subscription_scopes = [
+    for id in local.platform_subscription_ids : "/subscriptions/${id}"
+  ]
 }
 
 locals {
