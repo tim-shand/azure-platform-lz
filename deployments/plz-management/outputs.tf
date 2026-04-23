@@ -49,7 +49,3 @@ output "debug_platform_subscription_ids" {
 output "debug_platform_subscriptions" {
   value = local.platform_subscriptions
 }
-
-output "debug_all_subscriptions" {
-  value = [for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id]
-}
