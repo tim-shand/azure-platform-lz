@@ -12,6 +12,8 @@
 
 # Security Center: Send to Log Insights Workspace. 
 resource "azurerm_security_center_workspace" "mgt" {
+  # Intentionally scoped to all enabled tenant subscriptions, not just platform.
+  # MDFC security data is centralised into the platform LAW regardless of subscription ownership.
   for_each     = local.active_subscriptions
   scope        = each.value.id              # Assign to each subscription.
   workspace_id = azurerm_log_analytics_workspace.mgt.id

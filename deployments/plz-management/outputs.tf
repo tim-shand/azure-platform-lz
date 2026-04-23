@@ -35,3 +35,21 @@ output "mgt_entra_groups" {
     }
   }
 }
+
+# TEMP / DEBUG ------------------------------------------------------- #
+
+# output "debug_remote_state_raw" {
+#   value = data.terraform_remote_state.iac.outputs.platform_subscriptions
+# }
+
+output "debug_platform_subscription_ids" {
+  value = local.platform_subscription_ids
+}
+
+# output "debug_platform_subscriptions" {
+#   value = local.platform_subscriptions
+# }
+
+# output "debug_all_subscriptions" {
+#   value = [for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id]
+# }

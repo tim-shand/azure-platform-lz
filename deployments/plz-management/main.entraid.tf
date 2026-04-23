@@ -22,7 +22,7 @@ resource "azuread_group" "grp_adm" {
 # RBAC ----------------------------------------------------------------------- #
 
 # RBAC: Assign Entra ID privilaged groups to roles. 
-resource "azurerm_role_assignment" "rbac_sp_builtin" {
+resource "azurerm_role_assignment" "mgt" {
   for_each             = local.entra_groups_rbac_flattened
   name                 = uuidv5("oid", "${data.azurerm_management_group.core.id}${each.value.group_key}${each.value.role}")
   scope                = data.azurerm_management_group.core.id      # Assign to core management group.
