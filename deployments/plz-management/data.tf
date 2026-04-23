@@ -23,9 +23,3 @@ data "terraform_remote_state" "iac" {
 data "azurerm_management_group" "core" {
   name = data.terraform_remote_state.iac.outputs.management_group_core["core"].name
 }
-
-# Subscriptions: Platform
-data "azurerm_subscription" "platform" {
-  for_each = local.platform_subscription_ids
-  subscription_id = each.value.subscription_id
-} 
