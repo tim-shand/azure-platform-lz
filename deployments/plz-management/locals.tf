@@ -63,4 +63,16 @@ locals {
     k => v
     if v.active == true # Only create groups that are set to be active. 
   }
+
+  # Flatten groups roles into a map keyed by "GroupName_RoleName".
+  entra_groups_rbac_flattened = {
+    for pair in flatten([
+      for group_key, group in local.entra_groups_privilaged_enabled : [
+        for role in group.roles : {
+          group_key = group_key
+          role      = role
+        }
+      ]
+    ]) : "${pair.group_key}_${pair.role}" => pair
+  }
 }
