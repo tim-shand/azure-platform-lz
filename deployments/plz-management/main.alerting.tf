@@ -16,7 +16,7 @@ resource "azurerm_monitor_activity_log_alert" "resource_health" {
   enabled             = var.enabled_alerts.resource_health
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   scopes = [
-    for sub in platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
+    for sub in local.platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
   ]
   criteria {
     category = "ResourceHealth"
@@ -40,7 +40,7 @@ resource "azurerm_monitor_activity_log_alert" "service_health" {
   enabled             = var.enabled_alerts.service_health
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   scopes = [
-    for sub in platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
+    for sub in local.platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
   ]
   criteria {
     category = "ServiceHealth"
@@ -63,7 +63,7 @@ module "alert_rg_delete" {
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   scopes = [
-    for sub in platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
+    for sub in local.platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
   ]
   operation_name      = "Microsoft.Resources/subscriptions/resourceGroups/delete"
   action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
@@ -78,7 +78,7 @@ module "alert_rbac_add" {
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   scopes = [
-    for sub in platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
+    for sub in local.platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
   ]
   operation_name      = "Microsoft.Authorization/roleAssignments/write"
   action_group_id     = azurerm_monitor_action_group.mgt["security"].id
@@ -93,7 +93,7 @@ module "alert_rbac_del" {
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   scopes = [
-    for sub in platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
+    for sub in local.platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
   ]
   operation_name      = "Microsoft.Authorization/roleAssignments/delete"
   action_group_id     = azurerm_monitor_action_group.mgt["security"].id
@@ -108,7 +108,7 @@ module "alert_policy_add" {
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   scopes = [
-    for sub in platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
+    for sub in local.platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
   ]
   operation_name      = "Microsoft.Authorization/policyAssignments/write"
   action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
@@ -123,7 +123,7 @@ module "alert_policy_del" {
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   scopes = [
-    for sub in platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
+    for sub in local.platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
   ]
   operation_name      = "Microsoft.Authorization/policyAssignments/delete"
   action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
@@ -138,7 +138,7 @@ module "alert_vnet_del" {
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   scopes = [
-    for sub in platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
+    for sub in local.platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
   ]
   operation_name      = "Microsoft.Network/virtualNetworks/delete"
   action_group_id     = azurerm_monitor_action_group.mgt["platform"].id
@@ -153,7 +153,7 @@ module "alert_pip_add" {
   tags                = local.tags_merged
   #scopes              = [data.azurerm_subscription.current.id] # Alerts are per subscription resource scope.
   scopes = [
-    for sub in platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
+    for sub in local.platform_subscriptions : sub.subscription_id # Add platform subscriptions to scope.
   ]
   operation_name      = "Microsoft.Network/publicIPAddresses/write"
   action_group_id     = azurerm_monitor_action_group.mgt["security"].id
