@@ -15,41 +15,31 @@ stack = {
 
 # MANAGEMENT GROUPS ------------------------------------------- #
 
-# Management Groups: Core - Parent group for nested management groups.
-management_group_core = {
-  "core" = {
-    display_name             = "Core"
-    parent_mg_name           = null
-    subscription_identifiers = []
-    policy_initiatives       = ["core_baseline", "diagnostics_logging"]
-  }
-}
-
 # Management Groups: First level nested under core management group.
 management_groups_level1 = {
   "platform" = {
     display_name             = "Platform"                        
     parent_mg_name           = "core"                           # Key ID of the parent Management Group. 
     subscription_identifiers = ["platform-dev", "platform-iac"] # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
-    policy_initiatives       = []                               # Assign Policy Initiatives directly to MGs. 
+    #policy_initiatives       = []                               # Assign Policy Initiatives directly to MGs. 
   }
   "workload" = {
     display_name             = "Workload"
     parent_mg_name           = "core"
     subscription_identifiers = ["prd-sub"]
-    policy_initiatives       = ["cost_controls"]
+    #policy_initiatives       = ["cost_controls"]
   }
   "sandbox" = {
     display_name             = "Sandbox" 
     parent_mg_name           = "core"
     subscription_identifiers = ["platform-plz"]
-    policy_initiatives       = ["cost_controls"]
+    #policy_initiatives       = ["cost_controls"]
   }
   "decom" = {
     display_name             = "Decommissioned"
     parent_mg_name           = "core" 
     subscription_identifiers = []
-    policy_initiatives       = ["decommissioned"]
+    #policy_initiatives       = ["decommissioned"]
   }
 }
 
@@ -69,6 +59,8 @@ policy_initiatives_builtin = {
     enforce       = false                                  # [true/false]: Toggle enforcement of policy initiative. 
   }
 }
+
+policy_custom_enforce_mode = ""
 
 # Policy (Custom): Parameters
 policy_param_allowed_locations = [

@@ -19,6 +19,11 @@ data "terraform_remote_state" "iac" {
 
 # STACK -------------------------------------------------------------------- #
 
+# Management Group (CORE)
+data "azurerm_management_group" "core" {
+  name = data.terraform_remote_state.iac.outputs.management_group_core.name
+}
+
 # Policy Initiative (Built-in)
 data "azurerm_policy_set_definition" "builtin" {
   for_each     = var.policy_initiatives_builtin # Resolve name of each initiative to ID. 

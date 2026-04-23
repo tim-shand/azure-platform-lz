@@ -53,3 +53,14 @@ deployment_stacks = {
       enable_github_env       = true
     }
 }
+
+# MANAGEMENT GORP (Core) ------------------------------------------------------------- #
+
+# Management Groups: Core - Parent group for nested management groups.
+management_group_core = {
+  "core" = {
+    display_name             = "Core"
+    parent_mg_name           = null
+    subscription_identifiers = []
+  }
+}
