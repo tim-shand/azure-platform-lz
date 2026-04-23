@@ -21,10 +21,6 @@ global = {
     repo   = "azure-platform-lz" # Repository where this project is stored. 
     branch = "main"              # Name of the default repository branch. 
   }
-  # management_group_core = {
-  #   short_name   = "core"     # Used for the reference name of the core Management Group.
-  #   display_name = "TimShand" # Full display name of the core Management Group.
-  # }
 }
 
 # DEPLOYMENT STACKS / REMOTE STATES ------------------------------------------------------------- #
@@ -56,4 +52,15 @@ deployment_stacks = {
       subscription_identifier = "platform-dev-sub"
       enable_github_env       = true
     }
+}
+
+# MANAGEMENT GORP (Core) ------------------------------------------------------------- #
+
+# Management Groups: Core - Parent group for nested management groups.
+management_group_core = {
+  "core" = {
+    display_name             = "Core"
+    parent_mg_name           = null
+    subscription_identifiers = []
+  }
 }

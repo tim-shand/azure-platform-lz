@@ -13,6 +13,11 @@ output "platform_subscriptions" {
   value = local.deployment_stacks_subscriptions
 }
 
+output "management_group_core" {
+  description = "Map of core management group properties."
+  value = azurerm_management_group.core
+}
+
 output "bootstrap_backend" {
   description = "Map of platform subscriptions."
   value = {

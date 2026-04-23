@@ -89,6 +89,11 @@ deployment_stacks = {
 
 ### ☁️ Azure
 
+#### Management Group (Core)
+
+- Top-level management group to contain child management group structure and subscriptions.
+- Provides hierarchy for policy assignments and subscription organization.
+
 #### Service Principal
 
 - A dedicated identity (App Registration + Service Principal) used to authenticate with Entra ID.

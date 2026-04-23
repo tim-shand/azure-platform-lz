@@ -11,9 +11,7 @@ locals {
   policy_managed_identity_roles = [
     "Monitoring Contributor" # Required to modify diagnostic settings on resources.
   ]
-}
 
-locals {
   # Build a subscription lookup map (sub display name to ID).
   subscriptions_by_name = {
     for sub in data.azurerm_subscriptions.all.subscriptions : # Loop each sub in data call. 
@@ -36,11 +34,7 @@ locals {
   management_group_subscriptions_level1 = {
     for mg_name, mg in var.management_groups_level1 : # Loop each MG name and details
     mg_name => distinct(flatten([                     # New map, Key: MG Name, Value: Flatten a list of subscriptions where sub name contains identifier. 
-      for id in mg.subscription_identifiers : [
-        # for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
-        # if startswith(sub.subscription_id, id)
-        #for name, sub_id in local.subscriptions_by_name : sub_id
-        #if strcontains(name, lower(id)) # If sub name string contains MG object subscription_identifier field value. 
+      for id in mg.subscription_identifiers : [ 
         for name, sub_id in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
         if strcontains(name, lower(id)) # If sub name string contains MG object subscription_identifier field value.
       ]
@@ -67,7 +61,7 @@ locals {
 
   # Merge the individual lookup maps into a single map (flatten).
   management_groups_all = merge(
-    var.management_group_core,
+    data.management_group_core,
     var.management_groups_level1,
     var.management_groups_level2,
     var.management_groups_level3
@@ -106,18 +100,18 @@ locals {
     core_baseline = {
       allowedLocations = var.policy_param_allowed_locations
       requiredTags     = var.policy_param_required_tags
-      effect           = var.policy_effect_mode
+      effect           = var.policy_custom_effect_mode
     }
     cost_controls = {
       allowedVmSkus = var.policy_param_allowed_vm_skus
-      effect        = var.policy_effect_mode
+      effect        = var.policy_custom_effect_mode
     }
     decommissioned = {
-      effect = var.policy_effect_mode
+      effect = var.policy_custom_effect_mode
     }
     diagnostics_logging = {
       logAnalytics = data.terraform_remote_state.mgt.outputs.log_analytics_workspace.workspace_id
-      effect = var.policy_effect_mode
+      effect = var.policy_custom_effect_mode
     }
   }
 }

@@ -21,18 +21,15 @@ resource "azuread_group" "grp_adm" {
 
 # RBAC ----------------------------------------------------------------------- #
 
-# Create a deterministic GUID to avoid duplicates and guarantee uniqueness.
-resource "random_uuid" "uuid" {}
-
-# # RBAC: Assign Entra ID privilaged groups to roles. 
-# resource "azurerm_role_assignment" "rbac_sp_builtin" {
-#   for_each = local.entra_groups_privilaged_enabled
-#   name = uuidv5(random_uuid.uuid.result, each.key)
-#   scope                = azurerm_resource_group.iac.id              # Backend Resource Group.
-#   role_definition_name = each.value                                 # Each RBAC role. 
-#   principal_id         = azuread_service_principal.iac_sp.object_id # Service Principal object ID.
-#   principal_type       = "ServicePrincipal"                         # Avoids Azure RBAC graph lookup delays that sometimes break CI/CD pipelines.
-# }
+# RBAC: Assign Entra ID privilaged groups to roles. 
+resource "azurerm_role_assignment" "rbac_sp_builtin" {
+  for_each             = local.entra_groups_rbac_flattened
+  name                 = uuidv5("oid", "${data.azurerm_management_group.core.id}${each.value.group_key}${each.value.role}")
+  scope                = data.azurerm_management_group.core.id      # Assign to core management group.
+  role_definition_name = each.value.role                            # Each RBAC role. 
+  principal_id         = azuread_group.grp_adm[each.value.group_key].object_id  # Group ID.
+  principal_type       = "Group"                                    # Avoids Azure RBAC graph lookup delays that sometimes break CI/CD pipelines.
+}
 
 # Diagnostic Settings: Entra ID - Logging
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_aad_diagnostic_setting

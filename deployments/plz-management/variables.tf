@@ -54,19 +54,6 @@ variable "deployment_stacks" {
   }))
 }
 
-# RESOURCE SWITCH ------------------------------------------------------------- #
-
-variable "enable_resource_deployment" {
-  description = "Enable/disable specific resources for deployment."
-  type = map(string)
-  default = {
-    alerting = true
-    defender_for_cloud = true
-    key_vault = true
-    logging = true
-  }
-}
-
 # LOGGING ---------------------------------------------------- #
 
 variable "log_retention_days" {
