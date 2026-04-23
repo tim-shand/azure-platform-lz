@@ -133,12 +133,12 @@ variable "policy_initiatives_builtin" {
   }))
 }
 
-variable "policy_effect_mode" {
+variable "policy_custom_effect_mode" {
   description = "String value to control the effect mode of policy assignments (audit, deployIfNotExists, disabled)."
   type        = string
 }
 
-variable "policy_enforce_mode" {
+variable "policy_custom_enforce_mode" {
   description = "True/false value to control the enforcement mode of policy assignments."
   type        = bool
 }

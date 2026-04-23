@@ -21,7 +21,7 @@ resource "azurerm_management_group_policy_assignment" "custom" {
   display_name         = "[${upper(var.stack.naming.workload_code)}] ${title(replace(each.value.initiative, "_", " "))} Assignment"
   management_group_id  = data.azurerm_management_group.lookup[each.value.mg_name].id                     # Perform lookup on MG ID using data call with current value. 
   policy_definition_id = azurerm_management_group_policy_set_definition.custom[each.value.initiative].id # Use the ID of the initiative. 
-  enforce              = var.policy_enforce_mode                                                         # Enforce mode (true/false), set in TFVARS. 
+  enforce              = var.policy_custom_enforce_mode                                                         # Enforce mode (true/false), set in TFVARS. 
   location             = azurerm_user_assigned_identity.policy.location                                  # Must be used when Managed Identity is assigned. 
   identity {
     type         = "UserAssigned"
