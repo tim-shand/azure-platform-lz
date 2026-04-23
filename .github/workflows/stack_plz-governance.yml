@@ -30,7 +30,7 @@ jobs:
         uses: ./.github/workflows/terraform-plan.yml
         with:
             # Inputs passed to template job.
-            stack_name: plz-management
+            stack_name: plz-governance
             working_directory: ./deployments/plz-governance
             run_mode: ${{ inputs.action }}
         secrets:
