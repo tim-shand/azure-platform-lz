@@ -12,7 +12,7 @@ locals {
 }
 
 locals {
-  # Filter all active subscriptions.
+  # Filter all active subscriptions to apply MDFC settings.
   active_subscriptions = {
     for sub in data.azurerm_subscriptions.all.subscriptions :
     sub.subscription_id => sub
@@ -28,7 +28,7 @@ locals {
   platform_subscriptions = {
     for sub in data.azurerm_subscriptions.all.subscriptions :
     sub.subscription_id => sub
-    if contains(local.platform_subscription_ids, sub.subscription_id) && sub.state == "Enabled"
+    if contains(local.platform_subscription_ids, sub.subscription_id)
   }
 }
 
