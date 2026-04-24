@@ -9,6 +9,10 @@ terraform {
       source  = "hashicorp/azuread"
       version = "~> 3.8.0"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.9.0"
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.8.0"
@@ -35,4 +39,9 @@ provider "azurerm" {
   tenant_id           = data.azuread_client_config.current.tenant_id # Get tenant ID from current session. 
   subscription_id     = var.subscription_id_iac                      # Use dedicated IaC subscription (pass in from workflow).
   storage_use_azuread = true                                         # Use Entra ID only for interacting with Storage services. 
+}
+
+provider "azapi" {
+  use_oidc  = true
+  tenant_id = data.azuread_client_config.current.tenant_id
 }
