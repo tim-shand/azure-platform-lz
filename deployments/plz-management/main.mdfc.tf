@@ -22,16 +22,30 @@
 #   workspace_id  = azurerm_log_analytics_workspace.mgt.id
 # }
 
-resource "azapi_update_resource" "mdfc_workspace" {
-  for_each    = local.active_subscriptions
-  type        = "Microsoft.Security/workspaceSettings@2017-08-01-preview"
-  resource_id = "/subscriptions/${each.key}/providers/Microsoft.Security/workspaceSettings/default"
+# resource "azapi_update_resource" "mdfc_workspace" {
+#   for_each    = local.active_subscriptions
+#   type        = "Microsoft.Security/workspaceSettings@2017-08-01-preview"
+#   resource_id = "/subscriptions/${each.key}/providers/Microsoft.Security/workspaceSettings/default"
+#   body = {
+#     properties = {
+#       scope       = "/subscriptions/${each.key}"
+#       workspaceId = azurerm_log_analytics_workspace.mgt.id
+#     }
+#   }
+# }
+
+resource "azapi_resource" "mdfc_workspace" {
+  for_each  = local.active_subscriptions
+  type      = "Microsoft.Security/workspaceSettings@2017-08-01-preview"
+  name      = "default"
+  parent_id = "/subscriptions/${each.key}"
   body = {
     properties = {
       scope       = "/subscriptions/${each.key}"
       workspaceId = azurerm_log_analytics_workspace.mgt.id
     }
   }
+  response_export_values = [] # Prevent Terraform from trying to read back fields it didn't set. 
 }
 
 # Security Center: Contact Details
