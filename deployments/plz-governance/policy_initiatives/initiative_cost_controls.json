@@ -1,14 +1,22 @@
 {
     "properties": {
-        "displayName": "Decommissioned",
-        "description": "Initiative to prevent resource provisioning for decommissioned subscriptions.",
+        "displayName": "Cost Controls",
+        "description": "Initiative to reduce budget leakage and unwanted cost.",
         "policyType": "Custom",
         "metadata": {
             "version": "1.0.0",
-            "category": "Governance"
+            "category": "Budget"
         },
         "version": "1.0.0",
         "parameters": {
+            "allowedVmSkus": {
+                "type": "Array",
+                "metadata": {
+                    "strongType": "skus",
+                    "displayName": "SKU Names",
+                    "description": "List of VM SKUs to allowed for deployment."
+                }
+            },
             "effect": {
                 "type": "String",
                 "metadata": {
@@ -26,9 +34,12 @@
         },
         "policyDefinitions": [
             {
-                "policyDefinitionReferenceId": "deny_all_resources",
-                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/deny_all_resources",
+                "policyDefinitionReferenceId": "definition_vm_skus_allowed",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/definition_vm_skus_allowed",
                 "parameters": {
+                    "allowedVmSkus": {
+                        "value": "[parameters('allowedVmSkus')]"
+                    },
                     "effect": {
                         "value": "[parameters('effect')]"
                     }
