@@ -32,7 +32,7 @@ data "terraform_remote_state" "mgt" {
 
 # Management Group (CORE)
 data "azurerm_management_group" "core" {
-  name = data.terraform_remote_state.iac.outputs.management_group_core.name
+  name = data.terraform_remote_state.iac.outputs.management_group_core["core"].name
 }
 
 # Policy Initiative (Built-in)
