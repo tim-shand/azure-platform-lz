@@ -43,7 +43,7 @@ resource "azurerm_role_definition" "custom_role_iac_deploy" {
       # Security
       "Microsoft.Security/*",
       # Entra ID
-      "Microsoft.AADIAM/diagnosticSettings/*"
+      "Microsoft.AADIAM/*"
     ]
     not_actions = [
       "Microsoft.Authorization/elevateAccess/Action",
