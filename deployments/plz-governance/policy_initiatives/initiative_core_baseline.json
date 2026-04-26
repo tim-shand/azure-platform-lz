@@ -42,8 +42,8 @@
         },
         "policyDefinitions": [
             {
-                "policyDefinitionReferenceId": "allowed_locations",
-                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/allowed_locations",
+                "policyDefinitionReferenceId": "definition_locations_allowed",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/definition_locations_allowed",
                 "parameters": {
                     "allowedLocations": {
                         "value": "[parameters('allowedLocations')]"
@@ -54,8 +54,8 @@
                 }
             },
             {
-                "policyDefinitionReferenceId": "required_tag_list",
-                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/required_tag_list",
+                "policyDefinitionReferenceId": "definition_tags_required",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/definition_tags_required",
                 "parameters": {
                     "requiredTags": {
                         "value": "[parameters('requiredTags')]"
@@ -66,8 +66,8 @@
                 }
             },
             {
-                "policyDefinitionReferenceId": "storage_accounts_https",
-                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/storage_accounts_https",
+                "policyDefinitionReferenceId": "definition_storage_https",
+                "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/PLACEHOLDER/providers/Microsoft.Authorization/policyDefinitions/definition_storage_https",
                 "parameters": {
                     "effect": {
                         "value": "[parameters('effect')]"

@@ -21,25 +21,21 @@ management_groups_level1 = {
     display_name             = "Platform"                        
     parent_mg_name           = "core"                           # Key ID of the parent Management Group. 
     subscription_identifiers = ["platform-dev", "platform-iac"] # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
-    #policy_initiatives       = []                               # Assign Policy Initiatives directly to MGs. 
   }
   "workload" = {
     display_name             = "Workload"
     parent_mg_name           = "core"
     subscription_identifiers = ["prd-sub"]
-    #policy_initiatives       = ["cost_controls"]
   }
   "sandbox" = {
     display_name             = "Sandbox" 
     parent_mg_name           = "core"
     subscription_identifiers = ["platform-plz"]
-    #policy_initiatives       = ["cost_controls"]
   }
   "decom" = {
     display_name             = "Decommissioned"
     parent_mg_name           = "core" 
     subscription_identifiers = []
-    #policy_initiatives       = ["decommissioned"]
   }
 }
 
@@ -60,7 +56,7 @@ policy_initiatives_builtin = {
   }
 }
 
-policy_custom_enforce_mode = ""
+policy_enforce_mode = false
 
 # Policy (Custom): Parameters
 policy_param_allowed_locations = [
@@ -91,3 +87,26 @@ policy_param_allowed_vm_skus = [
   "Standard_D4_v4",
   "Standard_D4s_v4"
 ]
+
+# locals {
+#   # Initiative specific parameters for assignment. 
+#   policy_assignment_parameters = {
+#     initiative_core_baseline = {
+#       allowedLocations = var.policy_param_allowed_locations
+#       requiredTags     = var.policy_param_required_tags
+#       effect           = var.policy_effect_mode
+#     }
+#     initiative_cost_controls = {
+#       allowedVmSkus = var.policy_param_allowed_vm_skus
+#       effect        = var.policy_effect_mode
+#     }
+#     initiative_decommissioned = {
+#       effect = var.policy_effect_mode
+#     }
+#     initiative_diagnostics = {
+#       logAnalytics = local.law_workspace_id
+#       effect = var.policy_effect_mode
+#     }
+#   }
+# }
+

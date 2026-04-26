@@ -30,5 +30,3 @@ provider "azurerm" {
   subscription_id     = var.subscription_id_iac                      # Use dedicated IaC subscription (pass in from workflow).
   storage_use_azuread = true                                         # Use Entra ID only for interacting with Storage services. 
 }
-data "azuread_client_config" "current" {} # Get current user session data.
-data "azurerm_subscription" "current" {}  # Get current Azure subscription.
