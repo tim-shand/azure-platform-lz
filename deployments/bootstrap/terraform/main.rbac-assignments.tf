@@ -34,6 +34,13 @@ resource "azurerm_role_assignment" "rbac_sp_builtin" {
   principal_type       = "ServicePrincipal"                         # Avoids Azure RBAC graph lookup delays that sometimes break CI/CD pipelines.
 }
 
+# Entra ID: AADIAM - Required for setting diagnostic logging. 
+resource "azurerm_role_assignment" "entra_diag" {
+  scope                = "/providers/Microsoft.aadiam"
+  role_definition_id   = data.azurerm_role_definition.entra_diag.id
+  principal_id         = azuread_service_principal.iac_sp.object_id # Service Principal object ID.
+}
+
 # CURRENT USER -------------------------------------------------------- #
 
 # RBAC: [Current User] - Assign RBAC roles for current user. Required when 'shared_access_key_enabled=false'. 
