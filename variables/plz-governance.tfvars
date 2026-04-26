@@ -30,7 +30,7 @@ management_groups_level1 = {
   "sandbox" = {
     display_name             = "Sandbox" 
     parent_mg_name           = "core"
-    subscription_identifiers = ["platform-plz"]
+    subscription_identifiers = ["sandbox-dev"]
   }
   "decom" = {
     display_name             = "Decommissioned"

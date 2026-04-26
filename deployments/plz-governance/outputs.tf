@@ -61,3 +61,17 @@ output "policy_initiatives" {
 #     location            = azurerm_user_assigned_identity.policy.location
 #   }
 # }
+
+# TESTING ---------------------------------- #
+
+output "mg_subscriptions_level_1" {
+  value = local.management_group_subscriptions_level1
+}
+
+output "mg_subscriptions_level_2" {
+  value = local.management_group_subscriptions_level2
+}
+
+output "mg_subscriptions_level_3" {
+  value = local.management_group_subscriptions_level3
+}
