@@ -64,14 +64,18 @@ output "policy_initiatives" {
 
 # TESTING ---------------------------------- #
 
-output "mg_subscriptions_level_1" {
+output "test_all_subscriptions" {
+  value = data.azurerm_subscriptions.all.subscriptions
+}
+
+output "test_mg_subscriptions_level_1" {
   value = local.management_group_subscriptions_level1
 }
 
-output "mg_subscriptions_level_2" {
+output "test_mg_subscriptions_level_2" {
   value = local.management_group_subscriptions_level2
 }
 
-output "mg_subscriptions_level_3" {
+output "test_mg_subscriptions_level_3" {
   value = local.management_group_subscriptions_level3
 }
