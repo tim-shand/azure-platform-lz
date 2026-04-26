@@ -56,7 +56,7 @@ policy_initiatives_builtin = {
   }
 }
 
-policy_custom_enforce_mode = false
+policy_enforce_mode = false
 
 # Policy (Custom): Parameters
 policy_param_allowed_locations = [
