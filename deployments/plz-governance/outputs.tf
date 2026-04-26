@@ -1,17 +1,11 @@
-# # GOVERNANCE: Policy Initiatives
-# output "policies_builtin" {
-#   description = "Map of built-in policy initiatives to assign."
-#   value = {
-#     for k, v in azurerm_management_group_policy_assignment.builtin :
-#     k => {
-#       display_name = v.display_name
-#       mg_id        = v.management_group_id
-#       enforce      = v.enforce
-#     }
-#   }
-# }
+output "mg_subscriptions" {
+  value = merge(
+    local.management_group_subscriptions_level1,
+    local.management_group_subscriptions_level2,
+    local.management_group_subscriptions_level3
+  )
+}
 
-# GOVERNANCE: Policy Definitions
 output "policy_definitions" {
   description = "Map of custom policy definitions."
   value = {
@@ -36,7 +30,6 @@ output "policy_initiatives" {
   }
 }
 
-# # GOVERNANCE: Policy Assignments
 # output "policy_initiative_assignments" {
 #   description = "Map of policy initiative assignments to Management Groups."
 #   value = {
@@ -51,7 +44,6 @@ output "policy_initiatives" {
 #   }
 # }
 
-# # GOVERNANCE: Managed Identity
 # output "policy_managed_identity" {
 #   description = "Map of policy managed identity resource."
 #   value = {

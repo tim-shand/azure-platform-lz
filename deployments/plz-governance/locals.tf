@@ -34,7 +34,7 @@ locals {
     mg_name => distinct(flatten([                     # New map, Key: MG Name, Value: Flatten a list of subscriptions where sub name contains identifier. 
       for id in mg.subscription_identifiers : [ 
         for name, sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
-        if strcontains(name, lower(id)) # If sub name string contains MG object subscription_identifier field value.
+        if strcontains(sub.display_name, lower(id)) # If sub name string contains MG object subscription_identifier field value.
       ]
     ]))
   }
@@ -43,7 +43,7 @@ locals {
     mg_name => distinct(flatten([
       for id in mg.subscription_identifiers : [
         for name, sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
-        if strcontains(name, lower(id)) # If sub name string contains MG object subscription_identifier field value.
+        if strcontains(sub.display_name, lower(id)) # If sub name string contains MG object subscription_identifier field value.
       ]
     ]))
   }
@@ -52,7 +52,7 @@ locals {
     mg_name => distinct(flatten([
       for id in mg.subscription_identifiers : [
         for name, sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id
-        if strcontains(name, lower(id)) # If sub name string contains MG object subscription_identifier field value.
+        if strcontains(sub.display_name, lower(id)) # If sub name string contains MG object subscription_identifier field value.
       ]
     ]))
   }
