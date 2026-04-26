@@ -12,7 +12,7 @@ locals {
 
 locals {
   # Log Analytics workspace ID from MGT stack.
-  law_workspace_id = data.terraform_remote_state.management.outputs.log_analytics_workspace_id
+  law_workspace_id = data.terraform_remote_state.mgt.outputs.log_analytics_workspace_id
 }
 
 # MANAGEMENT GROUPS ------------------------------------------------------------- #
