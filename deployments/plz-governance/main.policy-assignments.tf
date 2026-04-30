@@ -20,7 +20,7 @@ resource "azurerm_management_group_policy_assignment" "custom" {
   for_each             = local.policy_assignments_flat  # Loop for each of the keys in the flattend map. 
   name                 = each.key 
   display_name         = "[${upper(var.stack.naming.workload_code)}] ${title(replace(each.key, "_", " "))}"
-  management_group_id  = management_groups_all[each.value.mg_key].id # /providers/Microsoft.Management/managementGroups/{id}
+  management_group_id  = local.management_groups_all[each.value.mg_key].id # /providers/Microsoft.Management/managementGroups/{id}
   policy_definition_id = azurerm_management_group_policy_set_definition.custom[each.value.initiative_key].id
   enforce              = each.value.parameters.effect == "Disabled" ? false : true # Set "true" if not disabled.
   location             = azurerm_user_assigned_identity.policy.location            # Must be used when Managed Identity is assigned. 
@@ -29,7 +29,7 @@ resource "azurerm_management_group_policy_assignment" "custom" {
     identity_ids = [azurerm_user_assigned_identity.policy.id] # Managed Identity ID for policy. 
   }
   parameters = jsonencode({
-    for k, v in try(local.each.value.parameters, {}) :
+    for k, v in try(each.value.parameters, {}) :
     k => { value = v } if v != null # Pass initiative specific parameters only. Fallback to empty map if initiative has no parameters.
   })
   depends_on = [
