@@ -1,18 +1,17 @@
 # GOVERNANCE: General
 # ------------------------------------------------------------- #
-locals {
-  tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
-}
 
 locals {
-  policy_managed_identity_roles = [
-    "Monitoring Contributor" # Required to modify diagnostic settings on resources.
-  ]
-}
+  # Merge global tags with stack tags. 
+  tags_merged = merge(var.global.tags, var.stack.tags)
 
-locals {
   # Log Analytics workspace ID from MGT stack.
   law_workspace_id = data.terraform_remote_state.mgt.outputs.log_analytics_workspace.id
+
+  # Required to modify diagnostic settings on resources.
+  policy_managed_identity_roles = [
+    "Monitoring Contributor" 
+  ]
 }
 
 # MANAGEMENT GROUPS ------------------------------------------------------------- #
@@ -59,59 +58,74 @@ locals {
 
   # Merge the individual lookup maps into a single map (flatten).
   management_groups_all = merge(
-    data.azurerm_management_group.core,
+    { "core" = data.azurerm_management_group.core },
     var.management_groups_level1,
     var.management_groups_level2,
     var.management_groups_level3
+  )
+
+  # Management Group IDs for assigning Policy to MG.
+  management_group_ids_all = merge(
+    { "core" = data.azurerm_management_group.core.id },
+    { for k, v in azurerm_management_group.level1 : k => v.id },
+    { for k, v in azurerm_management_group.level2 : k => v.id },
+    { for k, v in azurerm_management_group.level3 : k => v.id },
   )
 }
 
 # POLICY ASSIGNMENTS ------------------------------------------------------------- #
 
-# locals {
-#   # Filter only MGs that have initiatives defined. 
-#   mg_with_initiatives = {
-#     for mg_name, mg in local.management_groups_all :
-#     mg_name => mg.policy_initiatives
-#     if length(mg.policy_initiatives) > 0
-#   }
+locals {
+  # Define the policy initiative assignments with parameters per assignment.
+  policy_assignments = {
+    
+    "initiative_core_baseline" = { # Map to policy initiative name.
+      management_groups       = ["core"]
+      parameters = {
+        effect                = "Audit" # "Audit","Deny","Disabled"
+        allowedLocations  = var.policy_param_allowed_locations
+        requiredTags      = var.policy_param_required_tags
+      }
+    }
 
-#   # Build map of MG -> initiative pairs. 
-#   mg_initiative_pairs = tomap({
-#     for pair in flatten([
-#       for mg_name, initiatives in local.mg_with_initiatives : [
-#         for initiative in initiatives : {
-#           key        = "${mg_name}-${initiative}"
-#           mg_name    = mg_name
-#           initiative = initiative
-#         }
-#       ]
-#       ]) : pair.key => {
-#       mg_name    = pair.mg_name
-#       initiative = pair.initiative
-#     }
-#   })
-# }
+    "initiative_cost_controls" = { # Map to policy initiative name.
+      management_groups       = ["workload","sandbox"]
+      parameters = {
+        effect                = "Audit" # "Audit","Deny","Disabled"
+        allowedVmSkus         = var.policy_param_allowed_vm_skus
+      }
+    }
 
+    "initiative_decommissioned" = { # Map to policy initiative name.
+      management_groups       = ["decom"]
+      parameters = {
+        effect                = "Audit" # "Audit","Deny","Disabled"
+      }
+    }
 
-# locals {
-#   # Initiative specific parameters for assignment. 
-#   policy_assignment_parameters = {
-#     initiative_core_baseline = {
-#       allowedLocations = var.policy_param_allowed_locations
-#       requiredTags     = var.policy_param_required_tags
-#       effect           = var.policy_effect_mode
-#     }
-#     initiative_cost_controls = {
-#       allowedVmSkus = var.policy_param_allowed_vm_skus
-#       effect        = var.policy_effect_mode
-#     }
-#     initiative_decommissioned = {
-#       effect = var.policy_effect_mode
-#     }
-#     initiative_diagnostics = {
-#       logAnalytics = local.law_workspace_id
-#       effect = var.policy_effect_mode
-#     }
-#   }
-# }
+    "initiative_diagnostics" = { # Map to policy initiative name.
+      management_groups       = ["platform"]
+      parameters = {
+        effect                = "Audit" # "Audit","Deny","Disabled"
+        logAnalytics          = local.law_workspace_id
+      }
+    }
+
+  }
+}
+
+locals {
+  # Flatten initiatives to MGs into one entry per unique assignment. 
+  policy_assignments_flat = {
+    for pair in flatten([
+      for initiative_key, assignment in local.policy_assignments : [
+        for mg_key in assignment.management_groups : {
+          key            = "${initiative_key}_${mg_key}"
+          initiative_key = initiative_key
+          mg_key         = mg_key
+          parameters     = assignment.parameters
+        }
+      ]
+    ]) : pair.key => pair
+  }
+}

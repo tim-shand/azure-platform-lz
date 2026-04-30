@@ -88,25 +88,6 @@ policy_param_allowed_vm_skus = [
   "Standard_D4s_v4"
 ]
 
-# locals {
-#   # Initiative specific parameters for assignment. 
-#   policy_assignment_parameters = {
-#     initiative_core_baseline = {
-#       allowedLocations = var.policy_param_allowed_locations
-#       requiredTags     = var.policy_param_required_tags
-#       effect           = var.policy_effect_mode
-#     }
-#     initiative_cost_controls = {
-#       allowedVmSkus = var.policy_param_allowed_vm_skus
-#       effect        = var.policy_effect_mode
-#     }
-#     initiative_decommissioned = {
-#       effect = var.policy_effect_mode
-#     }
-#     initiative_diagnostics = {
-#       logAnalytics = local.law_workspace_id
-#       effect = var.policy_effect_mode
-#     }
-#   }
-# }
+# Assignments -------------------------- #
 
+# See locals.tf for dynamic assignments with parameters passed as variables.
