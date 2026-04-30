@@ -64,20 +64,20 @@ resource "azurerm_management_group_policy_remediation" "initiative" {
 #   })
 # }
 
-# # BUILT-IN: Assign built-in policy initiatives at the provided level (in the variable map, short name resolved in locals). 
-# resource "azurerm_management_group_policy_assignment" "builtin" {
-#   for_each = {
-#     for k, v in var.policy_initiatives_builtin :
-#     k => v if v.enabled # Only select initiatives that are set to be enabled.
-#   }
-#   name                 = each.key
-#   display_name         = "[${upper(var.stack.naming.workload_code)}] BuiltIn - ${each.key}"
-#   policy_definition_id = data.azurerm_policy_set_definition.builtin[each.key].id # Get from resolved initiative data call. 
-#   management_group_id  = data.azurerm_management_group.core.id                   # Assign directly to core MG. 
-#   enforce              = each.value.enforce                                      # True/False
-#   location             = azurerm_user_assigned_identity.policy.location          # Must be used when Managed Identity is assigned. 
-#   identity {
-#     type         = "UserAssigned"
-#     identity_ids = [azurerm_user_assigned_identity.policy.id] # Managed Identity ID for policy. 
-#   }
-# }
+# BUILT-IN: Assign built-in policy initiatives at the provided level (in the variable map, short name resolved in locals). 
+resource "azurerm_management_group_policy_assignment" "builtin" {
+  for_each = {
+    for k, v in var.policy_initiatives_builtin :
+    k => v if v.enabled # Only select initiatives that are set to be enabled.
+  }
+  name                 = each.key
+  display_name         = "[${upper(var.stack.naming.workload_code)}] BuiltIn - ${each.key}"
+  policy_definition_id = data.azurerm_policy_set_definition.builtin[each.key].id # Get from resolved initiative data call. 
+  management_group_id  = data.azurerm_management_group.core.id                   # Assign directly to core MG. 
+  enforce              = each.value.enforce                                      # True/False
+  location             = azurerm_user_assigned_identity.policy.location          # Must be used when Managed Identity is assigned. 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.policy.id] # Managed Identity ID for policy. 
+  }
+}
