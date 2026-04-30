@@ -57,11 +57,17 @@ locals {
   }
 
   # Merge the individual lookup maps into a single map (flatten).
+  # management_groups_all = merge(
+  #   { "core" = data.azurerm_management_group.core },
+  #   var.management_groups_level1,
+  #   var.management_groups_level2,
+  #   var.management_groups_level3
+  # )
   management_groups_all = merge(
     { "core" = data.azurerm_management_group.core },
-    var.management_groups_level1,
-    var.management_groups_level2,
-    var.management_groups_level3
+    azurerm_management_group.level1,
+    azurerm_management_group.level2,
+    azurerm_management_group.level3
   )
 }
 
