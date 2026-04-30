@@ -5,14 +5,45 @@
 # - Definition -> Initiative -> Assignment -> Scope
 #====================================================================================#
 
-# module "naming_policy_assign" {
-#   for_each      = local.mg_initiative_pairs
-#   source        = "../../modules/global-resource-naming"
-#   prefix        = var.stack.naming.workload_code # gov
-#   workload      = each.key                       # Management Group key names. 
-#   stack_or_env  = "asn"                          # Any value representing an assignment. 
-#   ensure_unique = true                           # Randomize the name. 
-# }
+module "naming_policy_assign" {
+  #for_each      = local.mg_initiative_pairs
+  for_each      = local.policy_assignments_flat
+  source        = "../../modules/global-resource-naming"
+  prefix        = var.stack.naming.workload_code # gov
+  workload      = each.key                       # Management Group key names. 
+  stack_or_env  = "asn"                          # Any value representing an assignment. 
+  ensure_unique = true                           # Randomize the name. 
+}
+
+# INITIATIVES: Assign Policy Initiatives to mapped Management Groups.
+resource "azurerm_management_group_policy_assignment" "custom" {
+  for_each             = local.policy_assignments_flat  # Loop for each of the keys in the flattend map. 
+  name                 = each.key 
+  display_name         = "[${upper(var.stack.naming.workload_code)}] ${title(replace(each.key, "_", " "))}"
+  management_group_id  = management_groups_all[each.value.mg_key].id # /providers/Microsoft.Management/managementGroups/{id}
+  policy_definition_id = azurerm_management_group_policy_set_definition.custom[each.value.initiative_key].id
+  enforce              = each.value.parameters.effect == "Disabled" ? false : true # Set "true" if not disabled.
+  location             = azurerm_user_assigned_identity.policy.location            # Must be used when Managed Identity is assigned. 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.policy.id] # Managed Identity ID for policy. 
+  }
+  parameters = jsonencode({
+    for k, v in try(local.each.value.parameters, {}) :
+    k => { value = v } if v != null # Pass initiative specific parameters only. Fallback to empty map if initiative has no parameters.
+  })
+  depends_on = [
+    azurerm_management_group_policy_set_definition.custom
+  ]
+}
+
+# REMEDIATION: Remediation Tasks for Existing Non-Compliant Resources.
+resource "azurerm_management_group_policy_remediation" "initiative" {
+  for_each             = local.policy_assignments_flat
+  name                 = "rem-${each.key}"
+  management_group_id  = management_groups_all[each.value.mg_key].id
+  policy_assignment_id = azurerm_management_group_policy_assignment.custom[each.key].id
+}
 
 # # CUSTOM: Assign Policy Initiatives to mapped Management Groups. 
 # resource "azurerm_management_group_policy_assignment" "custom" {
