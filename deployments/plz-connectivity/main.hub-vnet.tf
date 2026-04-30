@@ -14,9 +14,9 @@ resource "azurerm_virtual_network" "hub" {
   address_space       = var.vnet_hub_cidr
 }
 
-# Network Watcher: Main
+# Network Watcher: Hub
 resource "azurerm_network_watcher" "hub" {
-  name                = "${module.naming_con.full_name}-nww"
+  name                = "${module.naming_con.network_watcher}"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
