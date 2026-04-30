@@ -17,23 +17,15 @@ locals {
 # MANAGEMENT GROUPS ------------------------------------------------------------- #
 
 locals {
-  # # Lookup maps of management group IDs for created parent/child assignments, and policy assignment. 
-  # management_group_ids_level2 = {
-  #   for k, v in azurerm_management_group.level1 : # Use level 1 MGs as base. 
-  #   k => v.id
-  # }
-  # management_group_ids_level3 = {
-  #   for k, v in azurerm_management_group.level2 : # Use level 2 MGs as base. 
-  #   k => v.id
-  # }
-
-  # Lookup maps of management group IDs for created parent/child assignments, and policy assignment.
-  management_group_ids_all = merge(
-    { "core" = data.azurerm_management_group.core.id },
-    { for k, v in azurerm_management_group.level1 : k => v.id },
-    { for k, v in azurerm_management_group.level2 : k => v.id },
-    { for k, v in azurerm_management_group.level3 : k => v.id },
-  )
+  # Lookup maps of management group IDs for created parent/child assignments, and policy assignment. 
+  management_group_ids_level2 = {
+    for k, v in azurerm_management_group.level1 : # Use level 1 MGs as base. 
+    k => v.id
+  }
+  management_group_ids_level3 = {
+    for k, v in azurerm_management_group.level2 : # Use level 2 MGs as base. 
+    k => v.id
+  }
 
   # Resolve subscriptions per management group (contains match). 
   management_group_subscriptions_level1 = {
