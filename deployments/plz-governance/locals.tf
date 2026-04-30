@@ -106,7 +106,7 @@ locals {
     "initiative_diagnostics" = { # Map to policy initiative name.
       management_groups       = ["platform"]
       parameters = {
-        effect                = "Audit" # "Audit","Deny","Disabled"
+        effect                = "AuditIfNotExists" # "DeployIfNotExists","AuditIfNotExists","Disabled"
         logAnalytics          = local.law_workspace_id
       }
     }
