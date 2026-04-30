@@ -97,7 +97,7 @@ locals {
     }
 
     "initiative_decommissioned" = { # Map to policy initiative name.
-      management_groups       = ["decommissioned"]
+      management_groups       = ["decom"]
       parameters = {
         effect                = "Audit" # "Audit","Deny","Disabled"
       }

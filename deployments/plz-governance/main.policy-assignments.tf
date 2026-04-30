@@ -18,7 +18,7 @@ module "naming_policy_assign" {
 # INITIATIVES: Assign Policy Initiatives to mapped Management Groups.
 resource "azurerm_management_group_policy_assignment" "custom" {
   for_each             = local.policy_assignments_flat  # Loop for each of the keys in the flattend map. 
-  name                 = each.key 
+  name                 = module.naming_policy_assign[each.key].compact_name_unique # Get name from naming module (limit 24 chars).
   display_name         = "[${upper(var.stack.naming.workload_code)}] ${title(replace(each.key, "_", " "))}"
   management_group_id  = local.management_group_ids_all[each.value.mg_key] # /providers/Microsoft.Management/managementGroups/{id}
   policy_definition_id = azurerm_management_group_policy_set_definition.custom[each.value.initiative_key].id
