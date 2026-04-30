@@ -20,7 +20,7 @@ resource "azurerm_management_group_policy_assignment" "custom" {
   for_each             = local.policy_assignments_flat  # Loop for each of the keys in the flattend map. 
   name                 = each.key 
   display_name         = "[${upper(var.stack.naming.workload_code)}] ${title(replace(each.key, "_", " "))}"
-  management_group_id  = local.management_groups_all[each.value.mg_key].id # /providers/Microsoft.Management/managementGroups/{id}
+  management_group_id  = local.management_group_ids_all[each.value.mg_key] # /providers/Microsoft.Management/managementGroups/{id}
   policy_definition_id = azurerm_management_group_policy_set_definition.custom[each.value.initiative_key].id
   enforce              = each.value.parameters.effect == "Disabled" ? false : true # Set "true" if not disabled.
   location             = azurerm_user_assigned_identity.policy.location            # Must be used when Managed Identity is assigned. 
@@ -41,7 +41,7 @@ resource "azurerm_management_group_policy_assignment" "custom" {
 resource "azurerm_management_group_policy_remediation" "initiative" {
   for_each             = local.policy_assignments_flat
   name                 = "rem-${each.key}"
-  management_group_id  = local.management_groups_all[each.value.mg_key].id
+  management_group_id  = local.management_group_ids_all[each.value.mg_key]
   policy_assignment_id = azurerm_management_group_policy_assignment.custom[each.key].id
 }
 
