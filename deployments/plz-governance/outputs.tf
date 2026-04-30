@@ -1,3 +1,8 @@
+output "management_groups_all" {
+  description = "Map of all management groups."
+  value = local.management_groups_all
+}
+
 output "mg_subscriptions" {
   value = merge(
     local.management_group_subscriptions_level1,
