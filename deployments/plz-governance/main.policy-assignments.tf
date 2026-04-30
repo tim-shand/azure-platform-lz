@@ -41,7 +41,7 @@ resource "azurerm_management_group_policy_assignment" "custom" {
 resource "azurerm_management_group_policy_remediation" "initiative" {
   for_each             = local.policy_assignments_flat
   name                 = "rem-${each.key}"
-  management_group_id  = management_groups_all[each.value.mg_key].id
+  management_group_id  = local.management_groups_all[each.value.mg_key].id
   policy_assignment_id = azurerm_management_group_policy_assignment.custom[each.key].id
 }
 
