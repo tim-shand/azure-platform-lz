@@ -27,7 +27,8 @@ resource "azurerm_management_group" "level2" {
   name                       = module.naming_mg[each.key].management_group  
   display_name               = title(var.management_groups_level2[each.key].display_name)        
   subscription_ids           = lookup(local.management_group_subscriptions_level2, each.key, []) 
-  parent_management_group_id = local.management_group_ids_level2[each.value.parent_mg_name]
+  #parent_management_group_id = local.management_group_ids_level2[each.value.parent_mg_name]
+  parent_management_group_id = local.management_group_ids_all[each.value.mg_key]
 }
 
 # Management Groups: Level 3
@@ -36,5 +37,6 @@ resource "azurerm_management_group" "level3" {
   name                       = module.naming_mg[each.key].management_group
   display_name               = title(var.management_groups_level3[each.key].display_name)        
   subscription_ids           = lookup(local.management_group_subscriptions_level3, each.key, [])  
-  parent_management_group_id = local.management_group_ids_level3[each.value.parent_mg_name]
+  #parent_management_group_id = local.management_group_ids_level3[each.value.parent_mg_name]
+  parent_management_group_id = local.management_group_ids_all[each.value.mg_key]
 }

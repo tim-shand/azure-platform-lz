@@ -1,32 +1,39 @@
 # GOVERNANCE: General
 # ------------------------------------------------------------- #
-locals {
-  tags_merged = merge(var.global.tags, var.stack.tags) # Merge global tags with stack tags. 
-}
 
 locals {
-  policy_managed_identity_roles = [
-    "Monitoring Contributor" # Required to modify diagnostic settings on resources.
-  ]
-}
+  # Merge global tags with stack tags. 
+  tags_merged = merge(var.global.tags, var.stack.tags)
 
-locals {
   # Log Analytics workspace ID from MGT stack.
   law_workspace_id = data.terraform_remote_state.mgt.outputs.log_analytics_workspace.id
+
+  # Required to modify diagnostic settings on resources.
+  policy_managed_identity_roles = [
+    "Monitoring Contributor" 
+  ]
 }
 
 # MANAGEMENT GROUPS ------------------------------------------------------------- #
 
 locals {
-  # Lookup maps of management group IDs for created parent/child assignments, and policy assignment. 
-  management_group_ids_level2 = {
-    for k, v in azurerm_management_group.level1 : # Use level 1 MGs as base. 
-    k => v.id
-  }
-  management_group_ids_level3 = {
-    for k, v in azurerm_management_group.level2 : # Use level 2 MGs as base. 
-    k => v.id
-  }
+  # # Lookup maps of management group IDs for created parent/child assignments, and policy assignment. 
+  # management_group_ids_level2 = {
+  #   for k, v in azurerm_management_group.level1 : # Use level 1 MGs as base. 
+  #   k => v.id
+  # }
+  # management_group_ids_level3 = {
+  #   for k, v in azurerm_management_group.level2 : # Use level 2 MGs as base. 
+  #   k => v.id
+  # }
+
+  # Lookup maps of management group IDs for created parent/child assignments, and policy assignment.
+  management_group_ids_all = merge(
+    { "core" = data.azurerm_management_group.core.id },
+    { for k, v in azurerm_management_group.level1 : k => v.id },
+    { for k, v in azurerm_management_group.level2 : k => v.id },
+    { for k, v in azurerm_management_group.level3 : k => v.id },
+  )
 
   # Resolve subscriptions per management group (contains match). 
   management_group_subscriptions_level1 = {
@@ -59,7 +66,7 @@ locals {
 
   # Merge the individual lookup maps into a single map (flatten).
   management_groups_all = merge(
-    data.azurerm_management_group.core,
+    { "core" = data.azurerm_management_group.core },
     var.management_groups_level1,
     var.management_groups_level2,
     var.management_groups_level3
