@@ -12,7 +12,7 @@ locals {
 locals {
   # Map enabled hub services. 
   hub_services_enabled = {
-    for k,v in var.var.hub_services :
+    for k,v in var.hub_services :
     k => v
     if v.enabled
   }

@@ -11,7 +11,7 @@ resource "azurerm_virtual_network" "hub" {
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
-  address_space       = var.ip_address_space.hub
+  address_space       = [var.ip_address_space.hub]
 }
 
 # Network Watcher: Hub
