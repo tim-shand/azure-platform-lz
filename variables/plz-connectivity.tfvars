@@ -15,3 +15,56 @@ stack = {
 
 # VIRTUAL NETWORK (HUB) ---------------------------------------------------- #
 
+# Provide address spaces for the hub and on-prem networks.
+ip_address_space = {
+    hub     = "10.200.0.0/16"
+    onprem  = "10.0.0.0/16"
+}
+
+# Empty at connectivity stack deploy time.
+# Populated when spoke VNets are created during workload vending.
+#spoke_peerings = {}
+
+# Configure settings for hub services.
+hub_services = {
+    "azure_firewall" = {
+        enabled     = true         # true/false to enable/disable service and associated resources.
+        subnets     = [
+            "10.200.0.0/24", # Firewall
+            "10.200.1.0/24"  # Firewall Management
+        ]
+        sku_tier    = "Basic"       # "Basic","Standard","Premium"
+    }
+    "bastion" = {
+        enabled     = true          # true/false to enable/disable service and associated resources.
+        subnets     = [
+            "10.200.2.0/24"
+        ]
+        sku_tier    = "Developer"   # "Developer","Basic","Standard","Premium"
+        features = {
+            copy_paste_enabled          = true
+            # Below only supported when SKU is Premium. Automatically set to "false" during deployment if "sku_tier" not suitable.
+            file_copy_enabled           = true
+            ip_connect_enabled          = false
+            kerberos_enabled            = false
+            shareable_link_enabled      = false
+            tunneling_enabled           = true # Required for SFTP from on-prem via Bastion host.
+            # Below only supported when SKU is Premium. Automatically set to "false" during deployment if "sku_tier" not suitable.
+            session_recording_enabled   = false
+        }
+    }
+    "vpn_gateway" = {
+        enabled     = true          # true/false to enable/disable service and associated resources.
+        subnets     = [
+            "10.200.3.0/24"
+        ]
+        sku_tier    = "Basic"   # "Basic","Standard","HighPerformance","VpnGw1"-"VpnGw5", "VpnGw1AZ"-"VpnGw5AZ".
+    }
+    "dns_resolver" = {
+        enabled     = true          # true/false to enable/disable service and associated resources.
+        subnets     = [
+            "10.200.4.0/28", # Inbound
+            "10.200.4.16/28" # Outbound
+        ]
+    }
+}

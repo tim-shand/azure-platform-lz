@@ -56,7 +56,15 @@ variable "deployment_stacks" {
 
 # VIRTUAL NETWORK ------------------------------------------------------------- #
 
+variable "ip_address_space" {
+  description = "Map of hub and on-prem address spaces."
+  type = map(string)
+}
 
+variable "hub_services" {
+  description = "Map of hub services and their features/configuration."
+  type = map(any)
+}
 
 # FIREWALL ------------------------------------------------------------- #
 
