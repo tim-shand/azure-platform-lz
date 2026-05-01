@@ -5,6 +5,7 @@ output "log_analytics_workspace" {
     workspace_id   = azurerm_log_analytics_workspace.mgt.workspace_id
     name           = azurerm_log_analytics_workspace.mgt.name
     resource_group = azurerm_log_analytics_workspace.mgt.resource_group_name
+    location       = azurerm_log_analytics_workspace.mgt.location
   }
 }
 
@@ -14,6 +15,7 @@ output "storage_account" {
     id             = azurerm_storage_account.mgt.id
     name           = azurerm_storage_account.mgt.name
     resource_group = azurerm_storage_account.mgt.resource_group_name
+    location       = azurerm_storage_account.mgt.location
   }
 }
 
@@ -35,21 +37,3 @@ output "mgt_entra_groups" {
     }
   }
 }
-
-# TEMP / DEBUG ------------------------------------------------------- #
-
-# output "debug_remote_state_raw" {
-#   value = data.terraform_remote_state.iac.outputs.platform_subscriptions
-# }
-
-output "debug_platform_subscription_ids" {
-  value = local.platform_subscription_ids
-}
-
-# output "debug_platform_subscriptions" {
-#   value = local.platform_subscriptions
-# }
-
-# output "debug_all_subscriptions" {
-#   value = [for sub in data.azurerm_subscriptions.all.subscriptions : sub.subscription_id]
-# }
