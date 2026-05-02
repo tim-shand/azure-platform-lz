@@ -14,7 +14,7 @@ module "naming_con" {
 }
 
 # Resource Group for Connectivity resources.
-resource "azurerm_resource_group" "hub" {
+resource "azurerm_resource_group" "con" {
   name     = "${module.naming_con.resource_group}"
   location = var.global.location.primary
   tags     = local.tags_merged
