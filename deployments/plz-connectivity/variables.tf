@@ -72,7 +72,7 @@ variable "hub_firewall" {
     features    = optional(map(bool), {})
   })
   validation {
-    condition     = contains(["Basic","Standard","Premium"], var.hub_azure_firewall.sku_tier)
+    condition     = contains(["Basic","Standard","Premium"], var.hub_firewall.sku_tier)
     error_message = "Invalid SKU provided. Must be one of: Basic, Standard, Premium."
   }
 }
