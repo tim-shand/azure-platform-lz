@@ -9,7 +9,7 @@ stack = {
   tags = {                        # Tags to be merged with "global.tags" from "global.tfvars" file. 
     Owner      = "CloudOpsTeam"   # Name of the team that owns the project. 
     CostCenter = "Platform"       # Useful for grouping resources for billing/financial accountability.
-    Deployment = "plz-management" # Workload/project name, used to group and identify related resources.
+    Deployment = "plz-connectivity" # Workload/project name, used to group and identify related resources.
   }
 }
 
