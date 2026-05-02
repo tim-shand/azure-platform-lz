@@ -25,9 +25,11 @@ ip_address_space = {
 # Populated when spoke VNets are created during workload vending.
 #spoke_peerings = {}
 
+# HUB SERVICES ---------------------------------------------------- #
+
 # Configure settings for hub services.
 
-"hub_firewall" = {
+hub_firewall = {
     enabled     = true          # true/false to enable/disable service and associated resources.
     sku_tier    = "Basic"       # "Basic","Standard","Premium"
     subnets     = [
@@ -36,7 +38,7 @@ ip_address_space = {
     ]
 }
 
-"hub_bastion" = {
+hub_bastion = {
     enabled     = true          # true/false to enable/disable service and associated resources.
     sku_tier    = "Developer"   # "Developer","Basic","Standard","Premium"
     subnets     = [
@@ -55,7 +57,7 @@ ip_address_space = {
     }
 }
 
-"hub_vpn" = {
+hub_vpn = {
     enabled     = true          # true/false to enable/disable service and associated resources.
     sku_tier    = "Basic"   # "Basic","Standard","HighPerformance","VpnGw1"-"VpnGw5", "VpnGw1AZ"-"VpnGw5AZ".
     subnets     = [
@@ -63,7 +65,7 @@ ip_address_space = {
     ]
 }
 
-"hub_dns" = {
+hub_dns = {
     enabled     = true          # true/false to enable/disable service and associated resources.
     subnets     = [
         "10.200.4.0/28", # Inbound
