@@ -61,12 +61,65 @@ variable "ip_address_space" {
   type = map(string)
 }
 
-variable "hub_services" {
-  description = "Map of hub services and their features/configuration."
-  type = map(any)
+# FIREWALL ------------------------------------------------------------- #
+
+variable "hub_firewall" {
+  description = "Object of values to define the hub Azure Firewall configuration."
+  type = object({
+    enabled     = bool   # true/false to enable/disable service and associated resources.
+    sku_tier    = string # "Basic","Standard","Premium"
+    subnets     = optional(list(string), [])
+    features    = optional(map(bool), {})
+  })
+  validation {
+    condition     = contains(["Basic","Standard","Premium"], var.hub_azure_firewall.sku_tier)
+    error_message = "Invalid SKU provided. Must be one of: Basic, Standard, Premium."
+  }
 }
 
-# FIREWALL ------------------------------------------------------------- #
+# BASTION ------------------------------------------------------------- #
+
+variable "hub_bastion" {
+  description = "Object of values to define the hub Bastion configuration."
+  type = object({
+    enabled     = bool   # true/false to enable/disable service and associated resources.
+    sku_tier    = string # "Basic","Standard","Premium"
+    subnets     = optional(list(string), [])
+    features    = optional(map(bool), {})
+  })
+  validation {
+    condition     = contains(["Developer","Basic","Standard","Premium"], var.hub_bastion.sku_tier)
+    error_message = "Invalid SKU provided. Must be one of: Developer, Basic, Standard, Premium."
+  }
+}
+
+# VPN GATEWAY ------------------------------------------------------------- #
+
+variable "hub_vpn" {
+  description = "Object of values to define the hub VPN configuration."
+  type = object({
+    enabled     = bool   # true/false to enable/disable service and associated resources.
+    sku_tier    = string # "Basic","Standard","Premium"
+    subnets     = optional(list(string), [])
+    features    = optional(map(bool), {})
+  })
+  validation {
+    condition     = contains(["Basic","Standard","HighPerformance","VpnGw1","VpnGw2","VpnGw1AZ","VpnGw2AZ"], var.hub_vpn.sku_tier)
+    error_message = "Invalid SKU provided. Must be one of: Developer, Basic, Standard, Premium."
+  }
+}
+
+# DNS RESOLVER ------------------------------------------------------------- #
+
+variable "hub_dns" {
+  description = "value"
+  type = object ({
+    enabled     = bool   # true/false to enable/disable service and associated resources.
+    subnets     = optional(list(string), [])
+    features    = optional(map(bool), {})
+  })
+}
+
 
 # variable "firewall_policy_rule_collections" {
 #   description = "Firewall policy rule collections grouped by collection type."
