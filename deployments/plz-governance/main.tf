@@ -14,7 +14,7 @@ module "naming_gov" {
 
 # Resource Group: Governance - Contain logging related resources.  
 resource "azurerm_resource_group" "gov" {
-  name     = "${module.naming_gov.full_name}-rg"
+  name     = module.naming_gov.resource_group
   location = var.global.location.primary
   tags     = local.tags_merged
 }
