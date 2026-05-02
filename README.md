@@ -57,7 +57,8 @@ This stack provides centralized logging, monitoring and alerting for all platfor
   - Activity, Service and Health alerting, with severity-based notifications.
   - High-risk operations (resource group deletion, RBAC changes, policy modifications) are monitored using Azure Activity Log Alerts.
 - **Entra ID Administrative Groups:**
-  - Create base administrative groups in Entra ID, to be used with RBAC assignments.
+  - Create baseline administrative groups in Entra ID.
+  - RBAC assignments to top-level (core) management group.
 - **Microsoft Defender for Cloud**:
   - Foundational CSPM automatically enabled, free of charge, offering basic security posture management.
   - Optional deployment of Cloud Security Posture Management (CSPM).
@@ -73,7 +74,7 @@ This stack lays the ground work for policy assignments and remediation to enforc
   - Automated mapping of subscriptions to parent management groups using a subscription ID identifier value.
 - **Azure Policy:**
   - Custom policy definitions and initiatives, defined in JSON files and created using Terraform.
-  - Policy Initiative Assignments are mapped to Management Groups using the `policy_initiatives` field in the Management Group structure.
+  - Policy Initiative Assignments are mapped to Management Groups using the `policy_assignments` field in the local variables file.
   - Built-in Policy Initiatives are resolved by ID and assigned to target Management Groups in the `policy_initiatives_builtin` variable.
   - Remediation tasks enforce policy compliance continuously, ensuring current and future resources are in compliance.
 
@@ -96,13 +97,11 @@ management_groups_level1 = {
     display_name             = "Platform"                                # Contains all platform subscriptions. 
     parent_mg_name           = "core"                                    # Key ID of the parent Management Group. 
     subscription_identifiers = ["platform-dev-sub", "platform-iac-sub"]  # List of subscription identifiers, first 3 segments used to resolve full ID.
-    policy_initiatives       = [core_baseline]                           # Assign Policy Initiatives directly to MGs. 
   }
   "workload" = {
     display_name             = "Workload"
     parent_mg_name           = "core"
-    subscription_identifiers = ["app-myapp01-sub"]
-    policy_initiatives       = ["cost_controls"] 
+    subscription_identifiers = ["app-myapp01-sub"] 
   }
 }
 ```
