@@ -18,5 +18,5 @@ output "hub_firewall" {
         public_ip_mgt   = azurerm_public_ip.fw_mgt[0].id
         subnet          = azurerm_subnet.fw[0].address_prefixes
         subnet_mgt      = azurerm_subnet.fw_mgt[0].address_prefixes
-    } : {}
+    } : null # Return NULL if firewall is not enabled.
 }
