@@ -23,6 +23,8 @@ on:
             ARM_CLIENT_ID:
                 # Azure Service Principal ID for OIDC authentication.
                 required: true
+            VPN_LOCAL_PSK:
+                required: false
 
 jobs:
     plan:
@@ -47,6 +49,9 @@ jobs:
             ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure Service Principal ID, sourced from GitHub secret.
             ARM_SUBSCRIPTION_ID_IAC: ${{ vars.ARM_SUBSCRIPTION_ID_IAC }} # Subscription containing the Terraform backend Storage Account.
             ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }} # Target subscription for the stack resources.
+
+            # Optional ------------------------------------------- #
+            VPN_PUBLIC_IP: ${{ vars.VPN_PUBLIC_IP }} # OPTIONAL: Public IP for on-prem to be used with VPN gateway.
 
             # Terraform Backend Config ----------------------------------- #
             TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to install, from GitHub environment variable.
@@ -90,7 +95,9 @@ jobs:
                    -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
                    -var="subscription_id_iac=$ARM_SUBSCRIPTION_ID_IAC" \
                    -var="remote_state_resource_group=$TF_BACKEND_RG" \
-                   -var="remote_state_storage_account=$TF_BACKEND_SA"
+                   -var="remote_state_storage_account=$TF_BACKEND_SA" \
+                   -var=vpn_public_ip=$VPN_PUBLIC_IP" \
+                   -var=vpn_public_ip=$VPN_LOCAL_PSK"
 
             - name: "Upload Plan Artifact"
               uses: actions/upload-artifact@v4 # Upload Terraform plan file produced during the job for use by apply step.

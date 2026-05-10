@@ -36,11 +36,13 @@ jobs:
         secrets:
             # Secrets must be declared separately from inputs and passed explicitly.
             ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+            VPN_LOCAL_PSK: ${{ secrets.VPN_LOCAL_PSK }}
 
     # APPLY / DESTROY -------------------------------------------- #
     apply:
         needs: plan # REQUIRES the plan job to succeed before running.
-        if: github.event.inputs.action == 'apply' || github.event.inputs.action ==
+        if:
+            github.event.inputs.action == 'apply' || github.event.inputs.action ==
             'destroy'
         uses: ./.github/workflows/terraform-apply.yml
         with:
