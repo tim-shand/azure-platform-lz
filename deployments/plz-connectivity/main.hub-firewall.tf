@@ -37,7 +37,7 @@ resource "azurerm_subnet" "fw" {
   name                            = "AzureFirewallSubnet"            # Mandatory naming for this type of subnet.
   resource_group_name             = azurerm_virtual_network.hub.resource_group_name
   virtual_network_name            = azurerm_virtual_network.hub.name
-  address_prefixes                = var.hub_firewall.subnets[0]
+  address_prefixes                = [var.hub_firewall.subnets[0]]
   default_outbound_access_enabled = false # Disable to prevent outbound Internet via subnet.
 }
 
@@ -47,7 +47,7 @@ resource "azurerm_subnet" "fw_mgt" {
   name                            = "AzureFirewallManagementSubnet"  # Mandatory naming for this type of subnet.
   resource_group_name             = azurerm_virtual_network.hub.resource_group_name
   virtual_network_name            = azurerm_virtual_network.hub.name
-  address_prefixes                = var.hub_firewall.subnets[1]
+  address_prefixes                = [var.hub_firewall.subnets[1]]
   default_outbound_access_enabled = false # Disable to prevent outbound Internet via subnet.
 }
 
