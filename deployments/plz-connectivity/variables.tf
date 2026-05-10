@@ -88,10 +88,6 @@ variable "hub_firewall" {
     condition     = contains(["Basic","Standard","Premium"], var.hub_firewall.sku_tier)
     error_message = "Invalid SKU tier provided. Must be one of: Basic, Standard, Premium."
   }
-  validation {
-    condition     = contains(["Basic","Standard","Premium"], var.hub_firewall.policy_sku)
-    error_message = "Invalid firewall policy SKU provided. Must be one of: Basic, Standard, Premium."
-  }
 }
 
 # BASTION ------------------------------------------------------------- #
