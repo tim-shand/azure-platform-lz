@@ -82,16 +82,13 @@ resource "azurerm_virtual_network_gateway_connection" "onprem" {
   shared_key                 = var.vpn_local_psk
   connection_protocol        = "IKEv2" # IKEv1, IKEv2
   ipsec_policy {
-    # Phase 1 — IKE
-    ike_encryption = "AES256"
-    ike_integrity  = "SHA256"
-    dh_group       = "DHGroup14"
-    # Phase 2 — IPSec
-    ipsec_encryption = "AES256"
-    ipsec_integrity  = "SHA256"
-    pfs_group        = "PFS14"
-    # Lifetimes
-    sa_lifetime = 27000     # 7.5 hours — OPNsense default
-    sa_datasize = 102400000 # 100GB
+    ike_encryption   = var.hub_vpn.ipsec_policy.ike_encryption
+    ike_integrity    = var.hub_vpn.ipsec_policy.ike_integrity
+    dh_group         = var.hub_vpn.ipsec_policy.dh_group
+    ipsec_encryption = var.hub_vpn.ipsec_policy.ipsec_encryption
+    ipsec_integrity  = var.hub_vpn.ipsec_policy.ipsec_integrity
+    pfs_group        = var.hub_vpn.ipsec_policy.pfs_group
+    sa_lifetime      = var.hub_vpn.ipsec_policy.sa_lifetime
+    sa_datasize      = var.hub_vpn.ipsec_policy.sa_datasize
   }
 }
