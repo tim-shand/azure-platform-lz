@@ -51,6 +51,7 @@ jobs:
             ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }} # Target subscription for the stack resources.
 
             # Optional ------------------------------------------- #
+            VPN_LOCAL_PSK: ${{ secrets.VPN_LOCAL_PSK }} # OPTIONAL: Pre-Shared Key for on-prem VPN appliance.
             VPN_PUBLIC_IP: ${{ vars.VPN_PUBLIC_IP }} # OPTIONAL: Public IP for on-prem to be used with VPN gateway.
 
             # Terraform Backend Config ----------------------------------- #
