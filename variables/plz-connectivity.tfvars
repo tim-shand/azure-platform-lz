@@ -83,7 +83,7 @@ hub_vpn = {
     }
     features = {
         active_active   = false         # Requires a HighPerformance or an UltraPerformance SKU.
-        enable_bgp      = false         # Requires "Standard" or higher SKU.
+        bgp_enabled     = false         # Requires "Standard" or higher SKU.
     }
 }
 
