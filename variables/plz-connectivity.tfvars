@@ -84,11 +84,3 @@ hub_vpn = {
         bgp_enabled     = false         # Requires "Standard" or higher SKU.
     }
 }
-
-hub_dns = {
-    enabled     = true          # true/false to enable/disable service and associated resources.
-    subnets     = [
-        "10.200.4.0/28", # Inbound
-        "10.200.4.16/28" # Outbound
-    ]
-}

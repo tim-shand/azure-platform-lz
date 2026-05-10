@@ -182,17 +182,8 @@ variable "vpn_local_psk" {
   type        = string
 }
 
-# DNS RESOLVER ------------------------------------------------------------- #
 
-variable "hub_dns" {
-  description = "value"
-  type = object ({
-    enabled     = bool   # true/false to enable/disable service and associated resources.
-    subnets     = optional(list(string), [])
-    features    = optional(map(bool), {})
-  })
-}
-
+# FIREWALL RULES ------------------------------------------------------------- #
 
 # variable "firewall_policy_rule_collections" {
 #   description = "Firewall policy rule collections grouped by collection type."
