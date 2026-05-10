@@ -64,7 +64,7 @@ resource "azurerm_local_network_gateway" "onprem" {
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
-  gateway_address     = var.hub_vpn.local_public_ip # On-prem public IP (123.1.2.3)
+  gateway_address     = var.vpn_public_ip # On-prem public IP (123.1.2.3), passed in via workflow.
   address_space       = var.hub_vpn.local_address_spaces # On-prem IP address space ["10.0.0.0/16"].
 }
 
