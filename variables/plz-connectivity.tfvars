@@ -29,14 +29,21 @@ ip_address_space = {
 
 # Configure settings for hub services.
 
+hub_shared = {
+    name = "SharedServices"
+    subnets     = [
+        "10.200.0.0/24"
+    ]
+}
+
 hub_firewall = {
     enabled     = true              # true/false to enable/disable service and associated resources.
     sku_name    = "AZFW_VNet"       # One of: AZFW_VNet (hub-spoke) or AZFW_Hub (virtual WAN).
     sku_tier    = "Basic"           # "Basic","Standard","Premium"
     policy_sku  = "Basic"           # One of: Basic, Standard, Premium.
     subnets     = [
-        "10.200.0.0/24", # Firewall
-        "10.200.1.0/24"  # Firewall Management
+        "10.200.1.0/24", # Firewall
+        "10.200.2.0/24"  # Firewall Management
     ]
 }
 
@@ -44,7 +51,7 @@ hub_bastion = {
     enabled     = true          # true/false to enable/disable service and associated resources.
     sku_tier    = "Basic"       # "Developer","Basic","Standard","Premium"
     subnets     = [
-        "10.200.2.0/24"
+        "10.200.3.0/24"
     ]
     features = {
         copy_paste_enabled          = true
@@ -64,7 +71,7 @@ hub_vpn = {
     vpn_type        = "RouteBased"  # Required for IKEv2 and OPNsense compatibility (on-prem).
     sku_tier        = "Basic"       # "Basic","Standard","HighPerformance","VpnGw1"-"VpnGw5", "VpnGw1AZ"-"VpnGw5AZ".
     subnets         = [
-        "10.200.3.0/24"
+        "10.200.4.0/24"
     ]
     local_address_spaces = ["10.0.0.0/16"]  # Address spaces for on-prem networks.
     connection_type         = "IPsec"

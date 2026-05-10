@@ -61,6 +61,14 @@ variable "ip_address_space" {
   type = map(string)
 }
 
+variable "hub_shared" {
+  description = "Map of values to configure the hub shared subnet."
+  type = object({
+    name = string
+    subnets = list(string)
+  })
+}
+
 # FIREWALL ------------------------------------------------------------- #
 
 variable "hub_firewall" {
