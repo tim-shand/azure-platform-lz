@@ -72,7 +72,7 @@ resource "azurerm_local_network_gateway" "onprem" {
 
 resource "azurerm_virtual_network_gateway_connection" "onprem" {
   count                      = var.hub_vpn.enabled ? 1 : 0
-  name                       = "${module.naming.connection}-onprem"
+  name                       = "${module.naming_con.connection}-onprem"
   resource_group_name        = azurerm_resource_group.con.name
   location                   = azurerm_resource_group.con.location
   tags                       = local.tags_merged
