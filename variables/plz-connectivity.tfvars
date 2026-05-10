@@ -60,11 +60,31 @@ hub_bastion = {
 }
 
 hub_vpn = {
-    enabled     = true          # true/false to enable/disable service and associated resources.
-    sku_tier    = "Basic"   # "Basic","Standard","HighPerformance","VpnGw1"-"VpnGw5", "VpnGw1AZ"-"VpnGw5AZ".
-    subnets     = [
+    enabled         = true          # true/false to enable/disable service and associated resources.
+    vpn_type        = "RouteBased"  # Required for IKEv2 and OPNsense compatibility (on-prem).
+    sku_tier        = "Basic"       # "Basic","Standard","HighPerformance","VpnGw1"-"VpnGw5", "VpnGw1AZ"-"VpnGw5AZ".
+    subnets         = [
         "10.200.3.0/24"
     ]
+    local_public_ip      = ""               # Passed via GitHub Variables at runtime.
+    shared_key           = ""               # Passed via GitHub Secrets at runtime.
+    local_address_spaces = ["10.0.0.0/16"]  # Address spaces for on-prem networks.
+    connection_type         = "IPsec"
+    connection_protocol     = "IKEv2"
+    ipsec_policy = {
+        ike_encryption   = "AES256"
+        ike_integrity    = "SHA256"
+        dh_group         = "DHGroup14"
+        ipsec_encryption = "AES256"
+        ipsec_integrity  = "SHA256"
+        pfs_group        = "PFS14"
+        sa_lifetime      = 27000
+        sa_datasize      = 102400000
+    }
+    features = {
+        active_active   = false         # Requires a HighPerformance or an UltraPerformance SKU.
+        bgp_enabled     = false         # Requires "Standard" or higher SKU.
+    }
 }
 
 hub_dns = {
