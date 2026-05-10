@@ -19,8 +19,9 @@ resource "azurerm_public_ip" "vpn" {
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
-  allocation_method   = "Static"
-  sku                 = "Standard"
+  allocation_method   = local.vpn_gateway_pip_allocation
+  sku                 = local.vpn_gateway_pip_sku
+  zones               = local.vpn_gateway_pip_zones
 }
 
 # Subnet: Gateway
