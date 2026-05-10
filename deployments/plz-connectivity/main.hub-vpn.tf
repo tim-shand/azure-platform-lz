@@ -50,7 +50,7 @@ resource "azurerm_virtual_network_gateway" "vpn" {
   ip_configuration {
     name                          = "ipconfig-hub-vpn-gateway"
     subnet_id                     = azurerm_subnet.vpn[0].id
-    public_ip_address_id          = azurerm_public_ip.vpn[0].ip_address
+    public_ip_address_id          = azurerm_public_ip.vpn[0].id
     private_ip_address_allocation = "Dynamic" # The only valid value is Dynamic (Static is not supported by the service yet).
   }
 }
