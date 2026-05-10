@@ -13,6 +13,6 @@ output "hub_vnet" {
     value = {
         id = azurerm_virtual_network.hub.id
         name = azurerm_virtual_network.hub.name
-        resource_group = azurerm_virtual_network.hub.resource_group
+        resource_group = azurerm_virtual_network.hub.resource_group_name
     }
 }
