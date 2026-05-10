@@ -1,41 +1,86 @@
 <mxfile host="Electron">
   <diagram name="Page-1" id="NCEgzPu9SnBojhNuXvoB">
-    <mxGraphModel dx="1412" dy="842" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1765" dy="1053" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;dashed=1;strokeWidth=2;" value="" vertex="1">
-          <mxGeometry height="440" width="480" x="40" y="80" as="geometry" />
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="410" width="600" x="40" y="110" as="geometry" />
         </mxCell>
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-2" parent="1" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=12;image=img/lib/azure2/general/Subscriptions.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;imageBackground=none;labelBackgroundColor=none;" value="&lt;b&gt;Subscription&lt;br&gt;&lt;/b&gt;Management" vertex="1">
-          <mxGeometry height="71" width="44" x="40" y="69" as="geometry" />
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="" vertex="1">
+          <mxGeometry height="300" width="518.35" x="81.65" y="180" as="geometry" />
         </mxCell>
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="350" width="398.35" x="81.65" y="130" as="geometry" />
-        </mxCell>
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-4" parent="1" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=12;image=img/lib/azure2/general/Resource_Groups.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;" value="&lt;b&gt;Resource Group&lt;/b&gt;&lt;br&gt;rg-abc-plz-mgt" vertex="1">
-          <mxGeometry height="64" width="68" x="100" y="140" as="geometry" />
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-4" parent="1" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=12;image=img/lib/azure2/general/Resource_Groups.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;imageBackground=default;labelBackgroundColor=none;" value="&lt;b&gt;Resource Group&lt;/b&gt;&lt;br&gt;rg-abc-plz-mgt" vertex="1">
+          <mxGeometry height="54" width="57.38" x="66.80000000000001" y="176" as="geometry" />
         </mxCell>
         <mxCell id="AaMaPpwMvYSP5elZ-wLT-12" connectable="0" parent="1" style="group" value="" vertex="1">
           <mxGeometry height="198" width="313.3" x="124.18" y="230" as="geometry" />
         </mxCell>
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-5" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/analytics/Log_Analytics_Workspaces.svg;" value="&lt;b&gt;Log Analytics &lt;br&gt;Workspace&lt;/b&gt;" vertex="1">
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-5" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/analytics/Log_Analytics_Workspaces.svg;labelBackgroundColor=none;" value="&lt;b&gt;Log Analytics &lt;br&gt;Workspace&lt;/b&gt;" vertex="1">
           <mxGeometry height="64" width="64" x="1.3000000000000114" as="geometry" />
         </mxCell>
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-6" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/security/Key_Vaults.svg;" value="&lt;b&gt;Key Vault&lt;/b&gt;" vertex="1">
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-6" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/security/Key_Vaults.svg;labelBackgroundColor=none;" value="&lt;b&gt;Key Vault&lt;/b&gt;" vertex="1">
           <mxGeometry height="68" width="68" x="245.3" y="130" as="geometry" />
         </mxCell>
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-7" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/storage/Storage_Accounts.svg;" value="&lt;b&gt;Storage Account&lt;/b&gt;" vertex="1">
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-7" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/storage/Storage_Accounts.svg;labelBackgroundColor=none;" value="&lt;b&gt;Storage Account&lt;/b&gt;" vertex="1">
           <mxGeometry height="52" width="65" x="123.30000000000001" y="12" as="geometry" />
         </mxCell>
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-8" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/management_governance/Alerts.svg;" value="&lt;b&gt;Alerts&lt;/b&gt;" vertex="1">
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-8" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/management_governance/Alerts.svg;labelBackgroundColor=none;" value="&lt;b&gt;Alerts&lt;/b&gt;" vertex="1">
           <mxGeometry height="56.00000000000001" width="67" x="246.3" y="8" as="geometry" />
         </mxCell>
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-10" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/other/Data_Collection_Rules.svg;" value="&lt;b&gt;Data Collection&lt;br&gt;Rules&lt;/b&gt;" vertex="1">
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-10" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/other/Data_Collection_Rules.svg;labelBackgroundColor=none;" value="&lt;b&gt;Data Collection&lt;br&gt;Rules&lt;/b&gt;" vertex="1">
           <mxGeometry height="68" width="66.60000000000001" y="130" as="geometry" />
         </mxCell>
-        <mxCell id="AaMaPpwMvYSP5elZ-wLT-11" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/networking/Private_Endpoint.svg;" value="&lt;b&gt;Data Collection&lt;br&gt;Endpoints&lt;/b&gt;" vertex="1">
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-11" parent="AaMaPpwMvYSP5elZ-wLT-12" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/networking/Private_Endpoint.svg;labelBackgroundColor=none;" value="&lt;b&gt;Data Collection&lt;br&gt;Endpoints&lt;/b&gt;" vertex="1">
           <mxGeometry height="66" width="72" x="119.80000000000001" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-2" parent="1" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=12;image=img/lib/azure2/general/Subscriptions.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;imageBackground=default;labelBackgroundColor=none;" value="&lt;b&gt;Subscription&lt;br&gt;&lt;/b&gt;Management" vertex="1">
+          <mxGeometry height="71" width="44" x="22.799999999999983" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-16" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="410" width="480" x="1440.03" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-17" parent="1" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=12;image=img/lib/azure2/other/Entra_Identity.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;" value="&lt;b&gt;Entra ID&lt;/b&gt;" vertex="1">
+          <mxGeometry height="60.440000000000005" width="68" x="1410" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="" vertex="1">
+          <mxGeometry height="440" width="600" x="760" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-27" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="328" width="536" x="792" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-20" parent="AaMaPpwMvYSP5elZ-wLT-27" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Management_Groups.svg;labelBackgroundColor=none;" value="&lt;b&gt;Management Group&lt;/b&gt;&lt;br&gt;Tenant Root" vertex="1">
+          <mxGeometry height="64" width="66" x="237" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-21" parent="AaMaPpwMvYSP5elZ-wLT-27" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Management_Groups.svg;labelBackgroundColor=none;" value="&lt;b&gt;Management Group&lt;/b&gt;&lt;br&gt;Company (Core)" vertex="1">
+          <mxGeometry height="64" width="66" x="237" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-22" parent="AaMaPpwMvYSP5elZ-wLT-27" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Management_Groups.svg;labelBackgroundColor=none;" value="&lt;b&gt;Management Group&lt;/b&gt;&lt;br&gt;Platform" vertex="1">
+          <mxGeometry height="64" width="66" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-23" parent="AaMaPpwMvYSP5elZ-wLT-27" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Management_Groups.svg;labelBackgroundColor=none;" value="&lt;b&gt;Management Group&lt;/b&gt;&lt;br&gt;&lt;div&gt;Workload&lt;/div&gt;" vertex="1">
+          <mxGeometry height="64" width="66" x="160" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-24" parent="AaMaPpwMvYSP5elZ-wLT-27" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Management_Groups.svg;labelBackgroundColor=none;" value="&lt;b&gt;Management Group&lt;/b&gt;&lt;br&gt;&lt;div&gt;Sandbox&lt;/div&gt;" vertex="1">
+          <mxGeometry height="64" width="66" x="313" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-25" parent="AaMaPpwMvYSP5elZ-wLT-27" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Management_Groups.svg;labelBackgroundColor=none;" value="&lt;b&gt;Management Group&lt;/b&gt;&lt;br&gt;&lt;div&gt;Decommissioned&lt;/div&gt;" vertex="1">
+          <mxGeometry height="64" width="66" x="470" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-28" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/management_governance/Policy.svg;labelBackgroundColor=none;" value="&lt;b&gt;Azure Policy&lt;/b&gt;&lt;br&gt;Assignments" vertex="1">
+          <mxGeometry height="64" width="60" x="792" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-30" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="410" width="600" x="40.000000000000014" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-31" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="" vertex="1">
+          <mxGeometry height="300" width="518.35" x="81.65000000000002" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-32" parent="1" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=12;image=img/lib/azure2/general/Resource_Groups.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;imageBackground=default;labelBackgroundColor=none;" value="&lt;b&gt;Resource Group&lt;/b&gt;&lt;br&gt;rg-abc-plz-con-hub" vertex="1">
+          <mxGeometry height="54" width="57.38" x="66.80000000000003" y="626" as="geometry" />
+        </mxCell>
+        <mxCell id="AaMaPpwMvYSP5elZ-wLT-33" parent="1" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=12;image=img/lib/azure2/general/Subscriptions.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;imageBackground=default;labelBackgroundColor=none;" value="&lt;b&gt;Subscription&lt;br&gt;&lt;/b&gt;Connectivity" vertex="1">
+          <mxGeometry height="71" width="44" x="22.799999999999997" y="550" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

@@ -37,7 +37,7 @@ hub_shared = {
 }
 
 hub_firewall = {
-    enabled     = true              # true/false to enable/disable service and associated resources.
+    enabled     = false              # true/false to enable/disable service and associated resources.
     sku_name    = "AZFW_VNet"       # One of: AZFW_VNet (hub-spoke) or AZFW_Hub (virtual WAN).
     sku_tier    = "Standard"        # "Basic","Standard","Premium"
     subnets     = [
@@ -47,7 +47,7 @@ hub_firewall = {
 }
 
 hub_bastion = {
-    enabled     = true          # true/false to enable/disable service and associated resources.
+    enabled     = false          # true/false to enable/disable service and associated resources.
     sku_tier    = "Basic"       # "Developer","Basic","Standard","Premium"
     subnets     = [
         "10.200.3.0/24"
@@ -66,7 +66,7 @@ hub_bastion = {
 }
 
 hub_vpn = {
-    enabled         = true          # true/false to enable/disable service and associated resources.
+    enabled         = false          # true/false to enable/disable service and associated resources.
     vpn_type        = "RouteBased"  # Required for IKEv2 and OPNsense compatibility (on-prem).
     sku_tier        = "Basic"       # "Basic","Standard","HighPerformance","VpnGw1"-"VpnGw5", "VpnGw1AZ"-"VpnGw5AZ".
     subnets         = [
