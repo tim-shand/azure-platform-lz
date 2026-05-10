@@ -77,7 +77,6 @@ variable "hub_firewall" {
     enabled     = bool   # true/false to enable/disable service and associated resources.
     sku_name    = string # AZFW_VNet, AZFW_Hub
     sku_tier    = string # "Basic","Standard","Premium"
-    policy_sku  = string # "Basic","Standard","Premium"
     subnets     = optional(list(string), [])
     features    = optional(map(bool), {})
   })
@@ -88,10 +87,6 @@ variable "hub_firewall" {
   validation {
     condition     = contains(["Basic","Standard","Premium"], var.hub_firewall.sku_tier)
     error_message = "Invalid SKU tier provided. Must be one of: Basic, Standard, Premium."
-  }
-  validation {
-    condition     = contains(["Basic","Standard","Premium"], var.hub_firewall.policy_sku)
-    error_message = "Invalid firewall policy SKU provided. Must be one of: Basic, Standard, Premium."
   }
 }
 

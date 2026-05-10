@@ -21,3 +21,11 @@ locals {
     session_recording_enabled = (var.hub_bastion.sku_tier == "Developer" || var.hub_bastion.sku_tier == "Basic") ? false : var.hub_bastion.features.session_recording_enabled
   }
 }
+
+locals {
+  # Basic SKU gateway requires Basic public IP with Dynamic allocation and no zones.
+  # All other SKUs require Standard public IP with Static allocation and zones.
+  vpn_gateway_pip_sku        = var.hub_vpn.sku_tier == "Basic" ? "Basic" : "Standard"
+  vpn_gateway_pip_allocation = var.hub_vpn.sku_tier == "Basic" ? "Dynamic" : "Static"
+  vpn_gateway_pip_zones      = var.hub_vpn.sku_tier == "Basic" ? [] : ["1", "2", "3"]
+}

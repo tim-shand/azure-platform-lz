@@ -64,11 +64,14 @@ resource "azurerm_firewall_policy" "hub" {
   name                = module.naming_con.azure_firewall_policy
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
-  sku                 = var.hub_firewall.policy_sku
+  sku                 = var.hub_firewall.sku_tier
   tags                = local.tags_merged
-  dns {
-    proxy_enabled = var.hub_firewall.policy_sku == "Basic" ? false : true # Required to use FQDNs in network rules.
-    servers       = []          # Empty, use Azure default DNS.
+  dynamic "dns" {
+    for_each = var.hub_firewall.sku_tier != "Basic" ? [1] : [] # Only applicable for high than Basic SKU.
+    content {
+      proxy_enabled = true # Required to use FQDNs in network rules.
+      servers       = [] # Empty, use Azure default DNS.
+    }
   }
 }
 
