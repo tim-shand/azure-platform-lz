@@ -30,6 +30,7 @@ ip_address_space = {
 # Configure settings for hub services.
 
 hub_shared = {
+    name = "SharedServices"
     subnets     = [
         "10.200.0.0/24"
     ]
