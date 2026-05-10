@@ -38,7 +38,7 @@ resource "azurerm_subnet" "bastion" {
 # Bastion: Bastion Host
 resource "azurerm_bastion_host" "hub" {
   count               = var.hub_bastion.enabled ? 1 : 0 # If Bastion enabled, create, else do not.
-  name                = "${module.naming_con.bastion}-hub"
+  name                = module.naming_con.bastion
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
