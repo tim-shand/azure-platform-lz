@@ -110,12 +110,17 @@ variable "hub_vpn" {
   type = object({
     enabled     = bool   # true/false to enable/disable service and associated resources.
     sku_tier    = string # "Basic","Standard","Premium"
+    vpn_type    = string # "RouteBased", "PolicyBased".
     subnets     = optional(list(string), [])
     features    = optional(map(bool), {})
   })
   validation {
     condition     = contains(["Basic","Standard","HighPerformance","VpnGw1","VpnGw2","VpnGw1AZ","VpnGw2AZ"], var.hub_vpn.sku_tier)
-    error_message = "Invalid SKU provided. Must be one of: Developer, Basic, Standard, Premium."
+    error_message = "Invalid SKU provided. Must be one of: Basic, Standard, HighPerformance, VpnGw1, VpnGw2, VpnGw1AZ, VpnGw2AZ."
+  }
+  validation {
+    condition     = contains(["RouteBased", "PolicyBased"], var.hub_vpn.vpn_type)
+    error_message = "Invalid SKU provided. Must be one of: RouteBased, PolicyBased."
   }
 }
 

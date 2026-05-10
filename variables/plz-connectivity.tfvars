@@ -60,11 +60,16 @@ hub_bastion = {
 }
 
 hub_vpn = {
-    enabled     = true          # true/false to enable/disable service and associated resources.
-    sku_tier    = "Basic"   # "Basic","Standard","HighPerformance","VpnGw1"-"VpnGw5", "VpnGw1AZ"-"VpnGw5AZ".
-    subnets     = [
+    enabled         = true          # true/false to enable/disable service and associated resources.
+    vpn_type        = "RouteBased"  # Required for IKEv2 and OPNsense compatibility (on-prem).
+    sku_tier        = "Basic"       # "Basic","Standard","HighPerformance","VpnGw1"-"VpnGw5", "VpnGw1AZ"-"VpnGw5AZ".
+    subnets         = [
         "10.200.3.0/24"
     ]
+    features = {
+        active_active   = false         # Requires a HighPerformance or an UltraPerformance SKU.
+        enable_bgp      = false         # Requires "Standard" or higher SKU.
+    }
 }
 
 hub_dns = {
