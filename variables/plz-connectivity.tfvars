@@ -84,3 +84,57 @@ hub_vpn = {
         bgp_enabled     = false         # Requires "Standard" or higher SKU.
     }
 }
+
+# ============================================================== #
+#
+# Firewall Rules ---------------------------------------#
+#
+# ============================================================== #
+
+firewall_policy_rule_collections = {
+  # Application Rules
+  application = {
+    "plz-default-application" = {
+      priority = 100
+      action   = "Allow"
+      rules = {
+        "global-allowed-urls" = {
+          source_addresses  = ["*"]
+          destination_fqdns = ["*.google.com", "*.cloudflare.com", "*.microsoft.com", "pool.ntp.org"]
+          protocols = [
+            {
+              type = "Http"
+              port = 80
+            },
+            {
+              type = "Https"
+              port = 443
+            }
+          ]
+        }
+      }
+    }
+  }
+
+  # Network Rules
+  network = {
+    "plz-default-network" = {
+      priority = 200
+      action   = "Allow"
+      rules = {
+        "global-allowed-network-dns" = {
+          source_addresses      = ["*"]
+          destination_ports     = ["53"]
+          destination_addresses = ["8.8.8.8", "8.8.4.4", "1.1.1.1"]
+          protocols             = ["TCP", "UDP"]
+        }
+        "global-allowed-network-ntp" = {
+          source_addresses  = ["*"]
+          destination_ports = ["123"]
+          destination_fqdns = ["pool.ntp.org", "time.cloudflare.com", "time.google.com"]
+          protocols         = ["UDP"]
+        }
+      }
+    }
+  }
+}
