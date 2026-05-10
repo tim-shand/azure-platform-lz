@@ -5,6 +5,11 @@
 # - Create Azure Firewall in dedicated subnet from hub VNet.
 #====================================================================================#
 
+# NOTICE: Note on use of NSGs:
+# AzureFirewallSubnet and AzureFirewallManagementSubnet cannot have NSGs applied. Azure explicitly blocks this.
+# The Firewall manages its own traffic filtering via Firewall Policy and does not support NSG association on its subnets.
+# Attempting to apply one will result in a deployment error.
+
 # PUBLIC IPS --------------------------------------------------- #
 
 # Firewall: Public IP (External)

@@ -42,7 +42,7 @@ hub_firewall = {
 
 hub_bastion = {
     enabled     = true          # true/false to enable/disable service and associated resources.
-    sku_tier    = "Developer"   # "Developer","Basic","Standard","Premium"
+    sku_tier    = "Basic"       # "Developer","Basic","Standard","Premium"
     subnets     = [
         "10.200.2.0/24"
     ]
@@ -50,7 +50,7 @@ hub_bastion = {
         copy_paste_enabled          = true
         # Below only supported when SKU is Premium. Automatically set to "false" during deployment if "sku_tier" not suitable.
         file_copy_enabled           = true
-        ip_connect_enabled          = false
+        ip_connect_enabled          = true
         kerberos_enabled            = false
         shareable_link_enabled      = false
         tunneling_enabled           = true # Required for SFTP from on-prem via Bastion host.
