@@ -123,6 +123,10 @@ The Connectivity stack deploys the resources required for secure networking betw
 - **VPN Gateway:**
   - Site-to-Site VPN for hybrid connectivity between Azure and on-prem.
   - Dedicated subnet providing gateway services for hub virtual network.
+- **Route Tables:**
+  - When firewall is enabled, a route table forces all traffic through the firewall private IP.
+  - When firewall is disabled the route table is still created but with no forced routes.
+  - This allows associations to exist and can be populated later without state changes.
 
 ---
 
