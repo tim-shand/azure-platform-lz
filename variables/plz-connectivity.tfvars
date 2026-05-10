@@ -66,8 +66,6 @@ hub_vpn = {
     subnets         = [
         "10.200.3.0/24"
     ]
-    local_public_ip      = ""               # Passed via GitHub Variables at runtime.
-    shared_key           = ""               # Passed via GitHub Secrets at runtime.
     local_address_spaces = ["10.0.0.0/16"]  # Address spaces for on-prem networks.
     connection_type         = "IPsec"
     connection_protocol     = "IKEv2"
