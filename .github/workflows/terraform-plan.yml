@@ -98,7 +98,7 @@ jobs:
                    -var="remote_state_resource_group=$TF_BACKEND_RG" \
                    -var="remote_state_storage_account=$TF_BACKEND_SA" \
                    -var=vpn_public_ip=$VPN_PUBLIC_IP" \
-                   -var=vpn_public_ip=$VPN_LOCAL_PSK"
+                   -var=vpn_local_psk=$VPN_LOCAL_PSK"
 
             - name: "Upload Plan Artifact"
               uses: actions/upload-artifact@v4 # Upload Terraform plan file produced during the job for use by apply step.
