@@ -39,8 +39,7 @@ hub_shared = {
 hub_firewall = {
     enabled     = true              # true/false to enable/disable service and associated resources.
     sku_name    = "AZFW_VNet"       # One of: AZFW_VNet (hub-spoke) or AZFW_Hub (virtual WAN).
-    sku_tier    = "Basic"           # "Basic","Standard","Premium"
-    policy_sku  = "Basic"           # One of: Basic, Standard, Premium.
+    sku_tier    = "Standard"           # "Basic","Standard","Premium"
     subnets     = [
         "10.200.1.0/24", # Firewall
         "10.200.2.0/24"  # Firewall Management
@@ -101,26 +100,26 @@ hub_vpn = {
 firewall_policy_rule_collections = {
   # Application Rules
   application = {
-    # "plz-default-application" = {
-    #   priority = 100
-    #   action   = "Allow"
-    #   rules = {
-    #     "global-allowed-urls" = {
-    #       source_addresses  = ["*"]
-    #       destination_fqdns = ["*.google.com", "*.cloudflare.com", "*.microsoft.com", "pool.ntp.org"]
-    #       protocols = [
-    #         {
-    #           type = "Http"
-    #           port = 80
-    #         },
-    #         {
-    #           type = "Https"
-    #           port = 443
-    #         }
-    #       ]
-    #     }
-    #   }
-    # }
+    "plz-default-application" = {
+      priority = 100
+      action   = "Allow"
+      rules = {
+        "global-allowed-urls" = {
+          source_addresses  = ["*"]
+          destination_fqdns = ["*.google.com", "*.cloudflare.com", "*.microsoft.com", "pool.ntp.org"]
+          protocols = [
+            {
+              type = "Http"
+              port = 80
+            },
+            {
+              type = "Https"
+              port = 443
+            }
+          ]
+        }
+      }
+    }
   }
 
   # Network Rules
