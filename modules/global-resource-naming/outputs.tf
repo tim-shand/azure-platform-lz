@@ -51,6 +51,8 @@ output "gateway_express_route" { value = "ergw-${local.full_name}" }
 output "express_route_circuit" { value = "erc-${local.full_name}" }
 output "public_ip" { value = "pip-${local.full_name}" }
 output "network_watcher" { value = "nww-${local.full_name}"}
+output "route_table" { value = "rt-${local.full_name}"}
+output "user_defined_route" { value = "udr-${local.full_name}"}
 
 # Management -------------------------------------------------- #
 output "log_analytics_workspace" { value = "law-${local.full_name}" }
