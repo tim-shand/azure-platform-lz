@@ -48,21 +48,13 @@ resource "azurerm_bastion_host" "hub" {
     subnet_id            = azurerm_subnet.bastion[0].id
     public_ip_address_id = azurerm_public_ip.bastion[0].ip_address
   }
-  copy_paste_enabled = local.bastion_features.copy_paste_enabled
-  file_copy_enabled = local.bastion_features.file_copy_enabled
-  tunneling_enabled = local.bastion_features.tunneling_enabled
-  shareable_link_enabled = local.bastion_features.shareable_link_enabled
-  kerberos_enabled = local.bastion_features.kerberos_enabled
-  ip_connect_enabled = local.bastion_features.ip_connect_enabled
+  copy_paste_enabled        =  local.bastion_features.copy_paste_enabled
+  file_copy_enabled         = local.bastion_features.file_copy_enabled
+  tunneling_enabled         = local.bastion_features.tunneling_enabled
+  shareable_link_enabled    = local.bastion_features.shareable_link_enabled
+  kerberos_enabled          = local.bastion_features.kerberos_enabled
+  ip_connect_enabled        = local.bastion_features.ip_connect_enabled
   session_recording_enabled = local.bastion_features.session_recording_enabled
-  # copy_paste_enabled        = var.hub_bastion.features.copy_paste_enabled
-  # # NOTE: The below options require 'Standard' SKU.
-  # file_copy_enabled         = (var.hub_bastion.sku_tier == "Developer" || var.hub_bastion.sku_tier == "Basic") ? false : var.hub_bastion.features.file_copy_enabled
-  # tunneling_enabled         = (var.hub_bastion.sku_tier == "Developer" || var.hub_bastion.sku_tier == "Basic") ? false : var.hub_bastion.features.tunneling_enabled
-  # shareable_link_enabled    = (var.hub_bastion.sku_tier == "Developer" || var.hub_bastion.sku_tier == "Basic") ? false : var.hub_bastion.features.shareable_link_enabled
-  # kerberos_enabled          = (var.hub_bastion.sku_tier == "Developer" || var.hub_bastion.sku_tier == "Basic") ? false : var.hub_bastion.features.kerberos_enabled
-  # ip_connect_enabled        = (var.hub_bastion.sku_tier == "Developer" || var.hub_bastion.sku_tier == "Basic") ? false : var.hub_bastion.features.ip_connect_enabled
-  # session_recording_enabled = (var.hub_bastion.sku_tier == "Developer" || var.hub_bastion.sku_tier == "Basic") ? false : var.hub_bastion.features.session_recording_enabled
 }
 
 # NETWORK SECURITY GROUP: Bastion ------------------------------------------------------------ #
