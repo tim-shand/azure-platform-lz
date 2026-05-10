@@ -67,7 +67,7 @@ resource "azurerm_firewall_policy" "hub" {
   sku                 = var.hub_firewall.policy_sku
   tags                = local.tags_merged
   dns {
-    proxy_enabled = true        # Required to use FQDNs in network rules.
+    proxy_enabled = var.hub_firewall.policy_sku == "Basic" ? false : true # Required to use FQDNs in network rules.
     servers       = []          # Empty, use Azure default DNS.
   }
 }

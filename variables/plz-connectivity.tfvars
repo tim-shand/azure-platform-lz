@@ -101,26 +101,26 @@ hub_vpn = {
 firewall_policy_rule_collections = {
   # Application Rules
   application = {
-    "plz-default-application" = {
-      priority = 100
-      action   = "Allow"
-      rules = {
-        "global-allowed-urls" = {
-          source_addresses  = ["*"]
-          destination_fqdns = ["*.google.com", "*.cloudflare.com", "*.microsoft.com", "pool.ntp.org"]
-          protocols = [
-            {
-              type = "Http"
-              port = 80
-            },
-            {
-              type = "Https"
-              port = 443
-            }
-          ]
-        }
-      }
-    }
+    # "plz-default-application" = {
+    #   priority = 100
+    #   action   = "Allow"
+    #   rules = {
+    #     "global-allowed-urls" = {
+    #       source_addresses  = ["*"]
+    #       destination_fqdns = ["*.google.com", "*.cloudflare.com", "*.microsoft.com", "pool.ntp.org"]
+    #       protocols = [
+    #         {
+    #           type = "Http"
+    #           port = 80
+    #         },
+    #         {
+    #           type = "Https"
+    #           port = 443
+    #         }
+    #       ]
+    #     }
+    #   }
+    # }
   }
 
   # Network Rules
