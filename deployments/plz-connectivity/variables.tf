@@ -113,6 +113,8 @@ variable "hub_vpn" {
     vpn_type    = string # "RouteBased", "PolicyBased".
     subnets     = optional(list(string), [])
     local_address_spaces = list(string)         # Address spaces for on-prem networks.
+    connection_type       = string
+    connection_protocol   = string
     ipsec_policy = optional(object({
       ike_encryption   = optional(string, "AES256")
       ike_integrity    = optional(string, "SHA256")

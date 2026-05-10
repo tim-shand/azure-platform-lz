@@ -76,11 +76,11 @@ resource "azurerm_virtual_network_gateway_connection" "onprem" {
   resource_group_name        = azurerm_resource_group.con.name
   location                   = azurerm_resource_group.con.location
   tags                       = local.tags_merged
-  type                       = "IPsec"
+  type                       = var.hub_vpn.connection_type
   virtual_network_gateway_id = azurerm_virtual_network_gateway.vpn[0].id
   local_network_gateway_id   = azurerm_local_network_gateway.onprem[0].id
   shared_key                 = var.vpn_local_psk
-  connection_protocol        = "IKEv2" # IKEv1, IKEv2
+  connection_protocol        = var.hub_vpn.connection_protocol # IKEv1, IKEv2
   ipsec_policy {
     ike_encryption   = var.hub_vpn.ipsec_policy.ike_encryption
     ike_integrity    = var.hub_vpn.ipsec_policy.ike_integrity
