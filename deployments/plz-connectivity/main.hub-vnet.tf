@@ -14,6 +14,19 @@ resource "azurerm_virtual_network" "hub" {
   address_space       = [var.ip_address_space.hub]
 }
 
+# SUBNETS --------------------------------------------------- #
+
+# Shared Subnet
+resource "azurerm_subnet" "shared" {
+  name                            = var.hub_shared.name
+  resource_group_name             = azurerm_virtual_network.hub.resource_group_name
+  virtual_network_name            = azurerm_virtual_network.hub.name
+  address_prefixes                = [var.hub_shared.subnets[0]]
+  default_outbound_access_enabled = false # Disable to prevent outbound Internet via subnet.
+}
+
+# NETWORK WATCHER --------------------------------------------------- #
+
 # Network Watcher: Hub
 resource "azurerm_network_watcher" "hub" {
   name                = "${module.naming_con.network_watcher}"
