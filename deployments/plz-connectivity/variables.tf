@@ -112,6 +112,8 @@ variable "hub_vpn" {
     sku_tier    = string # "Basic","Standard","Premium"
     vpn_type    = string # "RouteBased", "PolicyBased".
     subnets     = optional(list(string), [])
+    local_public_ip      = string               # Passed via GitHub Variables at runtime.
+    local_address_spaces = list(string)         # Address spaces for on-prem networks.
     features    = optional(map(bool), {})
   })
   validation {
@@ -122,6 +124,18 @@ variable "hub_vpn" {
     condition     = contains(["RouteBased", "PolicyBased"], var.hub_vpn.vpn_type)
     error_message = "Invalid SKU provided. Must be one of: RouteBased, PolicyBased."
   }
+}
+
+variable "vpn_public_ip" {
+  description = "The string value of public IP from the local (on-prem) VPN device."
+  sensitive   = false
+  type        = string
+}
+
+variable "vpn_local_psk" {
+  description = "The string value of the Pre-Shared Key obtained from local (on-prem) VPN device."
+  sensitive   = true
+  type        = string
 }
 
 # DNS RESOLVER ------------------------------------------------------------- #

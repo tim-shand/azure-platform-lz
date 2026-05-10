@@ -66,6 +66,9 @@ hub_vpn = {
     subnets         = [
         "10.200.3.0/24"
     ]
+    local_public_ip      = ""               # Passed via GitHub Variables at runtime.
+    shared_key           = ""               # Passed via GitHub Secrets at runtime.
+    local_address_spaces = ["10.0.0.0/16"]  # Address spaces for on-prem networks.
     features = {
         active_active   = false         # Requires a HighPerformance or an UltraPerformance SKU.
         enable_bgp      = false         # Requires "Standard" or higher SKU.

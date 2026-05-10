@@ -4,6 +4,12 @@
 # - VPN Gateway service for on-prem to cloud connectivity. 
 #====================================================================================#
 
+# NOTICE: Note on use of VPN Gateway:
+# This requires a Pre-Shared Key to be added to the GitHub Actions Secrets at the repo level.
+# The PSK is then passed in via the workflow, preventing key leakage into the code base.
+# Add the PSK to your VPN device and then update the GitHub Actions Secret "VPN_LOCAL_PSK".
+# Add the VPN device public IP to the GitHub Actions Variable "VPN_PUBLIC_IP".
+
 # NETWORKING -------------------------------------- #
 
 # Public IP: Gateway
@@ -49,17 +55,18 @@ resource "azurerm_virtual_network_gateway" "vpn" {
   }
 }
 
-
 # LOCAL NETWORK GATEWAY -------------------------------------- #
-# Represents your VPN/firewall device on-prem (example: OPNsense).
-# Variables and updated when your ISP changes your IP.
 
+# Represents your VPN/firewall device on-prem (example: OPNsense).
 resource "azurerm_local_network_gateway" "onprem" {
   count               = var.hub_vpn.enabled ? 1 : 0
   name                = "${module.naming_con.gateway_local}-onprem"
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
-  gateway_address     = var.hub_vpn.local_public_ip # On-prem public IP.
-  address_space       = var.hub_vpn.local_address_spaces # On-prem IP address space.
+  gateway_address     = var.hub_vpn.local_public_ip # On-prem public IP (123.1.2.3)
+  address_space       = var.hub_vpn.local_address_spaces # On-prem IP address space ["10.0.0.0/16"].
 }
+
+# CONNECTION --------------------------------------------- #
+
