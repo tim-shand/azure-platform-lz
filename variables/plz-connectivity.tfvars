@@ -39,7 +39,7 @@ hub_shared = {
 hub_firewall = {
     enabled     = true              # true/false to enable/disable service and associated resources.
     sku_name    = "AZFW_VNet"       # One of: AZFW_VNet (hub-spoke) or AZFW_Hub (virtual WAN).
-    sku_tier    = "Standard"           # "Basic","Standard","Premium"
+    sku_tier    = "Standard"        # "Basic","Standard","Premium"
     subnets     = [
         "10.200.1.0/24", # Firewall
         "10.200.2.0/24"  # Firewall Management

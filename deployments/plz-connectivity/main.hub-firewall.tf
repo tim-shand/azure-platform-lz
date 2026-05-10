@@ -67,7 +67,7 @@ resource "azurerm_firewall_policy" "hub" {
   sku                 = var.hub_firewall.sku_tier
   tags                = local.tags_merged
   dynamic "dns" {
-    for_each = var.hub_firewall.policy_sku != "Basic" ? [1] : [] # Only applicable for high than Basic SKU.
+    for_each = var.hub_firewall.sku_tier != "Basic" ? [1] : [] # Only applicable for high than Basic SKU.
     content {
       proxy_enabled = true # Required to use FQDNs in network rules.
       servers       = [] # Empty, use Azure default DNS.
