@@ -67,13 +67,23 @@ variable "hub_firewall" {
   description = "Object of values to define the hub Azure Firewall configuration."
   type = object({
     enabled     = bool   # true/false to enable/disable service and associated resources.
+    sku_name    = string # AZFW_VNet, AZFW_Hub
     sku_tier    = string # "Basic","Standard","Premium"
+    policy_sku  = string # "Basic","Standard","Premium"
     subnets     = optional(list(string), [])
     features    = optional(map(bool), {})
   })
   validation {
+    condition     = contains(["AZFW_VNet", "AZFW_Hub"], var.hub_firewall.sku_name)
+    error_message = "Invalid SKU name provided. Must be one of: AZFW_VNet or AZFW_Hub."
+  }
+  validation {
     condition     = contains(["Basic","Standard","Premium"], var.hub_firewall.sku_tier)
-    error_message = "Invalid SKU provided. Must be one of: Basic, Standard, Premium."
+    error_message = "Invalid SKU tier provided. Must be one of: Basic, Standard, Premium."
+  }
+  validation {
+    condition     = contains(["Basic","Standard","Premium"], var.hub_firewall.policy_sku)
+    error_message = "Invalid firewall policy SKU provided. Must be one of: Basic, Standard, Premium."
   }
 }
 
