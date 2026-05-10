@@ -77,7 +77,6 @@ variable "hub_firewall" {
     enabled     = bool   # true/false to enable/disable service and associated resources.
     sku_name    = string # AZFW_VNet, AZFW_Hub
     sku_tier    = string # "Basic","Standard","Premium"
-    policy_sku  = string # "Basic","Standard","Premium"
     subnets     = optional(list(string), [])
     features    = optional(map(bool), {})
   })
