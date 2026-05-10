@@ -41,6 +41,7 @@ output "management_group" { value = "mg-${local.full_name}" }
 output "virtual_network" { value = "vnet-${local.full_name}" }
 output "subnet" { value = "snet-${local.full_name}" }
 output "nsg" {value = "nsg-${local.full_name}"}
+output "connection" {value = "con-${local.full_name}"}
 output "azure_firewall" { value = "afw-${local.full_name}" }
 output "azure_firewall_policy" { value = "afwp-${local.full_name}" }
 output "bastion" { value = "bas-${local.full_name}" }
