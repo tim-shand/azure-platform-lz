@@ -45,6 +45,7 @@ output "azure_firewall" { value = "afw-${local.full_name}" }
 output "azure_firewall_policy" { value = "afwp-${local.full_name}" }
 output "bastion" { value = "bas-${local.full_name}" }
 output "gateway_vpn" { value = "vgw-${local.full_name}" }
+output "gateway_local" { value = "lgw-${local.full_name}" }
 output "gateway_express_route" { value = "ergw-${local.full_name}" }
 output "express_route_circuit" { value = "erc-${local.full_name}" }
 output "public_ip" { value = "pip-${local.full_name}" }
