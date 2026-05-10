@@ -70,3 +70,28 @@ resource "azurerm_local_network_gateway" "onprem" {
 
 # CONNECTION --------------------------------------------- #
 
+resource "azurerm_virtual_network_gateway_connection" "onprem" {
+  count                      = var.hub_vpn.enabled ? 1 : 0
+  name                       = "${module.naming.connection}-onprem"
+  resource_group_name        = azurerm_resource_group.con.name
+  location                   = azurerm_resource_group.con.location
+  tags                       = local.tags_merged
+  type                       = "IPsec"
+  virtual_network_gateway_id = azurerm_virtual_network_gateway.vpn[0].id
+  local_network_gateway_id   = azurerm_local_network_gateway.onprem[0].id
+  shared_key                 = var.vpn_local_psk
+  connection_protocol        = "IKEv2" # IKEv1, IKEv2
+  ipsec_policy {
+    # Phase 1 — IKE
+    ike_encryption = "AES256"
+    ike_integrity  = "SHA256"
+    dh_group       = "DHGroup14"
+    # Phase 2 — IPSec
+    ipsec_encryption = "AES256"
+    ipsec_integrity  = "SHA256"
+    pfs_group        = "PFS14"
+    # Lifetimes
+    sa_lifetime = 27000     # 7.5 hours — OPNsense default
+    sa_datasize = 102400000 # 100GB
+  }
+}

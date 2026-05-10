@@ -112,17 +112,59 @@ variable "hub_vpn" {
     sku_tier    = string # "Basic","Standard","Premium"
     vpn_type    = string # "RouteBased", "PolicyBased".
     subnets     = optional(list(string), [])
-    local_public_ip      = string               # Passed via GitHub Variables at runtime.
     local_address_spaces = list(string)         # Address spaces for on-prem networks.
+    ipsec_policy = optional(object({
+      ike_encryption   = optional(string, "AES256")
+      ike_integrity    = optional(string, "SHA256")
+      dh_group         = optional(string, "DHGroup14")
+      ipsec_encryption = optional(string, "AES256")
+      ipsec_integrity  = optional(string, "SHA256")
+      pfs_group        = optional(string, "PFS14")
+      sa_lifetime      = optional(number, 27000)
+      sa_datasize      = optional(number, 102400000)
+    }), {
+      ike_encryption   = "AES256"
+      ike_integrity    = "SHA256"
+      dh_group         = "DHGroup14"
+      ipsec_encryption = "AES256"
+      ipsec_integrity  = "SHA256"
+      pfs_group        = "PFS14"
+      sa_lifetime      = 27000
+      sa_datasize      = 102400000
+    })
     features    = optional(map(bool), {})
   })
   validation {
-    condition     = contains(["Basic","Standard","HighPerformance","VpnGw1","VpnGw2","VpnGw1AZ","VpnGw2AZ"], var.hub_vpn.sku_tier)
-    error_message = "Invalid SKU provided. Must be one of: Basic, Standard, HighPerformance, VpnGw1, VpnGw2, VpnGw1AZ, VpnGw2AZ."
-  }
-  validation {
     condition     = contains(["RouteBased", "PolicyBased"], var.hub_vpn.vpn_type)
     error_message = "Invalid SKU provided. Must be one of: RouteBased, PolicyBased."
+  }
+    validation {
+    condition     = contains(["Basic", "VpnGw1", "VpnGw2", "VpnGw3", "VpnGw1AZ", "VpnGw2AZ", "VpnGw3AZ", "HighPerformance", "UltraPerformance"], var.hub_vpn.sku_tier)
+    error_message = "VPN Gateway SKU must be Basic, VpnGw1-VpnGw3, VpnGw1AZ-VpnGw3AZ, HighPerformance, or UltraPerformance."
+  }
+  validation {
+    condition     = contains(["AES128", "AES192", "AES256", "DES", "DES3", "GCMAES128", "GCMAES192", "GCMAES256"], var.hub_vpn.ipsec_policy.ike_encryption)
+    error_message = "IKE encryption must be AES128, AES192, AES256, DES, DES3, GCMAES128, GCMAES192, or GCMAES256."
+  }
+  validation {
+    condition     = contains(["MD5", "SHA1", "SHA256", "SHA384", "GCMAES128", "GCMAES192", "GCMAES256"], var.hub_vpn.ipsec_policy.ike_integrity)
+    error_message = "IKE integrity must be MD5, SHA1, SHA256, SHA384, GCMAES128, GCMAES192, or GCMAES256."
+  }
+  validation {
+    condition     = contains(["DHGroup1", "DHGroup2", "DHGroup14", "DHGroup24", "DHGroup2048", "ECP256", "ECP384", "None"], var.hub_vpn.ipsec_policy.dh_group)
+    error_message = "DH group must be DHGroup1, DHGroup2, DHGroup14, DHGroup24, DHGroup2048, ECP256, ECP384, or None."
+  }
+  validation {
+    condition     = contains(["AES128", "AES192", "AES256", "DES", "DES3", "GCMAES128", "GCMAES192", "GCMAES256", "None"], var.hub_vpn.ipsec_policy.ipsec_encryption)
+    error_message = "IPSec encryption must be AES128, AES192, AES256, DES, DES3, GCMAES128, GCMAES192, GCMAES256, or None."
+  }
+  validation {
+    condition     = contains(["MD5", "SHA1", "SHA256", "GCMAES128", "GCMAES192", "GCMAES256"], var.hub_vpn.ipsec_policy.ipsec_integrity)
+    error_message = "IPSec integrity must be MD5, SHA1, SHA256, GCMAES128, GCMAES192, or GCMAES256."
+  }
+  validation {
+    condition     = contains(["ECP256", "ECP384", "PFS1", "PFS2", "PFS14", "PFS24", "PFS2048", "PFSMM", "None"], var.hub_vpn.ipsec_policy.pfs_group)
+    error_message = "PFS group must be ECP256, ECP384, PFS1, PFS2, PFS14, PFS24, PFS2048, PFSMM, or None."
   }
 }
 

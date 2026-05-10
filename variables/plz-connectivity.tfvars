@@ -69,6 +69,16 @@ hub_vpn = {
     local_public_ip      = ""               # Passed via GitHub Variables at runtime.
     shared_key           = ""               # Passed via GitHub Secrets at runtime.
     local_address_spaces = ["10.0.0.0/16"]  # Address spaces for on-prem networks.
+    ipsec_policy = {
+        ike_encryption   = "AES256"
+        ike_integrity    = "SHA256"
+        dh_group         = "DHGroup14"
+        ipsec_encryption = "AES256"
+        ipsec_integrity  = "SHA256"
+        pfs_group        = "PFS14"
+        sa_lifetime      = 27000
+        sa_datasize      = 102400000
+    }
     features = {
         active_active   = false         # Requires a HighPerformance or an UltraPerformance SKU.
         enable_bgp      = false         # Requires "Standard" or higher SKU.
