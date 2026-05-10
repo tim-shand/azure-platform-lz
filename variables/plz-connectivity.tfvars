@@ -30,8 +30,10 @@ ip_address_space = {
 # Configure settings for hub services.
 
 hub_firewall = {
-    enabled     = true          # true/false to enable/disable service and associated resources.
-    sku_tier    = "Basic"       # "Basic","Standard","Premium"
+    enabled     = true              # true/false to enable/disable service and associated resources.
+    sku_name    = "AZFW_VNet"       # One of: AZFW_VNet (hub-spoke) or AZFW_Hub (virtual WAN).
+    sku_tier    = "Basic"           # "Basic","Standard","Premium"
+    policy_sku  = "Basic"           # One of: Basic, Standard, Premium.
     subnets     = [
         "10.200.0.0/24", # Firewall
         "10.200.1.0/24"  # Firewall Management
