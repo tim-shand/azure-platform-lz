@@ -46,7 +46,7 @@ resource "azurerm_bastion_host" "hub" {
   ip_configuration {
     name                 = "ipconfig-hub-bastion"
     subnet_id            = azurerm_subnet.bastion[0].id
-    public_ip_address_id = azurerm_public_ip.bastion[0].ip_address
+    public_ip_address_id = azurerm_public_ip.bastion[0].id
   }
   copy_paste_enabled        =  local.bastion_features.copy_paste_enabled
   file_copy_enabled         = local.bastion_features.file_copy_enabled
