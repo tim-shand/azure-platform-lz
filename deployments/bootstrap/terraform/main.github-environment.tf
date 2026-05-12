@@ -49,6 +49,22 @@ resource "github_actions_variable" "iac_sa" {
   value         = azurerm_storage_account.backend["platform"].name
 }
 
+# VPN (S2S) Variables
+
+# GitHub: Repo [SECRET] - VPN Pre-Shared Key
+resource "github_actions_secret" "vpn_psk" {
+  repository      = data.github_repository.repo.name
+  secret_name     = "VPN_LOCAL_PSK"
+  plaintext_value = "" # EMPTY: To be filled in manually after deployment, as it is sensitive information.
+}
+
+# GitHub: Repo [VARIABLE] - Backend: Storage Account
+resource "github_actions_variable" "vpn_public_ip" {
+  repository    = data.github_repository.repo.name
+  variable_name = "VPN_PUBLIC_IP"
+  value         = "" # EMPTY: To be filled in manually after deployment.
+}
+
 # PER STACK --------------------------------------------------- #
 
 # GitHub: Environment - Per Stack (enabled only)
