@@ -21,7 +21,7 @@ Ideal for a small organization, personal tenant, light production or development
 
 ## 🏢 Architecture & Design
 
-TBC
+![Platform Landing Zone architecture diagram.](../../docs/images/diagram-plz-architecture.png)
 
 ---
 
