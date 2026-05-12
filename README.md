@@ -24,7 +24,7 @@ Ideal for a small organization, personal tenant, light production or development
 This customized design is based on classic Enterprise Scale landing zone architecture.
 Utilizing hub-spoke networking, centralized log collection and policy-driven governance.
 
-![Platform Landing Zone architecture diagram.](../../docs/images/diagram-plz-architecture.png)
+![Platform Landing Zone architecture diagram.](../docs/images/diagram-plz-architecture.png)
 
 ---
 
