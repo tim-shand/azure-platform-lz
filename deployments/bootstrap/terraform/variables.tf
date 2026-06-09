@@ -34,6 +34,12 @@ variable "deployment_stacks" {
   }))
 }
 
+variable "custom_role_enable" {
+  description = "Boolean to control whether custom role for deployment is created and assigned."
+  type        = bool
+  default     = false
+}
+
 variable "management_group_core" {
   description = "Map of core Manangement Group details."
   type = map(object({

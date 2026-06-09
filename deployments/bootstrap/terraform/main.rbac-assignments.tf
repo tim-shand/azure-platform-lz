@@ -11,12 +11,13 @@ resource "random_uuid" "uuid" {}
 
 # RBAC: [Service Principal] - Assign Custom role for Service Principal.  
 resource "azurerm_role_assignment" "rbac_sp_custom" {
+  count       = var.custom_role_enable ? 1 : 0
   name = uuidv5( # Use multiple components in the name to guarantee uniqueness.
     random_uuid.uuid.result,
-    azurerm_role_definition.custom_role_iac_deploy.role_definition_resource_id
+    azurerm_role_definition.custom_role_iac_deploy[0].role_definition_resource_id
   )
   scope              = data.azurerm_management_group.tenant_root.id # Assign at tenant root group. 
-  role_definition_id = azurerm_role_definition.custom_role_iac_deploy.role_definition_resource_id
+  role_definition_id = azurerm_role_definition.custom_role_iac_deploy[0].role_definition_resource_id
   principal_id       = azuread_service_principal.iac_sp.object_id # Service Principal object ID.
   principal_type     = "ServicePrincipal"                         # Avoids Azure RBAC graph lookup delays that sometimes break CI/CD pipelines.
 }

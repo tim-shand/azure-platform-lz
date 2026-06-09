@@ -7,6 +7,7 @@
 
 # Custom Role: Create custom role to be assigned to Service Principal for multiple permissions on control and data plane. 
 resource "azurerm_role_definition" "custom_role_iac_deploy" {
+  count       = var.custom_role_enable ? 1 : 0
   name        = "Custom-IaC-Deploy"
   description = "Custom role for executing automation deployments using IaC service principal."
   scope       = data.azurerm_management_group.tenant_root.id
