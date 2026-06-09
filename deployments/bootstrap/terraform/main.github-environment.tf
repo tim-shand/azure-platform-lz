@@ -18,7 +18,7 @@ resource "github_actions_variable" "tf_version" {
 resource "github_actions_secret" "client_id" {
   repository      = data.github_repository.repo.name
   secret_name     = "ARM_CLIENT_ID"
-  plaintext_value = azuread_application.iac_sp.client_id # Service Principal ID.
+  value = azuread_application.iac_sp.client_id # Service Principal ID.
 }
 
 # GitHub: Repo [VARIABLE] - Azure Tenant ID
@@ -55,7 +55,7 @@ resource "github_actions_variable" "iac_sa" {
 resource "github_actions_secret" "vpn_psk" {
   repository      = data.github_repository.repo.name
   secret_name     = "VPN_LOCAL_PSK"
-  plaintext_value = "" # EMPTY: To be filled in manually after deployment, as it is sensitive information.
+  value = "" # EMPTY: To be filled in manually after deployment, as it is sensitive information.
 }
 
 # GitHub: Repo [VARIABLE] - Backend: Storage Account
