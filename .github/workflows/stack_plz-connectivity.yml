@@ -36,7 +36,7 @@ jobs:
         secrets:
             # Secrets must be declared separately from inputs and passed explicitly.
             ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-            VPN_LOCAL_PSK: ${{ secrets.VPN_LOCAL_PSK }}
+            # VPN_LOCAL_PSK: ${{ secrets.VPN_LOCAL_PSK }}
 
     # APPLY / DESTROY -------------------------------------------- #
     apply:
