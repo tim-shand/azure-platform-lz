@@ -20,17 +20,17 @@ management_groups_level1 = {
   "platform" = {
     display_name             = "Platform"                        
     parent_mg_name           = "core"                           # Key ID of the parent Management Group. 
-    subscription_identifiers = ["platform-dev", "platform-iac"] # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
+    subscription_identifiers = ["platform-prd", "platform-iac"] # List of subscription name identifiers. Maps MG to sub associations keeping sub ID out of code.
   }
   "workload" = {
     display_name             = "Workload"
     parent_mg_name           = "core"
-    subscription_identifiers = ["prd-sub"]
+    subscription_identifiers = ["tshandcom-prd-sub"]
   }
   "sandbox" = {
     display_name             = "Sandbox" 
     parent_mg_name           = "core"
-    subscription_identifiers = ["sandbox-dev"]
+    subscription_identifiers = ["vsccl-dev-sub"]
   }
   "decom" = {
     display_name             = "Decommissioned"
@@ -39,10 +39,10 @@ management_groups_level1 = {
   }
 }
 
-# Management Groups: Second level nested under level 1 manangement groups.
+# Management Groups: Second level nested under level 1 management groups.
 management_groups_level2 = {} # Leave blank if not required. Repeat same structure as "management_groups_level1". 
 
-# Management Groups: Third level nested under level 2 manangement groups.
+# Management Groups: Third level nested under level 2 management groups.
 management_groups_level3 = {} # Leave blank if not required. Repeat same structure as "management_groups_level2". 
 
 # POLICY ------------------------------------------- #

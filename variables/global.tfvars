@@ -1,6 +1,6 @@
 # GLOBAL ------------------------------------------------------------- #
 # Map of global variables used across multiple deployment stacks. 
-terraform_version = "1.14.0" # Version of Terraform to use in automation workflows.
+terraform_version = "1.15.0" # Version of Terraform to use in automation workflows.
 global = {
   naming = {                 # Map of name related variables (merge with "stack.naming"). 
     org_prefix       = "tjs" # Organization abbreviated name. Example: "abc" (Azure Balloon Company).
@@ -18,7 +18,7 @@ global = {
   }
   repo_config = {
     org    = "tim-shand"         # Name of the repository organization owner. 
-    repo   = "azure-platform-lz" # Repository where this project is stored. 
+    repo   = "azure-platform-lz-custom" # Repository where this project is stored. 
     branch = "main"              # Name of the default repository branch. 
   }
 }
@@ -37,19 +37,19 @@ deployment_stacks = {
     "management" = {
       stack_name              = "plz-management"
       stack_code              = "mgt"
-      subscription_identifier = "platform-dev-sub"
+      subscription_identifier = "platform-prd-sub"
       enable_github_env       = true                  # Create GitHub environment for stack (true/false).
     },
     "governance" = {
       stack_name              = "plz-governance"
       stack_code              = "gov"
-      subscription_identifier = "platform-dev-sub"
+      subscription_identifier = "platform-prd-sub"
       enable_github_env       = true
     },
     "connectivity" = {
       stack_name              = "plz-connectivity"
       stack_code              = "con"
-      subscription_identifier = "platform-dev-sub"
+      subscription_identifier = "platform-prd-sub"
       enable_github_env       = true
     }
 }

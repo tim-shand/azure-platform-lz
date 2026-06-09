@@ -115,6 +115,8 @@ variable "hub_vpn" {
     sku_tier    = string # "Basic","Standard","Premium"
     vpn_type    = string # "RouteBased", "PolicyBased".
     subnets     = optional(list(string), [])
+    vpn_local_ip = string # On-prem public IP (123.1.2.3).
+    vpn_local_psk = string # Pre-shared key for VPN connection.
     local_address_spaces = list(string)         # Address spaces for on-prem networks.
     connection_type       = string
     connection_protocol   = string
@@ -172,19 +174,6 @@ variable "hub_vpn" {
     error_message = "PFS group must be ECP256, ECP384, PFS1, PFS2, PFS14, PFS24, PFS2048, PFSMM, or None."
   }
 }
-
-variable "vpn_public_ip" {
-  description = "The string value of public IP from the local (on-prem) VPN device."
-  sensitive   = false
-  type        = string
-}
-
-variable "vpn_local_psk" {
-  description = "The string value of the Pre-Shared Key obtained from local (on-prem) VPN device."
-  sensitive   = true
-  type        = string
-}
-
 
 # FIREWALL RULES ------------------------------------------------------------- #
 

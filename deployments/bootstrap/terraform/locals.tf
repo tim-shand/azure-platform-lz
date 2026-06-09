@@ -13,6 +13,8 @@ locals {
 
   # RBAC roles to assign to the Service Principal at the data plane level.
   rbac_roles_builtin = [
+    "Contributor",
+    "User Access Administrator",
     "Key Vault Administrator",
     "Key Vault Secrets Officer",
     "Storage Blob Data Contributor"
