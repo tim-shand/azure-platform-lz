@@ -65,7 +65,7 @@ resource "azurerm_local_network_gateway" "onprem" {
   resource_group_name = azurerm_resource_group.con.name
   location            = azurerm_resource_group.con.location
   tags                = local.tags_merged
-  gateway_address     = var.vpn_public_ip # On-prem public IP (123.1.2.3), passed in via workflow.
+  gateway_address     = var.hub_vpn.vpn_local_ip # On-prem public IP (123.1.2.3).
   address_space       = var.hub_vpn.local_address_spaces # On-prem IP address space ["10.0.0.0/16"].
 }
 
@@ -80,7 +80,7 @@ resource "azurerm_virtual_network_gateway_connection" "onprem" {
   type                       = var.hub_vpn.connection_type
   virtual_network_gateway_id = azurerm_virtual_network_gateway.vpn[0].id
   local_network_gateway_id   = azurerm_local_network_gateway.onprem[0].id
-  shared_key                 = var.vpn_local_psk
+  shared_key                 = var.hub_vpn.vpn_local_psk
   connection_protocol        = var.hub_vpn.connection_protocol # IKEv1, IKEv2
   ipsec_policy {
     ike_encryption   = var.hub_vpn.ipsec_policy.ike_encryption

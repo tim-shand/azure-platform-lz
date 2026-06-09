@@ -73,6 +73,8 @@ hub_vpn = {
         "10.200.4.0/24"
     ]
     local_address_spaces = ["10.0.0.0/16"]  # Address spaces for on-prem networks.
+    vpn_local_ip         = ""              # On-prem public IP (123.1.2.3).
+    vpn_local_psk        = ""              # Pre-shared key for VPN connection.
     connection_type         = "IPsec"
     connection_protocol     = "IKEv2"
     ipsec_policy = {
