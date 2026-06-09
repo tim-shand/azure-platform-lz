@@ -18,7 +18,7 @@ global = {
   }
   repo_config = {
     org    = "tim-shand"         # Name of the repository organization owner. 
-    repo   = "azure-platform-lz" # Repository where this project is stored. 
+    repo   = "azure-platform-lz-custom" # Repository where this project is stored. 
     branch = "main"              # Name of the default repository branch. 
   }
 }
