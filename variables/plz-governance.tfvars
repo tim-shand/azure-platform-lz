@@ -39,10 +39,10 @@ management_groups_level1 = {
   }
 }
 
-# Management Groups: Second level nested under level 1 manangement groups.
+# Management Groups: Second level nested under level 1 management groups.
 management_groups_level2 = {} # Leave blank if not required. Repeat same structure as "management_groups_level1". 
 
-# Management Groups: Third level nested under level 2 manangement groups.
+# Management Groups: Third level nested under level 2 management groups.
 management_groups_level3 = {} # Leave blank if not required. Repeat same structure as "management_groups_level2". 
 
 # POLICY ------------------------------------------- #
