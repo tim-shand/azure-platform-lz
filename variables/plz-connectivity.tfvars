@@ -47,8 +47,8 @@ hub_firewall = {
 }
 
 hub_bastion = {
-    enabled     = false          # true/false to enable/disable service and associated resources.
-    sku_tier    = "Basic"       # "Developer","Basic","Standard","Premium"
+    enabled     = true          # true/false to enable/disable service and associated resources.
+    sku_tier    = "Developer"       # "Developer","Basic","Standard","Premium"
     subnets     = [
         "10.200.3.0/24"
     ]
