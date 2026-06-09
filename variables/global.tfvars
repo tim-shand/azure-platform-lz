@@ -54,7 +54,7 @@ deployment_stacks = {
     }
 }
 
-# MANAGEMENT GORP (Core) ------------------------------------------------------------- #
+# MANAGEMENT GROUP (Core) ------------------------------------------------------------- #
 
 # Management Groups: Core - Parent group for nested management groups.
 management_group_core = {
