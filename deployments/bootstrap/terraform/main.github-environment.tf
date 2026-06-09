@@ -55,14 +55,14 @@ resource "github_actions_variable" "iac_sa" {
 resource "github_actions_secret" "vpn_psk" {
   repository      = data.github_repository.repo.name
   secret_name     = "VPN_LOCAL_PSK"
-  plaintext_value = "" # EMPTY: To be filled in manually after deployment, as it is sensitive information.
+  plaintext_value = "your-vpn-psk-here" # EMPTY: To be filled in manually after deployment, as it is sensitive information.
 }
 
 # GitHub: Repo [VARIABLE] - Backend: Storage Account
 resource "github_actions_variable" "vpn_public_ip" {
   repository    = data.github_repository.repo.name
   variable_name = "VPN_PUBLIC_IP"
-  value         = "" # EMPTY: To be filled in manually after deployment.
+  value         = "123.456.789" # EMPTY: To be filled in manually after deployment.
 }
 
 # PER STACK --------------------------------------------------- #
