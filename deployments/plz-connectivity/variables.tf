@@ -177,14 +177,15 @@ variable "vpn_public_ip" {
   description = "The string value of public IP from the local (on-prem) VPN device."
   sensitive   = false
   type        = string
+  default     = ""
 }
 
 variable "vpn_local_psk" {
   description = "The string value of the Pre-Shared Key obtained from local (on-prem) VPN device."
   sensitive   = true
   type        = string
+  default     = ""
 }
-
 
 # FIREWALL RULES ------------------------------------------------------------- #
 
