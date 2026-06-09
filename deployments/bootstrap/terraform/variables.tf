@@ -37,11 +37,11 @@ variable "deployment_stacks" {
 variable "custom_role_enable" {
   description = "Boolean to control whether custom role for deployment is created and assigned."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "management_group_core" {
-  description = "Map of core Manangement Group details."
+  description = "Map of core Management Group details."
   type = map(object({
     display_name             = string
     parent_mg_name           = optional(string)       # NOT Required.
@@ -52,6 +52,6 @@ variable "management_group_core" {
     condition = alltrue([
       for mg, details in var.management_group_core : length(details.display_name) >= 3
     ])
-    error_message = "Display name is requried for the core Manangement Group."
+    error_message = "Display name is required for the core Management Group."
   }
 }
