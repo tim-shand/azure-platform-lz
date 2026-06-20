@@ -25,7 +25,7 @@ management_groups_level1 = {
   "workload" = {
     display_name             = "Workload"
     parent_mg_name           = "core"
-    subscription_identifiers = ["tshandcom-prd-sub"]
+    subscription_identifiers = ["workloads-sub"]
   }
   "sandbox" = {
     display_name             = "Sandbox" 
