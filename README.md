@@ -11,8 +11,8 @@ Ideal for a small organization, personal tenant, light production or development
   - Desired state of environment declared in code, using Terraform to define Azure resources and components.
   - Secrets and variables stored in GitHub repository, referenced and passed during workflow run-time.
 - **State Segmentation**
-  - Utilizes a dedicated subscription, containing state files remotely in Azure Blob storage.
-  - Separate state files per deployment stack, reducing blast radius in case of corruption or loss.
+  - Utilizes a dedicated IaC subscription, containing state files remotely in Azure Blob storage.
+  - Separate state files per deployment stack, reducing blast radius in event of data corruption or loss.
 - **Automated Powershell Bootstrapping**
   - Locally executed [Powershell script](./deployments/bootstrap) automates initial setup process.
   - Prepares both Azure tenant and GitHub repository for automated deployments using Terraform.
@@ -28,9 +28,7 @@ Utilizing hub-spoke networking, centralized log collection and policy-driven gov
 
 ---
 
-## 🚀 Deployment Stacks
-
-### 🥾 [Bootstrapping](./deployments/bootstrap)
+## 🥾 [Bootstrapping](./deployments/bootstrap)
 
 Automates the **initial bootstrapping** process, preparing both Azure and GitHub for platform landing zone deployments.
 
@@ -46,6 +44,10 @@ Automates the **initial bootstrapping** process, preparing both Azure and GitHub
 - **Backend Resources --> Dedicated IaC Subscription:**
   - Resource Group and Storage Accounts per category (platform, workloads).
   - Maintaining isolation and independence, using separate state files per stack (governance, connectivity, management).
+
+---
+
+## 🚀 Deployment Stacks
 
 ### 🔍 [Management](./deployments/plz-management)
 
@@ -126,10 +128,13 @@ The Connectivity stack deploys the resources required for secure networking betw
 - **VPN Gateway:**
   - Site-to-Site VPN for hybrid connectivity between Azure and on-prem.
   - Dedicated subnet providing gateway services for hub virtual network.
+  - NOTE: Requires manual input of pre-shared key for on-prem VPN service.
 - **Route Tables:**
   - When firewall is enabled, a route table forces all traffic through the firewall private IP.
   - When firewall is disabled the route table is still created but with no forced routes.
   - This allows associations to exist and can be populated later without state changes.
+
+> Note: Spoke VNet peering is intentionally left out of the connectivity stack, as it belongs in workload vending.
 
 ---
 
@@ -159,9 +164,12 @@ The Connectivity stack deploys the resources required for secure networking betw
 
 ## ▶️ Deployment
 
-Stacks are deployed using GitHub Actions workflows located in `.github/workflows`.  
-Workflows are designed to be run in the order provided below for the **initial deployment** only.  
-Once the full stack list has been deployed, changes can be made, with individual workflows executed when required.
+Stacks are deployed using **GitHub Actions workflows** located in `.github/workflows`.  
+Workflows are designed to be run in the order provided below for the **initial deployment** only.
+
+Once the full stack list has been deployed, changes can be made, with individual workflows executed as required.
+
+> Note: Workflows are configured to execute PLAN only deployments on commit or PR. Modification is required to enable full CI/CD.
 
 1. Update variable files in `./variables` with desired inputs for each stack.
 2. Add subscription identifier values to the `deployment_stacks` variable for stack referenced.
