@@ -30,7 +30,7 @@ management_groups_level1 = {
   "sandbox" = {
     display_name             = "Sandbox" 
     parent_mg_name           = "core"
-    subscription_identifiers = ["vsccl-dev-sub"]
+    subscription_identifiers = ["vs-ccl", "vs-spark"]
   }
   "decom" = {
     display_name             = "Decommissioned"
