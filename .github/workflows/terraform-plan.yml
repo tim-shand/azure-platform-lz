@@ -92,6 +92,7 @@ jobs:
                   PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
               run: |
                   set +e
+                  set -x
 
                   echo "Run Mode:   $RUN_MODE"
                   echo "Plan File:  $PLAN_FILE"
