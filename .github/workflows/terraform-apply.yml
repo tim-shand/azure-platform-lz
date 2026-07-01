@@ -54,9 +54,9 @@ jobs:
             TF_VARS_FILE: "${{ inputs.stack_name }}.tfvars" # Stack-specific filename, passed in from the parent workflow.
 
         steps:
-            - uses: actions/checkout@v4 # Clone the repository onto the runner.
+            - uses: actions/checkout@v7 # Clone the repository onto the runner.
 
-            - uses: hashicorp/setup-terraform@v3 # Install Terraform CLI on the runner.
+            - uses: hashicorp/setup-terraform@v4 # Install Terraform CLI on the runner.
               with:
                   terraform_version: ${{ vars.TF_VERSION }} # Pin to the version defined in the GitHub environment variable.
 
@@ -72,7 +72,7 @@ jobs:
                     -backend-config="use_azuread_auth=true"
 
             - name: "Download Plan Artifact"
-              uses: actions/download-artifact@v4
+              uses: actions/download-artifact@v7
               with:
                   name: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan" # Artifact name.
                   path: "${{ inputs.working_directory }}" # Path to the saved plan file produced in the plan step.

@@ -65,7 +65,7 @@ jobs:
             TF_VARS_FILE: "${{ inputs.stack_name }}.tfvars" # Stack-specific filename, passed in from the parent workflow.
 
         steps:
-            - uses: actions/checkout@v6 # Clone the repository onto the runner.
+            - uses: actions/checkout@v7 # Clone the repository onto the runner.
 
             - uses: hashicorp/setup-terraform@v4 # Install Terraform CLI on the runner.
               with:
@@ -123,7 +123,7 @@ jobs:
 
             - name: "Upload Plan Artifact"
               if: ${{ inputs.run_mode != 'drift' }}
-              uses: actions/upload-artifact@v4 # Upload Terraform plan file produced during the job for use by apply step.
+              uses: actions/upload-artifact@v7 # Upload Terraform plan file produced during the job for use by apply step.
               env:
                   PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
               with:
