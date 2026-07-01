@@ -42,7 +42,6 @@ jobs:
             # General ----------------------------------- #
             STACK_NAME: ${{ inputs.stack_name }} # Current stack name used for plan file and artifact naming.
             RUN_MODE: ${{ inputs.run_mode == 'destroy' && '-destroy' || '' }} # If run_mode is 'destroy', set RUN_MODE to '-destroy' for Terraform plan command.
-            DRIFT_MODE: ${{ inputs.run_mode == 'drift' && '-detailed-exitcode' || '' }} # If run_mode is 'drift', set DRIFT_MODE for Terraform plan command.
 
             # Azure OIDC Authentication  ----------------------------------- #
             ARM_USE_OIDC: true # Force Terraform AzureRM provider to authenticate via OIDC.
@@ -94,11 +93,10 @@ jobs:
               run: |
                   set +e
 
-                  echo "Run Mode:   $DRIFT_MODE"
-                  echo "Drift Mode: $DRIFT_MODE"
+                  echo "Run Mode:   $RUN_MODE"
                   echo "Plan File:  $PLAN_FILE"
 
-                  terraform plan $RUN_MODE $DRIFT_MODE \
+                  terraform plan $RUN_MODE -detailed-exitcode \
                    -out=$PLAN_FILE \
                    -var-file="$TF_VARS_DIR/global.tfvars" \
                    -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
