@@ -68,7 +68,8 @@ jobs:
 
             - uses: hashicorp/setup-terraform@v4 # Install Terraform CLI on the runner.
               with:
-                  terraform_version: ${{ vars.TF_VERSION }} # Pin to the version defined in the GitHub environment variable.
+                  terraform_version: ${{ vars.TF_VERSION }} # Pin to the version defined in the GitHub environment variable.'
+                  terraform_wrapper: false # Disable the Terraform wrapper script to avoid issues with certain commands.
 
             - name: "Terraform: Initialize"
               timeout-minutes: 5 # Fail this step if it exceeds 'x' minutes.
