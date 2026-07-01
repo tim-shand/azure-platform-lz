@@ -67,7 +67,7 @@ jobs:
         steps:
             - uses: actions/checkout@v6 # Clone the repository onto the runner.
 
-            - uses: hashicorp/setup-terraform@v3 # Install Terraform CLI on the runner.
+            - uses: hashicorp/setup-terraform@v4 # Install Terraform CLI on the runner.
               with:
                   terraform_version: ${{ vars.TF_VERSION }} # Pin to the version defined in the GitHub environment variable.
 
