@@ -25,8 +25,8 @@ jobs:
                       working_directory: deployments/plz-connectivity
         uses: ./.github/workflows/terraform-plan.yml
         with:
-            working_directory: ${{ matrix.stack.working_directory }}
-            stack_name: ${{ matrix.stack.name }}
-            run_mode: drift
+            working_directory: ${{ matrix.stack.working_directory }} # Pass the working directory for the stack to the terraform-plan workflow.
+            stack_name: ${{ matrix.stack.name }} # Pass the stack name to the terraform-plan workflow.
+            run_mode: drift # Set the run mode to 'drift' to satisfy the condition in the terraform-plan workflow for drift detection.
         secrets:
-            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure Service Principal Client ID for authentication.
