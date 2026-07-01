@@ -94,10 +94,11 @@ jobs:
               run: |
                   set +e
 
-                  echo "Run Mode: $RUN_MODE"
-                  echo "Plan File: $PLAN_FILE"
+                  echo "Run Mode:   $DRIFT_MODE"
+                  echo "Drift Mode: $DRIFT_MODE"
+                  echo "Plan File:  $PLAN_FILE"
 
-                  terraform plan ${RUN_MODE} ${DRIFT_MODE} \
+                  terraform plan $RUN_MODE $DRIFT_MODE \
                    -out=$PLAN_FILE \
                    -var-file="$TF_VARS_DIR/global.tfvars" \
                    -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
