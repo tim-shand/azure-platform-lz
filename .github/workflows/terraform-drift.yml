@@ -1,15 +1,12 @@
-name: "Terraform: Plan"
+name: "Terraform: Drift Detection"
 
 on: # Define workflow triggers.
     workflow_call: # Allows this workflow to be called by a parent workflow.
         inputs: # Define input parameters accepted from the calling workflow.
-            working_directory: # Path to the Terraform stack root module.
-                type: string
-                required: true
             stack_name: # String used with plan and variable file naming.
                 type: string
                 required: true
-            run_mode: # Pass in 'run_mode' to use as parameter in plan command (plan -destroy).
+            working_directory: # Path to the Terraform stack root module.
                 type: string
                 required: true
         secrets:
@@ -18,7 +15,7 @@ on: # Define workflow triggers.
 
 jobs:
     plan:
-        name: "Terraform: Plan" # Display name for this job in the GitHub Actions UI.
+        name: "Terraform: Drift Detection" # Display name for this job in the GitHub Actions UI.
         runs-on: ubuntu-latest # Use the latest GitHub-hosted Ubuntu runner.
         timeout-minutes: 30 # Fail the entire job if it exceeds this duration.
         environment: ${{ inputs.stack_name }} # Use stack name matching GitHub environment.
@@ -29,7 +26,7 @@ jobs:
         env:
             # General ----------------------------------- #
             STACK_NAME: ${{ inputs.stack_name }} # Current stack name used for plan file and artifact naming.
-            RUN_MODE: ${{ inputs.run_mode == 'destroy' && '-destroy' || '' }} # If run_mode is 'destroy', set RUN_MODE to '-destroy' for Terraform plan command.
+            PLAN_FILE: "${{ inputs.stack_name }}_drift.plan"
 
             # Azure OIDC Authentication  ----------------------------------- #
             ARM_USE_OIDC: true # Force Terraform AzureRM provider to authenticate via OIDC.
@@ -66,17 +63,14 @@ jobs:
                    -backend-config="key=$TF_BACKEND_KEY" \
                    -backend-config="use_azuread_auth=true"
 
-            - name: "Terraform: Validate"
-              timeout-minutes: 5 # Fail this step if it exceeds 'x' minutes.
-              run: terraform validate # Terraform and syntax check.
-
             - name: "Terraform: Plan"
               id: plan # Assign an ID to this step for referencing outputs.
               timeout-minutes: 10 # Fail this step if it exceeds 'x' minutes.
-              env:
-                  PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
               run: |
-                  terraform plan $RUN_MODE \
+                  # `set +e` Prevents the shell from exiting on a non-zero return code.
+                  set +e
+
+                  terraform plan -detailed-exitcode \
                     -out="$PLAN_FILE" \
                     -var-file="$TF_VARS_DIR/global.tfvars" \
                     -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
@@ -85,11 +79,33 @@ jobs:
                     -var="remote_state_resource_group=$TF_BACKEND_RG" \
                     -var="remote_state_storage_account=$TF_BACKEND_SA"
 
-            - name: "Upload Plan Artifact"
-              uses: actions/upload-artifact@v7 # Upload Terraform plan file produced during the job for use by apply step.
-              env:
-                  PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
+                  exitcode=$?
+                  echo "Terraform Code: $exitcode"
+                  echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+                   
+                  # Fail only on genuine Terraform errors.
+                  test "$exitcode" -eq 1 && exit 1
+                  exit 0
+
+            - name: "Drift Detection: PASS"
+              if: steps.plan.outputs.exitcode == '0'
+              run: echo "✅ $STACK_NAME | No drift detected." >> "$GITHUB_STEP_SUMMARY"
+
+            # DRIFT DETECTION ONLY: Upload the Terraform plan output to a file for review.
+            - name: "Drift Detection: DETECTED"
+              if: steps.plan.outputs.exitcode == '2'
+              run: |
+                  echo "⚠️ $STACK_NAME | Drift detected." >> "$GITHUB_STEP_SUMMARY"
+                  terraform show -no-color "$PLAN_FILE" > drift.txt
+                  terraform show -json "$PLAN_FILE" > drift.json
+
+            - name: "Upload Drift Artifacts"
+              if: steps.plan.outputs.exitcode == '2'
+              uses: actions/upload-artifact@v7 # Upload Terraform drift file.
               with:
-                  name: "${{ env.PLAN_FILE }}"
-                  path: "${{ inputs.working_directory }}/${{ env.PLAN_FILE }}"
+                  name: "$PLAN_FILE"
+                  path: |
+                      "${{ inputs.working_directory }}/$PLAN_FILE"
+                      "${{ inputs.working_directory }}/$drift.txt"
+                      "${{ inputs.working_directory }}/$drift.json"
                   retention-days: 1

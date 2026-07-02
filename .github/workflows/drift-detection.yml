@@ -2,7 +2,7 @@ name: "Drift Detection"
 
 on:
     schedule:
-        - cron: "0 3 * * *" # Run daily at 03:00 UTC
+        - cron: "0 15 * * *" # 03:00 NZST / 04:00 NZDT
     workflow_dispatch: # Allow manual trigger for ad-hoc checks.
 
 permissions:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
     detect-drift:
-        name: "Detect-Drift: ${{ matrix.stack }}"
+        name: "Detect-Drift: ${{ matrix.stack.name }}"
         strategy: # Define a matrix strategy to run the drift detection for multiple stacks in parallel.
             fail-fast: false # Run all stacks even if one fails.
             matrix: # Define the stacks to check for drift.
@@ -23,10 +23,9 @@ jobs:
                       working_directory: deployments/plz-governance
                     - name: plz-connectivity
                       working_directory: deployments/plz-connectivity
-        uses: ./.github/workflows/terraform-plan.yml
+        uses: ./.github/workflows/terraform-drift.yml
         with:
-            working_directory: ${{ matrix.stack.working_directory }} # Pass the working directory for the stack to the terraform-plan workflow.
             stack_name: ${{ matrix.stack.name }} # Pass the stack name to the terraform-plan workflow.
-            run_mode: drift # Set the run mode to 'drift' to satisfy the condition in the terraform-plan workflow for drift detection.
+            working_directory: ${{ matrix.stack.working_directory }} # Pass the working directory for the stack to the terraform-plan workflow.
         secrets:
             ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure Service Principal Client ID for authentication.
