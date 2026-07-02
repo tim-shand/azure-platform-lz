@@ -63,6 +63,10 @@ jobs:
                    -backend-config="key=$TF_BACKEND_KEY" \
                    -backend-config="use_azuread_auth=true"
 
+            - name: "Terraform: Validate"
+              timeout-minutes: 5 # Fail this step if it exceeds 'x' minutes.
+              run: terraform validate # Terraform and syntax check.
+
             - name: "Terraform: Plan"
               id: plan # Assign an ID to this step for referencing outputs.
               timeout-minutes: 10 # Fail this step if it exceeds 'x' minutes.
@@ -103,9 +107,9 @@ jobs:
               if: steps.plan.outputs.exitcode == '2'
               uses: actions/upload-artifact@v7 # Upload Terraform drift file.
               with:
-                  name: "$PLAN_FILE"
+                  name: "drift-${{ inputs.stack_name }}" # Name of the artifact directory in GitHub Actions.
                   path: |
-                      "${{ inputs.working_directory }}/$PLAN_FILE"
-                      "${{ inputs.working_directory }}/$drift.txt"
-                      "${{ inputs.working_directory }}/$drift.json"
+                      "${{ inputs.working_directory }}/${{ env.PLAN_FILE }}"
+                      "${{ inputs.working_directory }}/drift.txt"
+                      "${{ inputs.working_directory }}/drift.json"
                   retention-days: 1
