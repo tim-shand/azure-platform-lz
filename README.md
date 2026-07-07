@@ -1,6 +1,5 @@
 ![Banner](./docs/images/banner.png)
 
-| Workflow | Status |
 | -------- | ------ |
 | Drift Detection | [![Drift Detection](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml) |
 | Stack: Management | [![Deploy Stack: PLZ-Management](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml) |
