@@ -4,6 +4,12 @@ on:
     schedule:
         - cron: "0 15 * * *" # 03:00 NZST / 04:00 NZDT
     workflow_dispatch: # Allow manual trigger for ad-hoc checks.
+    pull_request:
+        paths:
+            - ".github/workflows/drift-detection.yml"
+            - ".github/workflows/terraform-drift.yml"
+        branches:
+            - main
 
 permissions:
     id-token: write # Required: OIDC token must be granted in the caller for federation to work through workflow_call.
