@@ -14,6 +14,7 @@ on:
 permissions:
     id-token: write # Required: OIDC token must be granted in the caller for federation to work through workflow_call.
     contents: read # Required: Checkout needs read access to the repository.
+    issues: write # Required to create GitHub Issues on drift detection.
 
 jobs:
     detect-drift:
