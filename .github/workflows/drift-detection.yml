@@ -6,9 +6,8 @@ on:
     workflow_dispatch: # Allow manual trigger for ad-hoc checks.
 
 permissions:
-    id-token: write # Required for OIDC authentication with Azure.
-    contents: read # Required to read the repository contents for Terraform code.
-    issues: write # Required to create GitHub Issues on drift detection.
+    id-token: write # Required: OIDC token must be granted in the caller for federation to work through workflow_call.
+    contents: read # Required: Checkout needs read access to the repository.
 
 jobs:
     detect-drift:

@@ -12,6 +12,10 @@ on: # Define workflow triggers.
         secrets:
             ARM_CLIENT_ID: # Secrets must be declared separately from inputs.
                 required: true # Azure Service Principal ID for OIDC authentication.
+permissions:
+    id-token: write # Required for OIDC authentication with Azure.
+    contents: read # Required to read the repository contents for Terraform code.
+    issues: write # Required to create GitHub Issues on drift detection.
 
 jobs:
     plan:
@@ -113,3 +117,99 @@ jobs:
                       ${{ inputs.working_directory }}/drift.txt
                       ${{ inputs.working_directory }}/drift.json
                   retention-days: 1
+
+            - name: "Drift: Create or Update GitHub Issue"
+              if: steps.plan.outputs.exitcode == '2'
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const stackName = process.env.STACK_NAME;
+                      const runId = context.runId;
+                      const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${runId}`;
+                      const today = new Date().toISOString().split('T')[0];
+
+                      const issues = await github.rest.issues.listForRepo({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        state: 'open',
+                        labels: ['drift', stackName]
+                      });
+
+                      if (issues.data.length > 0) {
+                        await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: issues.data[0].number,
+                          body: [
+                            `## Drift still present — ${new Date().toISOString()}`,
+                            `Run: [${runId}](${runUrl})`,
+                            `Review drift artifacts in the workflow run linked above.`
+                          ].join('\n')
+                        });
+                        console.log(`Updated existing drift issue #${issues.data[0].number}`);
+                      } else {
+                        await github.rest.issues.create({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          title: `Drift detected: ${stackName} — ${today}`,
+                          labels: ['drift', stackName],
+                          body: [
+                            `## Drift detected in \`${stackName}\` stack`,
+                            '',
+                            'Changes were detected between Terraform state and live infrastructure.',
+                            '',
+                            '## Review',
+                            `Download drift artifacts from workflow run [${runId}](${runUrl}):`,
+                            '- `drift.txt` — human-readable plan diff',
+                            '- `drift.json` — machine-readable plan diff',
+                            '',
+                            '## Next steps',
+                            '- If **unintentional**: trigger the deployment workflow to restore desired state',
+                            '- If **intentional**: update Terraform code to reflect the new desired state, raise a PR, and merge',
+                            '',
+                            '## Remediate',
+                            `[Trigger deployment for ${stackName}](${{ github.server_url }}/${{ github.repository }}/actions/workflows/${stackName}.yml)`,
+                            '',
+                            `> Detected by drift detection run [${runId}](${runUrl})`
+                          ].join('\n')
+                        });
+                        console.log(`Created new drift issue for stack: ${stackName}`);
+                      }
+
+            - name: "Drift: Close Issue if Resolved"
+              if: steps.plan.outputs.exitcode == '0'
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const stackName = process.env.STACK_NAME;
+                      const runId = context.runId;
+                      const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${runId}`;
+
+                      const issues = await github.rest.issues.listForRepo({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        state: 'open',
+                        labels: ['drift', stackName]
+                      });
+
+                      for (const issue of issues.data) {
+                        await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: issue.number,
+                          body: `Drift resolved — no changes detected in run [${runId}](${runUrl}). Closing issue.`
+                        });
+                        await github.rest.issues.update({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: issue.number,
+                          state: 'closed'
+                        });
+                        console.log(`Closed drift issue #${issue.number} for stack: ${stackName}`);
+                      }
+
+            - name: "Drift: Fail Job on Plan Error"
+              if: steps.plan.outputs.exitcode == '1'
+              run: |
+                  echo "Terraform plan returned an error for stack: $STACK_NAME"
+                  exit 1
