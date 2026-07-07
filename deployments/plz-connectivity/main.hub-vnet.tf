@@ -5,6 +5,10 @@
 # - Deploy Network Watcher and VNet flow logs to Log Analytics.
 #====================================================================================#
 
+# NOTE: Azure Network Traffic Analytics Service (NetworkTrafficAnalyticsService) automatically creates DCE and DCR resources prefixed with "NWTA".
+# These are created and managed by Microsoft service principal, application ID 1e3e4475-288f-4018-a376-df66fd7fac5f.
+# Do not import or attempt to manage these resources via Terraform to avoid potential issues.
+
 # VNet: Hub
 resource "azurerm_virtual_network" "hub" {
   name                = "${module.naming_con.virtual_network}"
