@@ -1,10 +1,12 @@
 ![Banner](./docs/images/banner.png)
 
-| -------- | ------ |
-| Drift Detection | [![Drift Detection](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml) |
-| Stack: Management | [![Deploy Stack: PLZ-Management](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml) |
-| Stack: Governance | [![Deploy Stack: PLZ-Governance](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-governance.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-governance.yml) |
-| Stack: Connectivity | [![Deploy Stack: PLZ-Connectivity](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-connectivity.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-connectivity.yml) |
+[![Drift Detection](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml)
+
+[![Deploy Stack: PLZ-Management](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml)
+
+[![Deploy Stack: PLZ-Governance](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-governance.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-governance.yml)
+
+[![Deploy Stack: PLZ-Connectivity](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-connectivity.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-connectivity.yml)
 
 # ☁️ Azure Platform Landing Zone (Custom)
 
