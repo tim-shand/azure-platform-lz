@@ -134,7 +134,8 @@ The Connectivity stack deploys the resources required for secure networking betw
   - When firewall is disabled the route table is still created but with no forced routes.
   - This allows associations to exist and can be populated later without state changes.
 
-> [!NOTE] Spoke VNet peering is intentionally left out of the connectivity stack, as it belongs in workload vending.
+> [!NOTE] 
+> Spoke VNet peering is intentionally left out of the connectivity stack, as it belongs in workload vending.
 
 ---
 
@@ -169,7 +170,8 @@ Workflows are designed to be run in the order provided below for the **initial d
 
 Once the full stack list has been deployed, changes can be made, with individual workflows executed as required.
 
-> [!NOTE] Workflows are configured to execute `PLAN` only deployments on commit or PR. Modification is required to enable full CI/CD.
+> [!NOTE]
+> Workflows are configured to execute `PLAN` only deployments on commit or PR. Modification is required to enable full CI/CD.
 
 1. Update variable files in `./variables` with desired inputs for each stack.
 2. Add subscription identifier values to the `deployment_stacks` variable for stack referenced.
