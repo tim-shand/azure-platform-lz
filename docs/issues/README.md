@@ -24,33 +24,39 @@ See `docs/issues/resolved/` for archived resolved, mitigated and accepted issues
 
 ## 🔠 Template
 
-## ISS-000: Description of issue as subject line
+```text
+# ISS-000: Description of issue as subject line
 
-**Date:**     2025-11-01
-**Severity:** Medium
-**Stack:**    Governance (FILE_NAME_IF_RELEVANT)
-**Status:**   New
+- **Date:**     2025-11-01
+- **Severity:** Medium
+- **Stack:**    Governance (FILE_NAME_IF_RELEVANT)
+- **Status:**   New
 
-**Description:**
+---
+
+## Description
 
 A problem has occurred causing some symptoms. Here is an example of the error output.
 
-```shell
 Error: Failed to do the thing that was supposed to happen.
 │ --------------------------------------------------------------------------------
 │ RESPONSE 401: 401 Unauthorized
 │ ERROR CODE: Bad event prevented great success.
 │ --------------------------------------------------------------------------------
-```
 
-**Impact:**
+---
+
+## Impact
 
 Deployment pipeline for `plz-governance` stack fails preventing changes.
 
-**Resolution:**
+---
+
+## Resolution
 
 The cause was another thing related to this.
 
 1. Step 1.
 2. Step 2.
 3. Step 3.
+```

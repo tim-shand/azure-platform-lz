@@ -182,7 +182,7 @@ Once the full stack list has been deployed, changes can be made, with individual
 
 ## 📗 Naming Conventions
 
-This project uses a semi-opinionated naming format for resources to ensure consistency, readability, and CAF alignment.  
+This project uses a semi-opinionated naming format for resources to ensure consistency, readability, and CAF alignment.
 Resource names are provided using a custom [naming module](./modules/global-resource-naming/) that produces multiple naming outputs.
 
 **Template:** `<resource_type>-<prefix>-<workload>-<stack_or_env>-<category>-<instance>`  
