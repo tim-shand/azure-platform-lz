@@ -180,7 +180,7 @@ Once the full stack list has been deployed, changes can be made, with individual
 
 ---
 
-## 📕 Naming Convention
+## 📗 Naming Conventions
 
 This project uses a semi-opinionated naming format for resources to ensure consistency, readability, and CAF alignment.  
 Resource names are provided using a custom [naming module](./modules/global-resource-naming/) that produces multiple naming outputs.
@@ -210,9 +210,29 @@ Resource names are provided using a custom [naming module](./modules/global-reso
 
 ---
 
+## 📘 Platform-Managed Resources
+
+The following resources are created and managed automatically by Azure platform services, and are intentionally excluded from Terraform management:
+
+| Resource                 | Prefix | Created by                     | Reason                                         |
+| ------------------------ | ------ | ------------------------------ | ---------------------------------------------- |
+| Data Collection Endpoint | `NWTA` | NetworkTrafficAnalyticsService | Defender for Cloud network traffic collection. |
+| Data Collection Rule     | `NWTA` | NetworkTrafficAnalyticsService | Defender for Cloud network traffic collection. |
+
+---
+
+## 🔬 Issues & Solutions
+
+Issues are recorded and held within the `issues` directory as individual files.
+When the issue is accepted, mitigated or resolved, the file is moved to the `resolved` directory.
+
+See the [Issues Register](./docs/issues/README.md) for details on active and resolved issues.
+
+---
+
 ## 📚 Reference Materials
 
-A list of references, material and content that contributed to, or influenced this project.
+A list of references, material, and content that contributed to, or influenced this project.
 
 - [Azure Landing Zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
 - [Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/overview)
