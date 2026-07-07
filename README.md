@@ -1,11 +1,14 @@
 ![Banner](./docs/images/banner.png)
 
+![](https://img.shields.io/badge/microsoft%20azure-0089D6?style=for-the-badge&logo=microsoft-azure&logoColor=white)
+![](https://img.shields.io/badge/powershell-5391FE?style=for-the-badge&logo=powershell&logoColor=white)
+![](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
+[![HitCount](https://hits.dwyl.com/tim-shand/azure-platform-lz-custom.svg?style=flat-square)](http://hits.dwyl.com/tim-shand/azure-platform-lz-custom)
+
+
 [![Drift Detection](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml)
-
 [![Deploy Stack: PLZ-Management](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml)
-
 [![Deploy Stack: PLZ-Governance](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-governance.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-governance.yml)
-
 [![Deploy Stack: PLZ-Connectivity](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-connectivity.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-connectivity.yml)
 
 # ☁️ Azure Platform Landing Zone (Custom)
