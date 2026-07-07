@@ -3,7 +3,8 @@
 ![](https://img.shields.io/badge/microsoft%20azure-0089D6?style=for-the-badge&logo=microsoft-azure&logoColor=white)
 ![](https://img.shields.io/badge/powershell-5391FE?style=for-the-badge&logo=powershell&logoColor=white)
 ![](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
-![License](https://img.shields.io/github/license/yourusername/your-repo-name)
+
+![License](https://img.shields.io/github/license/tim-shand/azure-platform-lz-custom)
 [![Drift Detection](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml)
 
 # ☁️ Azure Platform Landing Zone (Custom)
