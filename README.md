@@ -1,5 +1,14 @@
 # ☁️ Azure Platform Landing Zone (Custom)
 
+![Banner](./docs/images/banner.png)
+
+| Workflow | Status |
+| -------- | ------ |
+| Drift Detection | [![Drift Detection](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/drift-detection.yml) |
+| Stack: Management | [![Deploy Stack: PLZ-Management](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-management.yml) |
+| Stack: Governance | [![Deploy Stack: PLZ-Governance](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-governance.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-governance.yml) |
+| Stack: Connectivity | [![Deploy Stack: PLZ-Connectivity](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-connectivity.yml/badge.svg)](https://github.com/tim-shand/azure-platform-lz-custom/actions/workflows/stack_plz-connectivity.yml) |
+
 This project contains a custom Azure platform landing zone (PLZ), inspired by enterprise-scale architecture and based on CAF guidelines.
 Designed to be light-weight and cost-efficient, utilizing free or minimum pricing SKU options where possible.
 Ideal for a small organization, personal tenant, light production or development/training purposes.
