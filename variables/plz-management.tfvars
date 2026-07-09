@@ -57,7 +57,7 @@ action_groups = {
 
 # Enabled/disable alerts by category.
 enabled_alerts = {
-  resource_health = false # true
+  resource_health = true # true
   service_health  = true
   administrative  = true
 }
